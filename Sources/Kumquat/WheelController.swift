@@ -44,9 +44,18 @@ final class WheelController {
 
     /// Seconds the last opening took, from the call to the first frame handed to the window server.
     private(set) var lastOpenDuration: TimeInterval = 0
+    /// Where that time went, in milliseconds per step, so a slow opening points at its cause.
+    private(set) var lastOpenSteps: [(String, Double)] = []
 
     func show(urls: [URL], wheel: Wheel, at point: NSPoint, keyboard: Bool) {
         let started = DispatchTime.now()
+        var lap = started.uptimeNanoseconds
+        var steps: [(String, Double)] = []
+        func step(_ name: String) {
+            let now = DispatchTime.now().uptimeNanoseconds
+            steps.append((name, Double(now - lap) / 1e6))
+            lap = now
+        }
         let signpost = Trace.signposter.beginInterval("Open wheel", id: Trace.signposter.makeSignpostID())
         hideWork?.cancel()
         withoutAnimation {
@@ -60,6 +69,7 @@ final class WheelController {
             reloadOperations()
         }
         if keyboard, !model.operations.isEmpty { highlight(0) }
+        step("operations")
 
         panel.position(wheelCenter: point)
         if keyboard {
@@ -69,11 +79,16 @@ final class WheelController {
         } else {
             panel.orderFrontRegardless()
         }
+        step("order front")
         withAnimation(.spring(response: 0.3, dampingFraction: 0.78)) { model.isShown = true }
         playBloom(appearing: true)
+        step("state")
         // Draw and send the first frame now instead of at the end of this run loop pass.
         panel.displayIfNeeded()
+        step("draw")
         CATransaction.flush()
+        step("flush")
+        lastOpenSteps = steps
         lastOpenDuration = Double(DispatchTime.now().uptimeNanoseconds - started.uptimeNanoseconds) / 1e9
         Trace.signposter.endInterval("Open wheel", signpost)
     }

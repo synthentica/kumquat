@@ -46,6 +46,7 @@ struct SettingsView: View {
                     ForEach(OutputLocation.allCases) { Text($0.title).tag($0) }
                 }
                 Toggle("Show in Finder when done", isOn: $settings.revealWhenDone)
+                Toggle("Keep the original's dates", isOn: $settings.keepDates)
                 Toggle("Play a sound", isOn: $settings.playSound)
                 LabeledContent("Image quality") {
                     HStack {

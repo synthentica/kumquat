@@ -10,6 +10,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem?
     private var hotKey: HotKey?
     private var spinTimer: Timer?
+    private var stopItem: NSMenuItem?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
@@ -18,7 +19,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         wheel.onPerform = { [weak self] operation, urls in
             self?.runner.run(operation, on: urls)
         }
-        runner.onBusyChanged = { [weak self] busy in self?.setSpinning(busy) }
+        runner.onBusyChanged = { [weak self] busy in
+            self?.setSpinning(busy)
+            self?.stopItem?.isHidden = !busy
+        }
         dragMonitor.onWheelKey = { [weak self] chosen in
             guard let self else { return }
             if self.wheel.isVisible {
@@ -80,6 +84,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         showKeyboardWheel(for: urls)
     }
 
+    @objc private func stopAll() {
+        runner.stopAll()
+    }
+
     @objc private func openSettings() {
         settingsWindow.show()
     }
@@ -121,6 +129,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         convert.keyEquivalentModifierMask = [.control, .option]
         convert.target = self
         menu.addItem(convert)
+
+        let stop = NSMenuItem(title: "Stop Converting", action: #selector(stopAll), keyEquivalent: ".")
+        stop.target = self
+        stop.isHidden = true
+        menu.addItem(stop)
+        stopItem = stop
 
         let settings = NSMenuItem(title: "Settings…", action: #selector(openSettings), keyEquivalent: ",")
         settings.target = self

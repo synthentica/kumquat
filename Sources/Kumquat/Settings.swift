@@ -79,6 +79,7 @@ final class Settings: ObservableObject {
     @Published var imageQuality: Double { didSet { save(imageQuality, "imageQuality") } }
     @Published var ffmpegPath: String { didSet { save(ffmpegPath, "ffmpegPath") } }
     @Published var dragWheelEnabled: Bool { didSet { save(dragWheelEnabled, "dragWheelEnabled") } }
+    @Published var keepDates: Bool { didSet { save(keepDates, "keepDates") } }
 
     private init() {
         func key(_ name: String, _ fallback: ModifierKey) -> ModifierKey {
@@ -93,6 +94,7 @@ final class Settings: ObservableObject {
         imageQuality = defaults.object(forKey: "imageQuality") as? Double ?? 0.85
         ffmpegPath = defaults.string(forKey: "ffmpegPath") ?? ""
         dragWheelEnabled = defaults.object(forKey: "dragWheelEnabled") as? Bool ?? true
+        keepDates = defaults.object(forKey: "keepDates") as? Bool ?? true
     }
 
     private func save(_ value: Any, _ key: String) {
@@ -115,7 +117,7 @@ final class Settings: ObservableObject {
     var ffmpeg: URL? { FFmpegEngine.locate(custom: ffmpegPath) }
 
     var context: OperationContext {
-        OperationContext(outputDirectory: output.directory, imageQuality: imageQuality, ffmpeg: ffmpeg)
+        OperationContext(outputDirectory: output.directory, imageQuality: imageQuality, ffmpeg: ffmpeg, keepsDates: keepDates)
     }
 
     var launchAtLogin: Bool {

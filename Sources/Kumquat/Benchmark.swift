@@ -31,6 +31,7 @@ enum Benchmark {
         for index in 0..<30 {
             wheel.show(urls: [photo], wheel: Wheel.allCases[index % 3], at: center, keyboard: false)
             opens.append(wheel.lastOpenDuration * 1000)
+            if index < 2 { openSteps.append(wheel.lastOpenSteps) }
             spin(0.45)
             wheel.hide()
             spin(0.25)
@@ -78,11 +79,16 @@ enum Benchmark {
 
     /// Threads that used the processor while the app was idle, with their share in percent.
     private static var busyThreads: [(String, Double)] = []
+    /// Step timings of the first two wheel openings, to tell a cold start from a slow frame.
+    private static var openSteps: [[(String, Double)]] = []
 
     private static func report(_ results: [BudgetResult], to path: String) {
         print("")
         if !busyThreads.isEmpty {
             print("Awake while idle: " + busyThreads.prefix(6).map { "\($0.0) \(String(format: "%.2f", $0.1)) %" }.joined(separator: ", "))
+        }
+        for (index, steps) in openSteps.enumerated() {
+            print("Wheel opening \(index + 1): " + steps.map { "\($0.0) \(String(format: "%.1f", $0.1)) ms" }.joined(separator: ", "))
         }
         for result in results {
             let mark = result.pass ? "pass" : "MISS"
@@ -104,6 +110,7 @@ enum Benchmark {
             ],
             "date": ISO8601DateFormatter().string(from: Date()),
             "idle_threads": busyThreads.prefix(10).map { ["name": $0.0, "percent": ($0.1 * 100).rounded() / 100] },
+            "wheel_open_steps": openSteps.map { steps in steps.map { ["step": $0.0, "ms": ($0.1 * 10).rounded() / 10] } },
         ]
         if let data = try? JSONSerialization.data(withJSONObject: document, options: [.prettyPrinted, .sortedKeys]) {
             let url = URL(fileURLWithPath: path)

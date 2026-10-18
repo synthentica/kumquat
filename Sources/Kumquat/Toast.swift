@@ -8,6 +8,7 @@ final class ToastModel: ObservableObject {
         case working
         case done
         case failed
+        case stopped
     }
 
     @Published var state: State = .working
@@ -24,6 +25,8 @@ final class ToastModel: ObservableObject {
 final class ToastController {
     private let model = ToastModel()
     private var onClick: (() -> Void)?
+    /// Called with the job's ticket when its stop button is pressed.
+    var onStop: ((Int) -> Void)?
     private var hideWork: DispatchWorkItem?
     private var job = 0
     private static let size = NSSize(width: 420, height: 76)
@@ -42,10 +45,13 @@ final class ToastController {
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .transient, .ignoresCycle]
         panel.isReleasedWhenClosed = false
         panel.hidesOnDeactivate = false
-        let view = ToastView(model: model) { [weak self] in
+        let view = ToastView(model: model, onClick: { [weak self] in
             self?.onClick?()
             self?.hide()
-        }
+        }, onStop: { [weak self] in
+            guard let self else { return }
+            self.onStop?(self.job)
+        })
         panel.contentView = NSHostingView(rootView: view)
         return panel
     }()
@@ -86,6 +92,10 @@ final class ToastController {
         show(.failed, title, detail, onClick: nil, autoHide: 5)
     }
 
+    func showStopped(_ title: String, detail: String, onClick: (() -> Void)?) {
+        show(.stopped, title, detail, onClick: onClick, autoHide: 3.2)
+    }
+
     private func show(_ state: ToastModel.State, _ title: String, _ detail: String, onClick: (() -> Void)?, autoHide: TimeInterval?) {
         hideWork?.cancel()
         self.onClick = onClick
@@ -123,6 +133,7 @@ final class ToastController {
 private struct ToastView: View {
     @ObservedObject var model: ToastModel
     let onClick: () -> Void
+    let onStop: () -> Void
 
     var body: some View {
         HStack(spacing: 12) {
@@ -137,6 +148,9 @@ private struct ToastView: View {
                         .transition(.scale(scale: 0.4).combined(with: .opacity))
                 case .failed:
                     StatusBadge(colors: [Color(hex: 0xFF7A5C), Color(hex: 0xE5484D)], drawsCheck: false)
+                        .transition(.scale(scale: 0.4).combined(with: .opacity))
+                case .stopped:
+                    StatusBadge(colors: [Color(hex: 0x8E8E93), Color(hex: 0x636366)], drawsCheck: false, symbol: "stop.fill")
                         .transition(.scale(scale: 0.4).combined(with: .opacity))
                 }
             }
@@ -153,6 +167,17 @@ private struct ToastView: View {
             .frame(maxWidth: 300, alignment: .leading)
             .id(model.title)
             .transition(.opacity.combined(with: .offset(y: 6)))
+            if model.state == .working {
+                Button(action: onStop) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .help("Stop")
+                .accessibilityLabel("Stop")
+                .transition(.opacity)
+            }
         }
         .padding(.leading, 10)
         .padding(.trailing, 18)
@@ -197,6 +222,7 @@ private struct ToastView: View {
 private struct StatusBadge: View {
     let colors: [Color]
     let drawsCheck: Bool
+    var symbol = "exclamationmark"
     @State private var drawn: CGFloat = 0
 
     var body: some View {
@@ -209,8 +235,8 @@ private struct StatusBadge: View {
                     .trim(from: 0, to: drawn)
                     .stroke(Color.white, style: StrokeStyle(lineWidth: 2.6, lineCap: .round, lineJoin: .round))
             } else {
-                Image(systemName: "exclamationmark")
-                    .font(.system(size: 13, weight: .heavy))
+                Image(systemName: symbol)
+                    .font(.system(size: symbol == "exclamationmark" ? 13 : 11, weight: .heavy))
                     .foregroundStyle(.white)
             }
         }

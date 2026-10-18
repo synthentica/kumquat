@@ -550,6 +550,69 @@ final class EngineTests: XCTestCase {
         XCTAssertEqual(batch.values, batch.values.sorted())
     }
 
+    func testOutputChecks() async throws {
+        let empty = dir.appendingPathComponent("empty.mp4")
+        FileManager.default.createFile(atPath: empty.path, contents: Data())
+        XCTAssertThrowsError(try OutputCheck.verify(empty))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: empty.path), "an empty result is removed")
+        XCTAssertThrowsError(try OutputCheck.verify(dir.appendingPathComponent("never written.png")))
+
+        // Six seconds of audio, and a "conversion" that came out half as long.
+        let wav = try Fixtures.wav(seconds: 6, in: dir)
+        let parts = try AudioEngine.split(wav, every: 3, context: context)
+        let half = try XCTUnwrap(FileManager.default.contentsOfDirectory(at: parts, includingPropertiesForKeys: nil).first)
+        do {
+            try await OutputCheck.verifyMedia(half, from: wav, ffmpeg: nil)
+            XCTFail("a result half as long as the original passed")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("long"), error.localizedDescription)
+        }
+        let whole = try AudioEngine.encode(wav, .alac, context: context)
+        try await OutputCheck.verifyMedia(whole, from: wav, ffmpeg: nil)
+    }
+
+    func testConversionsKeepTheOriginalsDates() async throws {
+        let png = try makePNG()
+        let then = Date(timeIntervalSince1970: 1_500_000_000)
+        try FileManager.default.setAttributes([.creationDate: then, .modificationDate: then], ofItemAtPath: png.path)
+        let operation = try XCTUnwrap(OperationCatalog.operations(for: [png], wheel: .convert, context: context).first { $0.id == "convert.jpeg" })
+        let outcome = try await operation.perform([png], context)
+        let output = try XCTUnwrap(outcome.outputs.first)
+        let attributes = try FileManager.default.attributesOfItem(atPath: output.path)
+        XCTAssertEqual((attributes[.modificationDate] as? Date)?.timeIntervalSince1970, then.timeIntervalSince1970)
+        XCTAssertEqual((attributes[.creationDate] as? Date)?.timeIntervalSince1970, then.timeIntervalSince1970)
+    }
+
+    func testCancellingStopsTheTool() async throws {
+        let started = Date()
+        let task = Task { try await Shell.run("/bin/sleep", ["20"]) }
+        try await Task.sleep(nanoseconds: 200_000_000)
+        task.cancel()
+        do {
+            _ = try await task.value
+            XCTFail("a cancelled tool finished")
+        } catch {
+            XCTAssertTrue(error is CancellationError, "\(error)")
+        }
+        XCTAssertLessThan(Date().timeIntervalSince(started), 3, "the tool kept running after the cancel")
+    }
+
+    func testCancellingStopsPageRendering() async throws {
+        let pdf = try Fixtures.pdf(pages: 200, in: dir)
+        let context = self.context
+        let task = Task { try PDFEngine.renderPages(pdf, as: .png, context: context) }
+        try await Task.sleep(nanoseconds: 300_000_000)
+        task.cancel()
+        do {
+            _ = try await task.value
+            XCTFail("200 pages rendered despite the cancel")
+        } catch {
+            XCTAssertTrue(error is CancellationError, "\(error)")
+        }
+        let left = try FileManager.default.contentsOfDirectory(atPath: dir.path).filter { $0.contains("pages") }
+        XCTAssertEqual(left, [], "half-rendered pages were left behind")
+    }
+
     func testLaneCapsConcurrency() async throws {
         let lane = Lane(limit: 2)
         let counter = ConcurrencyCounter()

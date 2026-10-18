@@ -11,9 +11,24 @@ final class OperationRunner {
             if (oldValue == 0) != (running == 0) { onBusyChanged?(running > 0) }
         }
     }
+    /// Jobs in flight by their toast ticket, so the toast's stop button and the menu can cancel them.
+    private var tasks: [Int: Task<Void, Never>] = [:]
+
+    init() {
+        toast.onStop = { [weak self] job in self?.stop(job) }
+    }
 
     func prewarm() {
         toast.prewarm()
+    }
+
+    /// Stops one job: its tools are terminated, files not yet started are skipped, and half-written results removed.
+    func stop(_ job: Int) {
+        tasks[job]?.cancel()
+    }
+
+    func stopAll() {
+        tasks.values.forEach { $0.cancel() }
     }
 
     func run(_ operation: FileOperation, on urls: [URL]) {
@@ -32,25 +47,48 @@ final class OperationRunner {
             let relay = ProgressRelay { [weak self] fraction in self?.toast.setProgress(fraction, job: job) }
             sink = { relay.send($0) }
         }
-        Task.detached(priority: .userInitiated) {
+        let task = Task.detached(priority: .userInitiated) {
+            let result: Result<OperationOutcome, Error>
             do {
-                let outcome = try await WorkProgress.$sink.withValue(sink) {
+                result = .success(try await WorkProgress.$sink.withValue(sink) {
                     try await Trace.operation(operation.id, files: urls.count) {
                         try await operation.perform(urls, context)
                     }
-                }
-                await MainActor.run {
-                    if !isAction { self.running -= 1 }
-                    self.finish(outcome, operation: operation, started: started)
-                }
+                })
             } catch {
-                await MainActor.run {
-                    if !isAction { self.running -= 1 }
+                result = .failure(error)
+            }
+            let stopped = Task.isCancelled
+            await MainActor.run {
+                if !isAction {
+                    self.running -= 1
+                    self.tasks[job] = nil
+                }
+                switch result {
+                case .success(let outcome) where stopped:
+                    self.showStopped(kept: outcome.outputs)
+                case .success(let outcome):
+                    self.finish(outcome, operation: operation, started: started)
+                case .failure where stopped:
+                    self.showStopped(kept: [])
+                case .failure(let error):
                     self.toast.showFailure("Couldn't finish", detail: error.localizedDescription)
                     self.playSound(success: false)
                 }
             }
         }
+        if !isAction { tasks[job] = task }
+    }
+
+    private func showStopped(kept outputs: [URL]) {
+        let detail = switch outputs.count {
+        case 0: "Nothing was left half-written."
+        case 1: "Kept the file that was already done · click to show"
+        default: "Kept the \(outputs.count) files that were already done · click to show"
+        }
+        toast.showStopped("Stopped", detail: detail, onClick: outputs.isEmpty ? nil : {
+            NSWorkspace.shared.activateFileViewerSelecting(outputs)
+        })
     }
 
     private func finish(_ outcome: OperationOutcome, operation: FileOperation, started: Date) {

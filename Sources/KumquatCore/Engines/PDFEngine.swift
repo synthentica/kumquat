@@ -31,26 +31,33 @@ public enum PDFEngine {
         let state = PageState()
         // Read here: the worker threads aren't part of this task, so they can't see its task-locals.
         let progress = WorkProgress.sink
-        DispatchQueue.concurrentPerform(iterations: workers) { worker in
-            let copy: PDFDocument
-            if worker == 0 {
-                copy = document
-            } else if let opened = try? open(url) {
-                copy = opened
-            } else {
-                state.fail(OperationError.unreadable(url.lastPathComponent))
-                return
-            }
-            for index in stride(from: worker, to: count, by: workers) where !state.failed {
-                autoreleasepool {
-                    guard let page = copy.page(at: index) else { return }
-                    let number = String(index + 1).leftPadded(to: digits)
-                    let output = folder.appendingPathComponent("\(named.baseName) \(number).\(format.primaryExtension)")
-                    do {
-                        try ImageEngine.write(try render(page, dpi: dpi), to: output, format: format, quality: context.imageQuality)
-                        state.finishPage { done in progress?(Double(done) / Double(count)) }
-                    } catch {
-                        state.fail(error)
+        // The task is borrowed only while the workers run, to see whether someone pressed stop.
+        withUnsafeCurrentTask { task in
+            DispatchQueue.concurrentPerform(iterations: workers) { worker in
+                let copy: PDFDocument
+                if worker == 0 {
+                    copy = document
+                } else if let opened = try? open(url) {
+                    copy = opened
+                } else {
+                    state.fail(OperationError.unreadable(url.lastPathComponent))
+                    return
+                }
+                for index in stride(from: worker, to: count, by: workers) where !state.failed {
+                    if task?.isCancelled == true {
+                        state.fail(CancellationError())
+                        break
+                    }
+                    autoreleasepool {
+                        guard let page = copy.page(at: index) else { return }
+                        let number = String(index + 1).leftPadded(to: digits)
+                        let output = folder.appendingPathComponent("\(named.baseName) \(number).\(format.primaryExtension)")
+                        do {
+                            try ImageEngine.write(try render(page, dpi: dpi), to: output, format: format, quality: context.imageQuality)
+                            state.finishPage { done in progress?(Double(done) / Double(count)) }
+                        } catch {
+                            state.fail(error)
+                        }
                     }
                 }
             }

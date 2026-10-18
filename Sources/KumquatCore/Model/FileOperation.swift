@@ -21,11 +21,14 @@ public struct OperationContext: Sendable {
     public var imageQuality: Double
     /// FFmpeg binary, when one is installed. Unlocks extra formats.
     public var ffmpeg: URL?
+    /// Results get the original's creation and modification dates.
+    public var keepsDates: Bool
 
-    public init(outputDirectory: URL? = nil, imageQuality: Double = 0.85, ffmpeg: URL? = nil) {
+    public init(outputDirectory: URL? = nil, imageQuality: Double = 0.85, ffmpeg: URL? = nil, keepsDates: Bool = true) {
         self.outputDirectory = outputDirectory
         self.imageQuality = imageQuality
         self.ffmpeg = ffmpeg
+        self.keepsDates = keepsDates
     }
 
     func directory(for input: URL) -> URL {
@@ -136,12 +139,20 @@ public struct FileOperation: Identifiable, @unchecked Sendable {
     }
 
     /// An operation that turns each input into one output, running files in parallel.
+    /// Every result is checked before it counts, and gets the original's dates when the setting is on.
     public static func perFile(
         id: String, title: String, subtitle: String? = nil, symbol: String, wheel: Wheel, verb: String,
         _ body: @escaping @Sendable (URL, OperationContext) async throws -> URL
     ) -> FileOperation {
         FileOperation(id: id, title: title, subtitle: subtitle, symbol: symbol, wheel: wheel, verb: verb) { urls, context in
-            await Batch.run(urls) { try await body($0, context) }
+            await Batch.run(urls) { url in
+                let output = try await body(url, context)
+                try OutputCheck.verify(output)
+                // A conversion keeps the length and the sound; tools like trimming change them on purpose.
+                if wheel == .convert { try await OutputCheck.verifyMedia(output, from: url, ffmpeg: context.ffmpeg) }
+                if context.keepsDates { FileDates.copy(from: url, to: output) }
+                return output
+            }
         }
     }
 }
@@ -163,6 +174,8 @@ enum Batch {
                     // Each file reports its own 0…1; the batch adds them up.
                     let result: Result<URL, Error>
                     do {
+                        // Files still waiting when the job is stopped don't start.
+                        try Task.checkCancellation()
                         result = .success(try await WorkProgress.$sink.withValue({ progress.set(index, $0) }) {
                             try await body(url)
                         })

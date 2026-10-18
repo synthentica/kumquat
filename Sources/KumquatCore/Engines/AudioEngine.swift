@@ -165,6 +165,7 @@ public enum AudioEngine {
         }
         source.framePosition = 0
         while source.framePosition < source.length {
+            try Task.checkCancellation()
             let start = source.framePosition
             try source.read(into: buffer)
             if buffer.frameLength == 0 { break }
@@ -200,6 +201,7 @@ public enum AudioEngine {
             }
             source.framePosition = range.lowerBound
             while source.framePosition < range.upperBound {
+                try Task.checkCancellation()
                 let remaining = AVAudioFrameCount(range.upperBound - source.framePosition)
                 try source.read(into: buffer, frameCount: min(buffer.frameCapacity, remaining))
                 if buffer.frameLength == 0 { break }
@@ -253,6 +255,7 @@ public enum AudioEngine {
 
         if inputFormat == outputFormat {
             while source.framePosition < source.length {
+                try Task.checkCancellation()
                 try source.read(into: inputBuffer)
                 if inputBuffer.frameLength == 0 { break }
                 try destination.write(from: inputBuffer)
@@ -269,6 +272,7 @@ public enum AudioEngine {
         var finished = false
         var readError: Error?
         while true {
+            try Task.checkCancellation()
             var conversionError: NSError?
             outputBuffer.frameLength = 0
             let status = converter.convert(to: outputBuffer, error: &conversionError) { _, inputStatus in

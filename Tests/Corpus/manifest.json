@@ -1,0 +1,1235 @@
+[
+  {
+    "id": "heic-iphone13pro-hdr-gainmap",
+    "category": "heic",
+    "url": "https://raw.githubusercontent.com/imazen/heic/54bf0f51425bd152c46bd625650e32d43f9651de/testdata/apple-hdr/hdr-sample.heic",
+    "sha256": "c690fa4ecc6ae71ee9a926de869a95835a5d41e764ccbc200647e2fb9d0800cc",
+    "bytes": 238982,
+    "license": "MIT (John Charankattu, johncf/apple-hdr-heic; mirrored as a plain git blob in imazen/heic testdata/apple-hdr)",
+    "source_page": "https://github.com/johncf/apple-hdr-heic",
+    "why_hard": "iPhone 13 Pro HEIC with Apple HDR gain map aux image (urn:com:apple:photo:2020:aux:hdrgainmap) + XMP headroom; grid-tiled primary, Display P3. Tests that SDR export ignores/applies the gain map deterministically and that HDR-capable targets keep it.",
+    "expected": "convert",
+    "targets": [
+      "jpg",
+      "png",
+      "heic",
+      "avif",
+      "tiff"
+    ]
+  },
+  {
+    "id": "heic-iphone11pro-livephoto-still",
+    "category": "heic",
+    "url": "https://raw.githubusercontent.com/drewnoakes/metadata-extractor-images/651ad0e67aa8d43d358ad05f9bc07b52d8b9ac6e/heic/IMG_2928.HEIC",
+    "sha256": "7d677d740f933c3aaeee03b1f03092bc6dea813960d1ba293758751774e2fb7b",
+    "bytes": 6177768,
+    "license": "Free use: 'You are free to use these media files however you wish' (metadata-extractor-images README)",
+    "source_page": "https://github.com/drewnoakes/metadata-extractor-images/tree/master/heic",
+    "why_hard": "iPhone 11 Pro (iOS 13.4.1) Live Photo still: Apple MakerNote ContentIdentifier pairs it with a MOV; 48-tile HEVC grid 4032x3024 stored as 3024x4032 tiles + irot; Display P3; 6 MB.",
+    "expected": "convert",
+    "targets": [
+      "jpg",
+      "png",
+      "tiff",
+      "pdf"
+    ]
+  },
+  {
+    "id": "heic-iphone8-ios11",
+    "category": "heic",
+    "url": "https://raw.githubusercontent.com/drewnoakes/metadata-extractor-images/651ad0e67aa8d43d358ad05f9bc07b52d8b9ac6e/heic/IMG_1034.heic",
+    "sha256": "f40b97f76a281c56e90b502762ef66ff9d34ea61696c8350257b5dc6a8797e0d",
+    "bytes": 1499892,
+    "license": "Free use: 'You are free to use these media files however you wish' (metadata-extractor-images README)",
+    "source_page": "https://github.com/drewnoakes/metadata-extractor-images/tree/master/heic",
+    "why_hard": "First-generation iOS 11 HEIC (iPhone 8): 49 hvc1 items (grid + thumbnail), older box layout without miaf brand.",
+    "expected": "convert",
+    "targets": [
+      "jpg",
+      "png"
+    ]
+  },
+  {
+    "id": "heic-visionpro-spatial-stereo",
+    "category": "heic",
+    "url": "https://raw.githubusercontent.com/bigcat88/pillow_heif/5a6eb1e29f9ae3cbdcfa99d352f15c925e512a4c/tests/images/heif_other/spatial_photo.heic",
+    "sha256": "ef941d328072a2df034adb3c3b46f41117606bfc8fcc100dff975d31f55ec028",
+    "bytes": 1274535,
+    "license": "BSD-3-Clause (pillow_heif repository test image)",
+    "source_page": "https://github.com/bigcat88/pillow_heif/tree/5a6eb1e29f9ae3cbdcfa99d352f15c925e512a4c/tests/images",
+    "why_hard": "Apple Vision Pro spatial photo: two grid primaries (stereo pair entity group) in one HEIC; converter must pick the primary/left eye and not silently drop or merge.",
+    "expected": "convert",
+    "targets": [
+      "jpg",
+      "png"
+    ]
+  },
+  {
+    "id": "mov-iphone12pro-hevc-hlg-dolbyvision-8.4",
+    "category": "iphone-video",
+    "url": "https://raw.githubusercontent.com/immich-app/test-assets/ec56cc6c1d76c45bc9615dc6ea232470a2b0a3a1/videos/train.mov",
+    "sha256": "41cc5f00b7318627f83a67ef8be08aca65a26e6d39d265a6079717e520d6e096",
+    "bytes": 34941781,
+    "license": "Public domain (immich-app/test-assets README: 'All assets are public domain')",
+    "source_page": "https://github.com/immich-app/test-assets",
+    "why_hard": "Real iPhone 12 Pro (iOS 17.3.1) recording: HEVC Main10, BT.2020 HLG, Dolby Vision profile 8.4 (dvcC bl_compat_id=4), 59.94 fps with dropped frames (VFR), 3 mebx metadata tracks. The canonical 'iPhone HDR' case: tone-mapping to SDR, keeping HDR in HEVC, 10-bit preservation.",
+    "expected": "convert",
+    "targets": [
+      "mp4-h264",
+      "mp4-hevc",
+      "mov-hevc",
+      "gif",
+      "mp3",
+      "m4a"
+    ]
+  },
+  {
+    "id": "mov-iphone14pro-livephoto-video",
+    "category": "iphone-video",
+    "url": "https://raw.githubusercontent.com/drewnoakes/metadata-extractor-images/651ad0e67aa8d43d358ad05f9bc07b52d8b9ac6e/mov/apple-livephoto-quicktime.mov",
+    "sha256": "dad4e44fd2daec4722f0a31f4443ed09999c1163b7eb419e2cbe9bd590a25864",
+    "bytes": 5217930,
+    "license": "Free use: 'You are free to use these media files however you wish' (metadata-extractor-images README)",
+    "source_page": "https://github.com/drewnoakes/metadata-extractor-images/tree/master/mov",
+    "why_hard": "Live Photo motion component from iPhone 14 Pro (iOS 17): HEVC 1920x1440 full-range yuvj420p, Display P3 (smpte432) primaries, mono LPCM, 3 mebx timed-metadata tracks (still-image time, etc.).",
+    "expected": "convert",
+    "targets": [
+      "mp4-h264",
+      "gif",
+      "jpg-frame"
+    ]
+  },
+  {
+    "id": "mov-iphoneX-h264-rotated-vfr",
+    "category": "iphone-video",
+    "url": "https://raw.githubusercontent.com/drewnoakes/metadata-extractor-images/651ad0e67aa8d43d358ad05f9bc07b52d8b9ac6e/mov/Issue%20234%20dotnet.mov",
+    "sha256": "66376238496b6e424133f428773ed95300efc27f593e261bbcbd592c8523cda8",
+    "bytes": 5350573,
+    "license": "Free use: 'You are free to use these media files however you wish' (metadata-extractor-images README)",
+    "source_page": "https://github.com/drewnoakes/metadata-extractor-images/tree/master/mov",
+    "why_hard": "iPhone X (iOS 11.3) H.264 1440x1080 with -90 deg display matrix, variable frame rate (33/67 ms frame gaps, avg 24.3 fps vs nominal 30), LPCM audio, mebx tracks. Tests rotation baking + VFR handling.",
+    "expected": "convert",
+    "targets": [
+      "mp4-h264",
+      "mov-hevc",
+      "gif",
+      "m4a"
+    ]
+  },
+  {
+    "id": "mp4-dolbyvision-profile8.1",
+    "category": "iphone-video",
+    "url": "https://raw.githubusercontent.com/chromium/chromium/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data/glass-blowing2-dolby-vision-profile-8-1-frag.mp4",
+    "sha256": "2cbedc36cf1ec2fdaaa54d26942ff93faeda4d4b2baf9fd25ee74bfebc15287e",
+    "bytes": 3528195,
+    "license": "BSD-3-Clause (Chromium media test data); derived from Dolby developer sample (see README.md)",
+    "source_page": "https://github.com/chromium/chromium/tree/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data",
+    "why_hard": "Dolby Vision profile 8.1 (HDR10-compatible base layer, PQ) in fragmented MP4, 1080p60, no audio. Profile 8.1 is what non-iPhone DV sources produce.",
+    "expected": "convert",
+    "targets": [
+      "mp4-h264",
+      "mp4-hevc",
+      "gif"
+    ]
+  },
+  {
+    "id": "mp4-dolbyvision-profile5",
+    "category": "iphone-video",
+    "url": "https://raw.githubusercontent.com/chromium/chromium/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data/glass-blowing2-dolby-vision-profile-5-frag.mp4",
+    "sha256": "d21fc3938a813b6ce25efe890074b23d966a5828c9a3d33de7e8591a25dd2036",
+    "bytes": 4537752,
+    "license": "BSD-3-Clause (Chromium media test data); derived from Dolby developer sample (see README.md)",
+    "source_page": "https://github.com/chromium/chromium/tree/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data",
+    "why_hard": "Dolby Vision profile 5 (dvh1, IPTPQc2, NO backward-compatible base layer): decoders without DV reshaping produce purple/green images. Must either reshape correctly or fail cleanly, never emit wrong colours silently.",
+    "expected": "convert",
+    "targets": [
+      "mp4-h264",
+      "mp4-hevc"
+    ]
+  },
+  {
+    "id": "mp4-hevc-hdr10-pq",
+    "category": "iphone-video",
+    "url": "https://raw.githubusercontent.com/chromium/chromium/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data/bear-1280x720-hevc-10bit-hdr10.mp4",
+    "sha256": "49b960ac28ae13153ba8e62e3fceb50408564c21f25fc38936e7c8a06b61f2db",
+    "bytes": 319643,
+    "license": "BSD-3-Clause (Chromium media test data)",
+    "source_page": "https://github.com/chromium/chromium/tree/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data",
+    "why_hard": "HEVC Main10 HDR10 (PQ/BT.2020) with mastering-display + MaxCLL SEI, hev1 sample entry (parameter sets in-band, not hvc1).",
+    "expected": "convert",
+    "targets": [
+      "mp4-h264",
+      "mov-hevc",
+      "webm"
+    ]
+  },
+  {
+    "id": "mp4-obs-screen-recording-vfr",
+    "category": "vfr",
+    "url": "https://raw.githubusercontent.com/chromium/chromium/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data/obs_remux_variable_aac_durations.mp4",
+    "sha256": "9bd7f8cb1372078f9b23aa4c80751926f8c5e2db6b5587459f0892785175ddcf",
+    "bytes": 4777511,
+    "license": "BSD-3-Clause (Chromium media test data)",
+    "source_page": "https://github.com/chromium/chromium/tree/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data",
+    "why_hard": "OBS screen recording remux: 1080p60 H.264 with alternating 16/17 ms frame durations and variable AAC packet durations (A/V drift trap).",
+    "expected": "convert",
+    "targets": [
+      "mp4-h264",
+      "mov-hevc",
+      "gif",
+      "m4a"
+    ]
+  },
+  {
+    "id": "mkv-multi-audio-8-subtitles",
+    "category": "video",
+    "url": "https://raw.githubusercontent.com/ietf-wg-cellar/matroska-test-files/e6965e5ca666322ed93e2748a10a4f132309e005/test_files/test5.mkv",
+    "sha256": "92acdc33bb0b5d7a4d9b0d6ca792230a78c786a30179dc9999cee41c28642842",
+    "bytes": 31762747,
+    "license": "CC-BY (Big Buck Bunny / Elephants Dream, Blender Foundation)",
+    "source_page": "https://github.com/ietf-wg-cellar/matroska-test-files",
+    "why_hard": "Matroska Wave-1 test5 (31.8 MB): H.264 + 2 AAC audio tracks (main + English 'Commentary') + 8 SubRip subtitle tracks (eng/hun/ger/fre/spa/ita/jpn/und); tests default-track selection and that text subtitles do not break MP4/MOV muxing.",
+    "expected": "convert",
+    "targets": [
+      "mp4-h264",
+      "mov-hevc",
+      "m4a"
+    ]
+  },
+  {
+    "id": "webm-vp9-720p",
+    "category": "video",
+    "url": "https://raw.githubusercontent.com/chromium/chromium/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data/buck-1280x720-vp9.webm",
+    "sha256": "e86ecaea790b46b896f06debc27c26541fdf44ccc0afa557cf672e487fc70ca8",
+    "bytes": 17884,
+    "license": "BSD-3-Clause (Chromium media test data)",
+    "source_page": "https://github.com/chromium/chromium/tree/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data",
+    "why_hard": "VP9 profile 0 720p WebM without audio track, 29.92 fps (359/12) non-integer rate.",
+    "expected": "convert",
+    "targets": [
+      "mp4-h264",
+      "gif"
+    ]
+  },
+  {
+    "id": "webm-av1",
+    "category": "video",
+    "url": "https://raw.githubusercontent.com/chromium/chromium/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data/bear-av1.webm",
+    "sha256": "66e87771e204c6d86ce8ed86ce62c44e70f98325cbbdf8d077150c483e6e8ebb",
+    "bytes": 18898,
+    "license": "BSD-3-Clause (Chromium media test data)",
+    "source_page": "https://github.com/chromium/chromium/tree/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data",
+    "why_hard": "AV1 in WebM: AVFoundation only decodes AV1 in hardware on M3+/A17+; CI runners (M1) need a software path or a clean error.",
+    "expected": "convert",
+    "targets": [
+      "mp4-h264",
+      "gif"
+    ]
+  },
+  {
+    "id": "webm-multitrack-3video-2audio",
+    "category": "video",
+    "url": "https://raw.githubusercontent.com/chromium/chromium/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data/multitrack-3video-2audio.webm",
+    "sha256": "072202594bb39408086bee2ba1c841ff8735cdb787d7bb66c2077aff995ff7cf",
+    "bytes": 190935,
+    "license": "BSD-3-Clause (Chromium media test data)",
+    "source_page": "https://github.com/chromium/chromium/tree/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data",
+    "why_hard": "WebM with 3 VP9 video tracks (different sizes) and 2 Opus audio tracks; tests default-track choice.",
+    "expected": "convert",
+    "targets": [
+      "mp4-h264"
+    ]
+  },
+  {
+    "id": "avi-canon-mjpeg-pcm",
+    "category": "video",
+    "url": "https://raw.githubusercontent.com/drewnoakes/metadata-extractor-images/651ad0e67aa8d43d358ad05f9bc07b52d8b9ac6e/avi/MVI_4823.AVI",
+    "sha256": "b14d912cfc035689aa10ba1d8c668308569031992d05c89c5b4dbfcd8c452813",
+    "bytes": 3137404,
+    "license": "Free use: 'You are free to use these media files however you wish' (metadata-extractor-images README)",
+    "source_page": "https://github.com/drewnoakes/metadata-extractor-images/tree/master/avi",
+    "why_hard": "Real Canon PowerShot AVI: Motion-JPEG 4:2:2 full-range + PCM; legacy RIFF AVI with uppercase extension.",
+    "expected": "convert",
+    "targets": [
+      "mp4-h264",
+      "gif",
+      "m4a"
+    ]
+  },
+  {
+    "id": "avi-mpeg4-asp-ac3",
+    "category": "video",
+    "url": "https://raw.githubusercontent.com/chromium/chromium/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data/bear.avi",
+    "sha256": "3a2a06920897a72324a6d4f2b4770219870bb9b6b8ac201fb24846024e396239",
+    "bytes": 103714,
+    "license": "BSD-3-Clause (Chromium media test data)",
+    "source_page": "https://github.com/chromium/chromium/tree/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data",
+    "why_hard": "AVI with MPEG-4 Part 2 (FMP4 fourcc) + AC-3 audio: no native AVFoundation demuxer for AVI.",
+    "expected": "convert",
+    "targets": [
+      "mp4-h264",
+      "m4a"
+    ]
+  },
+  {
+    "id": "asf-wmv-msmpeg4-wma",
+    "category": "video",
+    "url": "https://raw.githubusercontent.com/Borewit/music-metadata/8e61c734beb6c3000b23e81bb3e3562de6bf0368/test/samples/asf/elephant.asf",
+    "sha256": "e81690e9e99a5c5dc3c408404862da18c26a5e4f064e461d4d36887af2e3de28",
+    "bytes": 143037,
+    "license": "MIT (music-metadata test sample)",
+    "source_page": "https://github.com/Borewit/music-metadata/tree/8e61c734beb6c3000b23e81bb3e3562de6bf0368/test/samples",
+    "why_hard": "ASF/WMV-family container with MS-MPEG4v3 video + WMA v2 audio (28 s). Real WMV9/VC-1 sample not found (see README).",
+    "expected": "convert",
+    "targets": [
+      "mp4-h264",
+      "m4a",
+      "mp3"
+    ]
+  },
+  {
+    "id": "mkv-wmv2-vorbis",
+    "category": "video",
+    "url": "https://raw.githubusercontent.com/chromium/chromium/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data/vorbis_audio_wmv_video.mkv",
+    "sha256": "905266cf080255ffb25402a89dd59900d84a31a650dea8d2e6c3b88137ef8f59",
+    "bytes": 88659,
+    "license": "BSD-3-Clause (Chromium media test data)",
+    "source_page": "https://github.com/chromium/chromium/tree/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data",
+    "why_hard": "WMV2 video + Vorbis audio in Matroska: neither codec is supported by AVFoundation.",
+    "expected": "convert",
+    "targets": [
+      "mp4-h264",
+      "m4a"
+    ]
+  },
+  {
+    "id": "mp4-h264-high10",
+    "category": "video",
+    "url": "https://raw.githubusercontent.com/chromium/chromium/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data/bear-320x180-hi10p.mp4",
+    "sha256": "04ff92825f6c903e0bc1c662e38f45f9cc50177b7bc82c0e1aacca4ec5dd5610",
+    "bytes": 157833,
+    "license": "BSD-3-Clause (Chromium media test data)",
+    "source_page": "https://github.com/chromium/chromium/tree/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data",
+    "why_hard": "H.264 High 10 profile (yuv420p10le): VideoToolbox cannot decode 10-bit H.264; needs software decode or clean error.",
+    "expected": "convert",
+    "targets": [
+      "mp4-h264",
+      "mov-hevc"
+    ]
+  },
+  {
+    "id": "mp4-android-rotated-90",
+    "category": "video",
+    "url": "https://raw.githubusercontent.com/drewnoakes/metadata-extractor-images/651ad0e67aa8d43d358ad05f9bc07b52d8b9ac6e/mp4/Nokia%206.1.mp4",
+    "sha256": "f2b8aa78afacbdd5bb724d415e5c1b80c808db81056f455c96f75f0d73c14e61",
+    "bytes": 5549841,
+    "license": "Free use: 'You are free to use these media files however you wish' (metadata-extractor-images README)",
+    "source_page": "https://github.com/drewnoakes/metadata-extractor-images/tree/master/mp4",
+    "why_hard": "Real Android phone (Nokia 6.1) 1080p H.264 Baseline with -90 deg display matrix, odd 29.5 fps (59/2) nominal rate, full-range.",
+    "expected": "convert",
+    "targets": [
+      "mp4-h264",
+      "mov-hevc",
+      "gif"
+    ]
+  },
+  {
+    "id": "mp4-hevc-no-audio",
+    "category": "video",
+    "url": "https://raw.githubusercontent.com/chromium/chromium/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data/bear-1280x720-hevc-no-audio.mp4",
+    "sha256": "6a4b08b56b11ba8d4d04f08120860cbd26b7046ce80bd32e8d152220c0211788",
+    "bytes": 309787,
+    "license": "BSD-3-Clause (Chromium media test data)",
+    "source_page": "https://github.com/chromium/chromium/tree/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data",
+    "why_hard": "HEVC (hev1) with no audio track: audio-only targets must fail cleanly; video targets must not invent a silent track unexpectedly.",
+    "expected": "convert",
+    "targets": [
+      "mp4-h264",
+      "gif",
+      "m4a:clean-error"
+    ]
+  },
+  {
+    "id": "mp4-2video-2audio",
+    "category": "video",
+    "url": "https://raw.githubusercontent.com/chromium/chromium/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data/bbb-320x240-2video-2audio.mp4",
+    "sha256": "080b9eabdc9c309b40b0a97ad38a2eb950bb4ab0980679d806ea5d0d8210e934",
+    "bytes": 1047608,
+    "license": "BSD-3-Clause (Chromium media test data)",
+    "source_page": "https://github.com/chromium/chromium/tree/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data",
+    "why_hard": "MP4 with two video and two audio tracks (alternate groups).",
+    "expected": "convert",
+    "targets": [
+      "mp4-h264",
+      "m4a"
+    ]
+  },
+  {
+    "id": "mp3-id3-png-cover",
+    "category": "audio",
+    "url": "https://raw.githubusercontent.com/chromium/chromium/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data/id3_png_test.mp3",
+    "sha256": "42b61dd5ba1ea954d40ca668cb0618bd97cdbe6eae8469d4679e4f1b5fb1c059",
+    "bytes": 180999,
+    "license": "BSD-3-Clause (Chromium media test data)",
+    "source_page": "https://github.com/chromium/chromium/tree/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data",
+    "why_hard": "MP3 with ID3v2 APIC PNG cover art (exposed as an attached-picture video stream); art must be preserved or dropped explicitly, not turned into a video.",
+    "expected": "convert",
+    "targets": [
+      "m4a",
+      "aac",
+      "wav",
+      "flac",
+      "ogg"
+    ]
+  },
+  {
+    "id": "flac-24bit-96khz",
+    "category": "audio",
+    "url": "https://raw.githubusercontent.com/ietf-wg-cellar/flac-test-files/aa7b0c6cf32994c106ae517a08134c28a96ff5b2/subset/28%20-%20high%20resolution%20audio%2C%20default%20settings.flac",
+    "sha256": "62322a5c7821081bae99cc1a3f398f177a17cf9312131a5fbcfcc2ee38539346",
+    "bytes": 3476937,
+    "license": "CC0-1.0 (IETF CELLAR flac-test-files)",
+    "source_page": "https://github.com/ietf-wg-cellar/flac-test-files",
+    "why_hard": "24-bit / 96 kHz stereo FLAC: lossy targets must resample/dither correctly; lossless targets (ALAC/WAV) must keep 24/96.",
+    "expected": "convert",
+    "targets": [
+      "m4a-alac",
+      "wav",
+      "mp3",
+      "m4a"
+    ]
+  },
+  {
+    "id": "flac-6ch-5.1",
+    "category": "audio",
+    "url": "https://raw.githubusercontent.com/ietf-wg-cellar/flac-test-files/aa7b0c6cf32994c106ae517a08134c28a96ff5b2/subset/41%20-%206%20channels%20%285.1%29.flac",
+    "sha256": "c12650fda54a384abf017d4b931491de043eaa7a815ae74c7a9b49d4087d6193",
+    "bytes": 171527,
+    "license": "CC0-1.0 (IETF CELLAR flac-test-files)",
+    "source_page": "https://github.com/ietf-wg-cellar/flac-test-files",
+    "why_hard": "6-channel 5.1(side) FLAC: tests channel-layout mapping into AAC/ALAC/MP3 (MP3 must downmix or refuse).",
+    "expected": "convert",
+    "targets": [
+      "m4a",
+      "m4a-alac",
+      "wav",
+      "mp3"
+    ]
+  },
+  {
+    "id": "flac-8ch-7.1",
+    "category": "audio",
+    "url": "https://raw.githubusercontent.com/ietf-wg-cellar/flac-test-files/aa7b0c6cf32994c106ae517a08134c28a96ff5b2/subset/43%20-%208%20channels%20%287.1%29.flac",
+    "sha256": "9c39ff436f316b3a8e72200c8f38af2d9ef15418c25be555aa621d0c793a6254",
+    "bytes": 233560,
+    "license": "CC0-1.0 (IETF CELLAR flac-test-files)",
+    "source_page": "https://github.com/ietf-wg-cellar/flac-test-files",
+    "why_hard": "8-channel 7.1 FLAC.",
+    "expected": "convert",
+    "targets": [
+      "m4a",
+      "wav"
+    ]
+  },
+  {
+    "id": "ogg-vorbis-mono",
+    "category": "audio",
+    "url": "https://raw.githubusercontent.com/chromium/chromium/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data/sfx.ogg",
+    "sha256": "d38a6edbd595aafa08cef3f1749acdeafb4f471cb4fc4b37679292936ca6d89c",
+    "bytes": 3869,
+    "license": "BSD-3-Clause (Chromium media test data)",
+    "source_page": "https://github.com/chromium/chromium/tree/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data",
+    "why_hard": "Ogg Vorbis (no native AVFoundation decoder).",
+    "expected": "convert",
+    "targets": [
+      "mp3",
+      "m4a",
+      "wav"
+    ]
+  },
+  {
+    "id": "opus-stereo",
+    "category": "audio",
+    "url": "https://raw.githubusercontent.com/chromium/chromium/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data/opus-test.opus",
+    "sha256": "78214b3eac788076db103e3f84c89995bc124cde0c86fc5096e74e66abaf5c66",
+    "bytes": 14128,
+    "license": "BSD-3-Clause (Chromium media test data)",
+    "source_page": "https://github.com/chromium/chromium/tree/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data",
+    "why_hard": "Ogg Opus with .opus extension, 48 kHz, pre-skip/end-trimming.",
+    "expected": "convert",
+    "targets": [
+      "mp3",
+      "m4a",
+      "wav"
+    ]
+  },
+  {
+    "id": "wma-v2",
+    "category": "audio",
+    "url": "https://raw.githubusercontent.com/Borewit/music-metadata/8e61c734beb6c3000b23e81bb3e3562de6bf0368/test/samples/asf/asf.wma",
+    "sha256": "209b2829c667cd7b99b3c29774eeafcbaaf83f9cecbec0f25d359d23358975e5",
+    "bytes": 35128,
+    "license": "MIT (music-metadata test sample)",
+    "source_page": "https://github.com/Borewit/music-metadata/tree/8e61c734beb6c3000b23e81bb3e3562de6bf0368/test/samples",
+    "why_hard": "Windows Media Audio v2 in ASF: no Apple decoder.",
+    "expected": "convert",
+    "targets": [
+      "mp3",
+      "m4a",
+      "wav"
+    ]
+  },
+  {
+    "id": "caf-alac",
+    "category": "audio",
+    "url": "https://raw.githubusercontent.com/Borewit/music-metadata/8e61c734beb6c3000b23e81bb3e3562de6bf0368/test/samples/caf/alac.caf",
+    "sha256": "d8e494b33dee37bd149a7f76dd07e82dbfa8aae7dd6dd3a988f8768605f438d6",
+    "bytes": 5953,
+    "license": "MIT (music-metadata test sample)",
+    "source_page": "https://github.com/Borewit/music-metadata/tree/8e61c734beb6c3000b23e81bb3e3562de6bf0368/test/samples",
+    "why_hard": "Apple Lossless in a Core Audio Format container (very short, 0.19 s). An ALAC .m4a is generated in CI (see README).",
+    "expected": "convert",
+    "targets": [
+      "m4a",
+      "flac",
+      "wav",
+      "mp3"
+    ]
+  },
+  {
+    "id": "pdf-progit-501-pages",
+    "category": "pdf",
+    "url": "https://github.com/progit/progit2/releases/download/2.1.450/progit.pdf",
+    "sha256": "403f4051cdca2c585361d85f6e87d5dd87d8c544fc91dced007711babe81e8ef",
+    "bytes": 18847129,
+    "license": "CC-BY-NC-SA-3.0 (Pro Git, 2nd ed.)",
+    "source_page": "https://github.com/progit/progit2/releases/tag/2.1.450",
+    "why_hard": "501-page, 18.8 MB book (Asciidoctor PDF/Prawn) with outlines, links, embedded fonts and images: memory/time limits for PDF->images and PDF->DOCX.",
+    "expected": "convert",
+    "targets": [
+      "png-pages",
+      "jpg-pages",
+      "txt",
+      "docx",
+      "pdf-a"
+    ]
+  },
+  {
+    "id": "pdf-password-libreoffice",
+    "category": "pdf",
+    "url": "https://raw.githubusercontent.com/py-pdf/sample-files/02b8203bf416db3dbdb03438bc8278dfcb0555f3/005-libreoffice-writer-password/libreoffice-writer-password.pdf",
+    "sha256": "3e333bff0196d0c5320f40cdd1b7a3abd21b316de79de3c0f9083accdaef9358",
+    "bytes": 12783,
+    "license": "CC-BY-SA-4.0 (py-pdf/sample-files)",
+    "source_page": "https://github.com/py-pdf/sample-files/tree/main/005-libreoffice-writer-password",
+    "why_hard": "Encrypted PDF (user password 'openpassword', owner 'permissionpassword'). Without a password Kumquat must surface a clean 'password required' error.",
+    "expected": "clean-error",
+    "targets": [
+      "png-pages",
+      "txt",
+      "docx"
+    ]
+  },
+  {
+    "id": "pdf-scanned-gutenberg-page",
+    "category": "pdf",
+    "url": "https://raw.githubusercontent.com/ocrmypdf/OCRmyPDF/cf0df3da06aef04fe9a5bf91c6feff36370bb3eb/tests/resources/c03-29.pdf",
+    "sha256": "c2ff83af7d028c95209cc7eebdf80fd5bb4cd292973ed6601e4bab7d1929f201",
+    "bytes": 167938,
+    "license": "Public domain (Project Gutenberg scan, via OCRmyPDF tests/resources)",
+    "source_page": "https://github.com/ocrmypdf/OCRmyPDF/blob/cf0df3da06aef04fe9a5bf91c6feff36370bb3eb/tests/resources/README.rst",
+    "why_hard": "Image-only scanned page (no text layer, Quartz PDFContext): text extraction yields nothing; tests OCR path or an explicit 'no text' outcome.",
+    "expected": "convert",
+    "targets": [
+      "png-pages",
+      "jpg-pages",
+      "txt",
+      "docx"
+    ]
+  },
+  {
+    "id": "pdf-scanned-rotated-4pages",
+    "category": "pdf",
+    "url": "https://raw.githubusercontent.com/ocrmypdf/OCRmyPDF/cf0df3da06aef04fe9a5bf91c6feff36370bb3eb/tests/resources/cardinal.pdf",
+    "sha256": "ebd7b2233aea5f320562df9635901bbd8e734cb42c85defa1059163d4b1d6ccb",
+    "bytes": 76875,
+    "license": "CC-BY-SA-4.0 (OCRmyPDF test resources, derived from Wikimedia LinnSequencer scan)",
+    "source_page": "https://github.com/ocrmypdf/OCRmyPDF/blob/cf0df3da06aef04fe9a5bf91c6feff36370bb3eb/tests/resources/README.rst",
+    "why_hard": "Four image-only pages, each rotated a different cardinal direction (/Rotate and baked rotation).",
+    "expected": "convert",
+    "targets": [
+      "png-pages",
+      "txt"
+    ]
+  },
+  {
+    "id": "pdf-acroform-irs-1040",
+    "category": "pdf",
+    "url": "https://raw.githubusercontent.com/mozilla/pdf.js/98cfa3ec8781575f3aa9c698a53598dd498b4fb5/test/pdfs/prefilled_f1040.pdf",
+    "sha256": "899edb271684d2451337e225268003324a583a7d3429e23efd69f1654adf9bf9",
+    "bytes": 306416,
+    "license": "Public domain (US IRS form) in pdf.js test corpus (Apache-2.0)",
+    "source_page": "https://github.com/mozilla/pdf.js/tree/98cfa3ec8781575f3aa9c698a53598dd498b4fb5/test/pdfs",
+    "why_hard": "Pre-filled AcroForm (IRS Form 1040, LiveCycle Designer): field appearances must be flattened into rendered output.",
+    "expected": "convert",
+    "targets": [
+      "png-pages",
+      "txt",
+      "pdf-flattened"
+    ]
+  },
+  {
+    "id": "pdf-xfa-dynamic-form",
+    "category": "pdf",
+    "url": "https://raw.githubusercontent.com/mozilla/pdf.js/98cfa3ec8781575f3aa9c698a53598dd498b4fb5/test/pdfs/xfa_filled_imm1344e.pdf",
+    "sha256": "8313c52ea97b49908137fd744e85fc37584b502210fcc0a73d6c272cca9d7889",
+    "bytes": 3023968,
+    "license": "Government of Canada form, redistributed in pdf.js test corpus (Apache-2.0 repo); treat as test-only",
+    "source_page": "https://github.com/mozilla/pdf.js/tree/98cfa3ec8781575f3aa9c698a53598dd498b4fb5/test/pdfs",
+    "why_hard": "Dynamic XFA form (IMM 1344): PDFKit renders only the 'please wait' placeholder page. Expect a clean 'XFA not supported' error or correct rendering, never a silently blank output.",
+    "expected": "clean-error",
+    "targets": [
+      "png-pages",
+      "txt"
+    ]
+  },
+  {
+    "id": "pdf-a1b-ghostscript",
+    "category": "pdf",
+    "url": "https://raw.githubusercontent.com/py-pdf/sample-files/02b8203bf416db3dbdb03438bc8278dfcb0555f3/021-pdfa/crazyones-pdfa.pdf",
+    "sha256": "f05f2738a1fa8c1d2e1147881fe1a62516a7f8caaf784067790731f56df626c4",
+    "bytes": 16368,
+    "license": "CC-BY-SA-4.0 (py-pdf/sample-files)",
+    "source_page": "https://github.com/py-pdf/sample-files/tree/main/021-pdfa",
+    "why_hard": "PDF/A-1b produced by Ghostscript 10 (XMP + OutputIntent). Round-trip and PDF->PDF/A conversions must keep veraPDF passing.",
+    "expected": "convert",
+    "targets": [
+      "pdf-a",
+      "png-pages",
+      "txt"
+    ]
+  },
+  {
+    "id": "pdf-a2b-verapdf-pass",
+    "category": "pdf",
+    "url": "https://raw.githubusercontent.com/veraPDF/veraPDF-corpus/bb75f4f0073d9350dfd058c0162a367e6fadf25e/PDF_A-2b/6.1%20File%20structure/6.1.12%20Permissions/veraPDF%20test%20suite%206-1-12-t01-pass-a.pdf",
+    "sha256": "f389929bb730a7f0dab85a7179c76fc7f4cfc4a1f1f1210d2acc05d8dd99bf6b",
+    "bytes": 6706,
+    "license": "CC-BY-4.0 (veraPDF corpus)",
+    "source_page": "https://github.com/veraPDF/veraPDF-corpus",
+    "why_hard": "Minimal veraPDF-certified PDF/A-2b 'pass' file: sanity check for the veraPDF step itself (input must validate before output is judged).",
+    "expected": "convert",
+    "targets": [
+      "pdf-a",
+      "png-pages"
+    ]
+  },
+  {
+    "id": "pptx-google-slides-export",
+    "category": "office",
+    "url": "https://raw.githubusercontent.com/Unstructured-IO/unstructured/1b02b4d189c260ed9b1aca29583203e233d853cb/example-docs/sample-presentation.pptx",
+    "sha256": "fe5a50d28a8213258b0ac9e15290d9b82249fb47ca37530db3f95719ea93e732",
+    "bytes": 41767,
+    "license": "Apache-2.0 (Unstructured-IO example-docs)",
+    "source_page": "https://github.com/Unstructured-IO/unstructured/tree/1b02b4d189c260ed9b1aca29583203e233d853cb/example-docs",
+    "why_hard": "Exported from Google Slides (no docProps/app.xml, 'Google Shape;N;pN' shape names, TITLE/SECTION_HEADER layouts): non-Microsoft OOXML dialect.",
+    "expected": "convert",
+    "targets": [
+      "pdf",
+      "png-slides",
+      "key"
+    ]
+  },
+  {
+    "id": "pptx-powerpoint-charts-tables-groups",
+    "category": "office",
+    "url": "https://raw.githubusercontent.com/apache/poi/bf7c9b6a1490046517cbd8e1504e702a89be4bc9/test-data/integration/stress021.pptx",
+    "sha256": "443016bb8dfe45d080cce2db36f21f8727c86477f72698aa4086c32a41a16160",
+    "bytes": 596690,
+    "license": "Apache-2.0 (Apache POI test-data)",
+    "source_page": "https://github.com/apache/poi/tree/bf7c9b6a1490046517cbd8e1504e702a89be4bc9/test-data/integration",
+    "why_hard": "Real-world PowerPoint deck: 41 slides, 6 embedded charts, 10 tables, 81 group shapes.",
+    "expected": "convert",
+    "targets": [
+      "pdf",
+      "png-slides",
+      "odp"
+    ]
+  },
+  {
+    "id": "xls-biff8-real-world",
+    "category": "office",
+    "url": "https://raw.githubusercontent.com/apache/poi/bf7c9b6a1490046517cbd8e1504e702a89be4bc9/test-data/spreadsheet/at.gv.land-oberoesterreich.www_cps_rde_xbcr_SID-4A1B954F-5C07F98E_ooe_stat_download_bp10.xls",
+    "sha256": "a87732064cfafc6ec8036d29096f92509d10ccd2761ff58bb1aee2d20e8c9d7b",
+    "bytes": 822273,
+    "license": "Apache-2.0 (Apache POI test-data)",
+    "source_page": "https://github.com/apache/poi/tree/bf7c9b6a1490046517cbd8e1504e702a89be4bc9/test-data/spreadsheet",
+    "why_hard": "Real-world Excel 97-2003 (BIFF8) statistics workbook from an Austrian government site, 822 KB, multiple sheets.",
+    "expected": "convert",
+    "targets": [
+      "xlsx",
+      "pdf",
+      "csv",
+      "ods"
+    ]
+  },
+  {
+    "id": "xlsx-formulas-merges-charts",
+    "category": "office",
+    "url": "https://raw.githubusercontent.com/apache/poi/bf7c9b6a1490046517cbd8e1504e702a89be4bc9/test-data/integration/stress024.xlsx",
+    "sha256": "1426b310329954a89df61a05668d25911c4b0e438974cb99e2a08818eb25b3a4",
+    "bytes": 773960,
+    "license": "Apache-2.0 (Apache POI test-data)",
+    "source_page": "https://github.com/apache/poi/tree/bf7c9b6a1490046517cbd8e1504e702a89be4bc9/test-data/integration",
+    "why_hard": "Excel workbook: 3 sheets, 444 formulas, 38 merged ranges, 2 charts. Cached values vs recalculation, merged-cell layout in PDF.",
+    "expected": "convert",
+    "targets": [
+      "pdf",
+      "csv",
+      "xls",
+      "ods"
+    ]
+  },
+  {
+    "id": "xlsx-50000-merged-cells",
+    "category": "office",
+    "url": "https://raw.githubusercontent.com/apache/poi/bf7c9b6a1490046517cbd8e1504e702a89be4bc9/test-data/spreadsheet/57893-many-merges.xlsx",
+    "sha256": "f1b0cc07459a2e00f1e930ff54330e45b9d0626f45468b1ffa7eb3dc21d6f46b",
+    "bytes": 848912,
+    "license": "Apache-2.0 (Apache POI test-data)",
+    "source_page": "https://github.com/apache/poi/tree/bf7c9b6a1490046517cbd8e1504e702a89be4bc9/test-data/spreadsheet",
+    "why_hard": "Pathological sheet with 50,000 merged ranges (POI bug 57893): quadratic-time trap for converters.",
+    "expected": "convert",
+    "targets": [
+      "pdf",
+      "csv"
+    ]
+  },
+  {
+    "id": "docx-images-in-tables",
+    "category": "office",
+    "url": "https://raw.githubusercontent.com/docling-project/docling/0e54294231b69bc2cf7a39873235495788f76b57/tests/data/docx/sources/docx_rich_cells.docx",
+    "sha256": "502b76c002ff8beaa8fbaec5ec62d5cfe68e41da0bfbb4ca55d13ed7c69cac7e",
+    "bytes": 25697,
+    "license": "MIT (docling test data)",
+    "source_page": "https://github.com/docling-project/docling/tree/0e54294231b69bc2cf7a39873235495788f76b57/tests/data/docx/sources",
+    "why_hard": "Word document with 9 tables whose cells contain images, lists and formatting.",
+    "expected": "convert",
+    "targets": [
+      "pdf",
+      "odt",
+      "txt",
+      "html"
+    ]
+  },
+  {
+    "id": "docx-chartex",
+    "category": "office",
+    "url": "https://raw.githubusercontent.com/apache/poi/bf7c9b6a1490046517cbd8e1504e702a89be4bc9/test-data/document/chartex.docx",
+    "sha256": "5d7f0ca9aa26d0244eedbc8ff862f08910689ec3848a036c622b17d56a290b57",
+    "bytes": 133304,
+    "license": "Apache-2.0 (Apache POI test-data)",
+    "source_page": "https://github.com/apache/poi/tree/bf7c9b6a1490046517cbd8e1504e702a89be4bc9/test-data/document",
+    "why_hard": "DOCX with 6 classic charts plus 2 Office 2016 'cx' chartex charts wrapped in mc:AlternateContent with PNG fallbacks: renderers that ignore cx must use the fallback, not leave a hole.",
+    "expected": "convert",
+    "targets": [
+      "pdf",
+      "odt"
+    ]
+  },
+  {
+    "id": "docx-truncated-zip",
+    "category": "office",
+    "url": "https://raw.githubusercontent.com/apache/poi/bf7c9b6a1490046517cbd8e1504e702a89be4bc9/test-data/document/truncated62886.docx",
+    "sha256": "39619851dab09369e91f926a94499caba0749ca2fa57d30b2fc2bc4a937292d0",
+    "bytes": 19785,
+    "license": "Apache-2.0 (Apache POI test-data)",
+    "source_page": "https://github.com/apache/poi/tree/bf7c9b6a1490046517cbd8e1504e702a89be4bc9/test-data/document",
+    "why_hard": "Truncated DOCX (no ZIP central directory, POI bug 62886): must fail with a clean 'damaged file' error, not hang or crash.",
+    "expected": "clean-error",
+    "targets": [
+      "pdf",
+      "txt"
+    ]
+  },
+  {
+    "id": "odt-text-document",
+    "category": "office",
+    "url": "https://raw.githubusercontent.com/docling-project/docling/0e54294231b69bc2cf7a39873235495788f76b57/tests/data/odf/sources/text_document_03.odt",
+    "sha256": "fa288f3fe401787f9433c1705795ddbd59c338d1ec1e93901ac751672e3ff19d",
+    "bytes": 31738,
+    "license": "MIT (docling test data)",
+    "source_page": "https://github.com/docling-project/docling/tree/0e54294231b69bc2cf7a39873235495788f76b57/tests/data/odf/sources",
+    "why_hard": "OpenDocument Text from LibreOffice.",
+    "expected": "convert",
+    "targets": [
+      "pdf",
+      "docx",
+      "txt"
+    ]
+  },
+  {
+    "id": "ods-table-with-title",
+    "category": "office",
+    "url": "https://raw.githubusercontent.com/docling-project/docling/0e54294231b69bc2cf7a39873235495788f76b57/tests/data/odf/sources/odf_table_with_title_01.ods",
+    "sha256": "89411ac41620285463bd6b63ea94c57d6b2a5b4ff267707fef494058c6af8469",
+    "bytes": 12528,
+    "license": "MIT (docling test data)",
+    "source_page": "https://github.com/docling-project/docling/tree/0e54294231b69bc2cf7a39873235495788f76b57/tests/data/odf/sources",
+    "why_hard": "OpenDocument Spreadsheet.",
+    "expected": "convert",
+    "targets": [
+      "xlsx",
+      "pdf",
+      "csv"
+    ]
+  },
+  {
+    "id": "odp-presentation",
+    "category": "office",
+    "url": "https://raw.githubusercontent.com/docling-project/docling/0e54294231b69bc2cf7a39873235495788f76b57/tests/data/odf/sources/odf_presentation_01.odp",
+    "sha256": "e226795c33f589c234d81f5adb414fb75d46a3d10e6fae09877f7a7645a8adb7",
+    "bytes": 34826,
+    "license": "MIT (docling test data)",
+    "source_page": "https://github.com/docling-project/docling/tree/0e54294231b69bc2cf7a39873235495788f76b57/tests/data/odf/sources",
+    "why_hard": "OpenDocument Presentation.",
+    "expected": "convert",
+    "targets": [
+      "pptx",
+      "pdf",
+      "png-slides"
+    ]
+  },
+  {
+    "id": "keynote-2013-iwa",
+    "category": "office",
+    "url": "https://raw.githubusercontent.com/docling-project/docling/0e54294231b69bc2cf7a39873235495788f76b57/tests/data/keynote/sources/keynote_2013.key",
+    "sha256": "8da93f6b566bc9eb22f4791bbfd5f2179162f39bf80968187b164c33d31824db",
+    "bytes": 274397,
+    "license": "MIT (docling test data)",
+    "source_page": "https://github.com/docling-project/docling/tree/0e54294231b69bc2cf7a39873235495788f76b57/tests/data/keynote/sources",
+    "why_hard": "Keynote 2013+ single-file package (protobuf .iwa + preview.jpg). No Keynote on CI runners: expect preview-based output or a clean 'needs Keynote' error.",
+    "expected": "convert",
+    "targets": [
+      "pdf",
+      "pptx",
+      "jpg"
+    ]
+  },
+  {
+    "id": "keynote-2018-zipped-bundle",
+    "category": "office",
+    "url": "https://raw.githubusercontent.com/docling-project/docling/0e54294231b69bc2cf7a39873235495788f76b57/tests/data/keynote/sources/keynote_2018.key",
+    "sha256": "05edd6dfddd7cbbb2c74f8648a68de2e18dd97b36da5822f4b68795010bb935f",
+    "bytes": 54228,
+    "license": "MIT (docling test data)",
+    "source_page": "https://github.com/docling-project/docling/tree/0e54294231b69bc2cf7a39873235495788f76b57/tests/data/keynote/sources",
+    "why_hard": "Keynote document that is a ZIP containing a Presentation.key/ directory bundle (no preview at top level): an unusual packaging that breaks naive iWork detection.",
+    "expected": "clean-error",
+    "targets": [
+      "pdf",
+      "pptx"
+    ]
+  },
+  {
+    "id": "pages-2013-iwa",
+    "category": "office",
+    "url": "https://raw.githubusercontent.com/docling-project/docling/0e54294231b69bc2cf7a39873235495788f76b57/tests/data/pages/sources/pages_2013.pages",
+    "sha256": "1819dd1f4a04fd22018afcaa3743802f891e092c0974a4193498fb4a1173f2ee",
+    "bytes": 237567,
+    "license": "MIT (docling test data)",
+    "source_page": "https://github.com/docling-project/docling/tree/0e54294231b69bc2cf7a39873235495788f76b57/tests/data/pages/sources",
+    "why_hard": "Pages 2013+ single-file package (.iwa + preview.jpg).",
+    "expected": "convert",
+    "targets": [
+      "pdf",
+      "docx",
+      "jpg"
+    ]
+  },
+  {
+    "id": "numbers-2013-iwa",
+    "category": "office",
+    "url": "https://raw.githubusercontent.com/docling-project/docling/0e54294231b69bc2cf7a39873235495788f76b57/tests/data/numbers/sources/numbers_2013.numbers",
+    "sha256": "74a834857c02d06dbc399aff8ba475f7708092e42501cc665d7fa489f385831f",
+    "bytes": 179147,
+    "license": "MIT (docling test data)",
+    "source_page": "https://github.com/docling-project/docling/tree/0e54294231b69bc2cf7a39873235495788f76b57/tests/data/numbers/sources",
+    "why_hard": "Numbers 2013+ single-file package (.iwa + preview.jpg).",
+    "expected": "convert",
+    "targets": [
+      "pdf",
+      "xlsx",
+      "csv"
+    ]
+  },
+  {
+    "id": "zip-nested-office-docs",
+    "category": "archive",
+    "url": "https://raw.githubusercontent.com/microsoft/markitdown/4cc9fa17653d695d64fb9eee5b33d4de55ff84e8/packages/markitdown/tests/test_files/test_files.zip",
+    "sha256": "fdc6402d0c47d7f2891f9bb46a0389024c63b0aa6325596027519bbe2ded7f05",
+    "bytes": 744377,
+    "license": "MIT (microsoft/markitdown test files)",
+    "source_page": "https://github.com/microsoft/markitdown/tree/4cc9fa17653d695d64fb9eee5b33d4de55ff84e8/packages/markitdown/tests/test_files",
+    "why_hard": "ZIP containing DOCX/PPTX/XLSX/JPG/HTML: extract, re-pack to other archive formats, and optionally convert members.",
+    "expected": "convert",
+    "targets": [
+      "tar.gz",
+      "7z",
+      "folder"
+    ]
+  },
+  {
+    "id": "targz-zlib-source",
+    "category": "archive",
+    "url": "https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz",
+    "sha256": "9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23",
+    "bytes": 1512791,
+    "license": "Zlib",
+    "source_page": "https://github.com/madler/zlib/releases/tag/v1.3.1",
+    "why_hard": "Real release tarball, 290 entries, nested directories, ustar/pax headers; upstream-published sha256.",
+    "expected": "convert",
+    "targets": [
+      "zip",
+      "7z",
+      "folder"
+    ]
+  },
+  {
+    "id": "7z-umlaut-solid",
+    "category": "archive",
+    "url": "https://raw.githubusercontent.com/miurahr/py7zr/c717d21171bdc66b6370040dc95a6ce9036f4d40/tests/data/umlaut-solid.7z",
+    "sha256": "de375e450db76e55b0dcae245d482786cb034078f73c5da181aeb69328b0b33e",
+    "bytes": 163,
+    "license": "LGPL-2.1-or-later (py7zr test data)",
+    "source_page": "https://github.com/miurahr/py7zr/tree/c717d21171bdc66b6370040dc95a6ce9036f4d40/tests/data",
+    "why_hard": "Solid 7z archive with non-ASCII (umlaut) member names.",
+    "expected": "convert",
+    "targets": [
+      "zip",
+      "tar.gz",
+      "folder"
+    ]
+  },
+  {
+    "id": "7z-encrypted",
+    "category": "archive",
+    "url": "https://raw.githubusercontent.com/miurahr/py7zr/c717d21171bdc66b6370040dc95a6ce9036f4d40/tests/data/encrypted_1.7z",
+    "sha256": "45573dc73048486f421bfd2e490b8e0bddf501856d142d854064149365446ca7",
+    "bytes": 251,
+    "license": "LGPL-2.1-or-later (py7zr test data)",
+    "source_page": "https://github.com/miurahr/py7zr/tree/c717d21171bdc66b6370040dc95a6ce9036f4d40/tests/data",
+    "why_hard": "AES-encrypted 7z (password 'secret' per py7zr tests): without a password must surface a clean 'password required' error.",
+    "expected": "clean-error",
+    "targets": [
+      "zip",
+      "folder"
+    ]
+  },
+  {
+    "id": "7z-data-corrupted",
+    "category": "archive",
+    "url": "https://raw.githubusercontent.com/miurahr/py7zr/c717d21171bdc66b6370040dc95a6ce9036f4d40/tests/data/data_corrupted.7z",
+    "sha256": "c911c5d3db955fc0c90704157b2ddd62f9614347d140b255325a7dc467633d65",
+    "bytes": 657,
+    "license": "LGPL-2.1-or-later (py7zr test data)",
+    "source_page": "https://github.com/miurahr/py7zr/tree/c717d21171bdc66b6370040dc95a6ce9036f4d40/tests/data",
+    "why_hard": "7z with corrupted packed stream (CRC mismatch): must not write partial output silently.",
+    "expected": "clean-error",
+    "targets": [
+      "zip",
+      "folder"
+    ]
+  },
+  {
+    "id": "rar3-unicode-names",
+    "category": "archive",
+    "url": "https://raw.githubusercontent.com/markokr/rarfile/d2f7df6fc843dae356fd6b0a85971dc36fd6e757/test/files/unicode.rar",
+    "sha256": "1d1d25ff7e1a4190055bda32a771a4a5e282ddd8078ce730ca44c45befcec176",
+    "bytes": 163,
+    "license": "ISC (rarfile test files)",
+    "source_page": "https://github.com/markokr/rarfile/tree/d2f7df6fc843dae356fd6b0a85971dc36fd6e757/test/files",
+    "why_hard": "RAR 2.9/3.x archive with Cyrillic and astral-plane (U+1D400) file names; RAR is decode-only on macOS.",
+    "expected": "convert",
+    "targets": [
+      "zip",
+      "folder"
+    ]
+  },
+  {
+    "id": "rar5-encrypted",
+    "category": "archive",
+    "url": "https://raw.githubusercontent.com/markokr/rarfile/d2f7df6fc843dae356fd6b0a85971dc36fd6e757/test/files/rar5-psw.rar",
+    "sha256": "b6840e95152a1c3b5acd736dc34f988509866f04158b67da1b5a29e166a31355",
+    "bytes": 2403,
+    "license": "ISC (rarfile test files)",
+    "source_page": "https://github.com/markokr/rarfile/tree/d2f7df6fc843dae356fd6b0a85971dc36fd6e757/test/files",
+    "why_hard": "RAR5 with AES-256 encrypted file data (password 'password'): clean 'password required' error.",
+    "expected": "clean-error",
+    "targets": [
+      "zip",
+      "folder"
+    ]
+  },
+  {
+    "id": "jpeg-cmyk-adobe",
+    "category": "image",
+    "url": "https://raw.githubusercontent.com/ocrmypdf/OCRmyPDF/cf0df3da06aef04fe9a5bf91c6feff36370bb3eb/tests/resources/baiona_cmyk.jpg",
+    "sha256": "545eff601876d78b37140d9328cde5334f9111ab922ffdaaeb3b50449a3d47a6",
+    "bytes": 148726,
+    "license": "CC-BY-SA (OCRmyPDF test resources, derived from Wikimedia 'Baionako udalerri mugakideak')",
+    "source_page": "https://github.com/ocrmypdf/OCRmyPDF/blob/cf0df3da06aef04fe9a5bf91c6feff36370bb3eb/tests/resources/README.rst",
+    "why_hard": "4-component CMYK JPEG without ICC profile (Adobe APP14): naive decoders invert colours.",
+    "expected": "convert",
+    "targets": [
+      "png",
+      "jpg",
+      "pdf",
+      "heic",
+      "webp"
+    ]
+  },
+  {
+    "id": "jpeg-cmyk-small",
+    "category": "image",
+    "url": "https://raw.githubusercontent.com/python-pillow/Pillow/6085656229c7babd093b2b065141e9936fd3c261/Tests/images/pil_sample_cmyk.jpg",
+    "sha256": "1086f923d60bb5d6c4f2d3f7f56ba5d315d98e6f19ee8c8797dabac630c8ae80",
+    "bytes": 29364,
+    "license": "MIT-CMU (Pillow test image)",
+    "source_page": "https://github.com/python-pillow/Pillow/tree/6085656229c7babd093b2b065141e9936fd3c261/Tests/images",
+    "why_hard": "Small CMYK JPEG used by Pillow's test suite (second CMYK encoder variant).",
+    "expected": "convert",
+    "targets": [
+      "png",
+      "jpg"
+    ]
+  },
+  {
+    "id": "png-16bit-hdr-room",
+    "category": "image",
+    "url": "https://raw.githubusercontent.com/libjxl/testdata/73695d303670c90e4d506ea89d9901b081385089/jxl/hdr_room.png",
+    "sha256": "df2efb86c6114dba264c849ac0ae3a073c663d5aa55890fa276b8bd3b0efb2ae",
+    "bytes": 1536564,
+    "license": "CC-BY-4.0 (libjxl testdata)",
+    "source_page": "https://github.com/libjxl/testdata",
+    "why_hard": "16-bit-per-channel RGB PNG (676x449, 1.5 MB): must keep 16-bit in TIFF/PNG and dither properly into 8-bit targets.",
+    "expected": "convert",
+    "targets": [
+      "tiff",
+      "png",
+      "jpg",
+      "heic",
+      "avif"
+    ]
+  },
+  {
+    "id": "gif-animated-42-frames",
+    "category": "image",
+    "url": "https://raw.githubusercontent.com/python-pillow/Pillow/6085656229c7babd093b2b065141e9936fd3c261/Tests/images/iss634.gif",
+    "sha256": "3ad971599fa36b013c0a6f4da76effbbda3cd98961bfe9bb2951c7930baaee76",
+    "bytes": 277517,
+    "license": "MIT-CMU (Pillow test image)",
+    "source_page": "https://github.com/python-pillow/Pillow/tree/6085656229c7babd093b2b065141e9936fd3c261/Tests/images",
+    "why_hard": "42-frame animated GIF with per-frame disposal/palettes.",
+    "expected": "convert",
+    "targets": [
+      "mp4-h264",
+      "webp-animated",
+      "png-frames",
+      "heic"
+    ]
+  },
+  {
+    "id": "webp-animated-42-frames",
+    "category": "image",
+    "url": "https://raw.githubusercontent.com/python-pillow/Pillow/6085656229c7babd093b2b065141e9936fd3c261/Tests/images/iss634.webp",
+    "sha256": "e000f2c68d1dcbe0cb9b399e6f67031e624f9f1769950efad94e45596cf96f19",
+    "bytes": 207838,
+    "license": "MIT-CMU (Pillow test image)",
+    "source_page": "https://github.com/python-pillow/Pillow/tree/6085656229c7babd093b2b065141e9936fd3c261/Tests/images",
+    "why_hard": "Animated WebP (ANIM/ANMF) of the same 42 frames: ImageIO decodes animated WebP read-only.",
+    "expected": "convert",
+    "targets": [
+      "gif",
+      "mp4-h264",
+      "png"
+    ]
+  },
+  {
+    "id": "avif-10bit-hdr-p3",
+    "category": "image",
+    "url": "https://raw.githubusercontent.com/immich-app/test-assets/ec56cc6c1d76c45bc9615dc6ea232470a2b0a3a1/formats/avif/10bit-HDR-P3-nclx.avif",
+    "sha256": "af145f4853f47ad9a5ce744018fda8c94c39ba96deb779cec516d9353443a4e5",
+    "bytes": 993671,
+    "license": "Public domain (immich-app/test-assets README: 'All assets are public domain')",
+    "source_page": "https://github.com/immich-app/test-assets",
+    "why_hard": "10-bit AVIF, 3681x5594 (20.6 MP), Display-P3 + HDR nclx colour box.",
+    "expected": "convert",
+    "targets": [
+      "jpg",
+      "png",
+      "heic",
+      "tiff"
+    ]
+  },
+  {
+    "id": "avif-sequence-animated",
+    "category": "image",
+    "url": "https://raw.githubusercontent.com/python-pillow/Pillow/6085656229c7babd093b2b065141e9936fd3c261/Tests/images/avif/star.avifs",
+    "sha256": "f055ec59fa0fbb843921673ea1bbc6081722b59a674a409cba40c9001e8e86ef",
+    "bytes": 29724,
+    "license": "MIT-CMU (Pillow test image)",
+    "source_page": "https://github.com/python-pillow/Pillow/tree/6085656229c7babd093b2b065141e9936fd3c261/Tests/images",
+    "why_hard": "AVIF image sequence (avis brand, .avifs): animated AVIF, often unsupported.",
+    "expected": "convert",
+    "targets": [
+      "gif",
+      "mp4-h264",
+      "png"
+    ]
+  },
+  {
+    "id": "tiff-multipage",
+    "category": "image",
+    "url": "https://raw.githubusercontent.com/python-pillow/Pillow/6085656229c7babd093b2b065141e9936fd3c261/Tests/images/multipage.tiff",
+    "sha256": "e6ea0b435d075d8c1381db743a9be2603a9419afccbb23cc0a4fd42c29169d51",
+    "bytes": 816,
+    "license": "MIT-CMU (Pillow test image)",
+    "source_page": "https://github.com/python-pillow/Pillow/tree/6085656229c7babd093b2b065141e9936fd3c261/Tests/images",
+    "why_hard": "3-page TIFF: page handling for TIFF->PDF (all pages) and TIFF->PNG (first page or per-page).",
+    "expected": "convert",
+    "targets": [
+      "pdf",
+      "png",
+      "jpg"
+    ]
+  },
+  {
+    "id": "tiff-ifd-loop",
+    "category": "image",
+    "url": "https://gitlab.com/libtiff/libtiff/-/raw/d23249978a7a99ea2e0752a476611914501577de/test/images/test_ifd_loop_to_first.tif",
+    "sha256": "516a304cc30116b6f3a123544ad287d7fbe93aae1bf741a883b1d0b92f7dec9d",
+    "bytes": 312,
+    "license": "libtiff license (BSD-like)",
+    "source_page": "https://gitlab.com/libtiff/libtiff/-/tree/master/test/images",
+    "why_hard": "TIFF whose IFD chain loops back to the first IFD: multi-page readers must detect the cycle instead of looping forever.",
+    "expected": "clean-error",
+    "targets": [
+      "pdf",
+      "png"
+    ]
+  },
+  {
+    "id": "svg-inkscape-filters",
+    "category": "image",
+    "url": "https://gitlab.com/inkscape/inkscape/-/raw/5575b5952f86c116792daa8ec969af8869ffdcf7/share/examples/filters.svg",
+    "sha256": "be2ab9f6b1157b3d1ff0fd942668a2dd1704f485ec07ad33a2253b56aeb66bbb",
+    "bytes": 595508,
+    "license": "GPL-2.0-or-later (Inkscape example)",
+    "source_page": "https://gitlab.com/inkscape/inkscape/-/tree/5575b5952f86c116792daa8ec969af8869ffdcf7/share/examples",
+    "why_hard": "Inkscape SVG (595 KB) with heavy SVG filter effects (feTurbulence, feComposite, lighting), sodipodi/inkscape namespaces.",
+    "expected": "convert",
+    "targets": [
+      "png",
+      "pdf",
+      "jpg"
+    ]
+  },
+  {
+    "id": "svg-inkscape-i18n-text",
+    "category": "image",
+    "url": "https://gitlab.com/inkscape/inkscape/-/raw/5575b5952f86c116792daa8ec969af8869ffdcf7/share/examples/i18n.svg",
+    "sha256": "6e6379d3099f371b1a6386ee8abaeaf40325d02b22cc72f96e08a608e1f46210",
+    "bytes": 26865,
+    "license": "GPL-2.0-or-later (Inkscape example)",
+    "source_page": "https://gitlab.com/inkscape/inkscape/-/tree/5575b5952f86c116792daa8ec969af8869ffdcf7/share/examples",
+    "why_hard": "SVG with 43 <text> elements of the Universal Declaration of Human Rights in many scripts (CJK, Devanagari, Arabic, Thai...) naming fonts that do not exist on macOS: font fallback and bidi/complex shaping.",
+    "expected": "convert",
+    "targets": [
+      "png",
+      "pdf"
+    ]
+  },
+  {
+    "id": "psd-layer-effects",
+    "category": "image",
+    "url": "https://raw.githubusercontent.com/psd-tools/psd-tools/d6efd7b4504b48868a74563f49f69c08d56c81ae/tests/psd_files/layer_effects.psd",
+    "sha256": "6ab41ce6e17b3287c703dc4cf4d898506ffc1bd9babf20d0f1de5ef6df1d2e1e",
+    "bytes": 735149,
+    "license": "MIT (psd-tools test file)",
+    "source_page": "https://github.com/psd-tools/psd-tools/tree/d6efd7b4504b48868a74563f49f69c08d56c81ae/tests/psd_files",
+    "why_hard": "Photoshop PSD 800x640 with 13 layers using layer effects (shadows, strokes, overlays): composite must match the embedded merged image.",
+    "expected": "convert",
+    "targets": [
+      "png",
+      "jpg",
+      "tiff",
+      "pdf"
+    ]
+  },
+  {
+    "id": "psd-cmyk-spot-channels",
+    "category": "image",
+    "url": "https://raw.githubusercontent.com/psd-tools/psd-tools/d6efd7b4504b48868a74563f49f69c08d56c81ae/tests/psd_files/cmyk-spot.psd",
+    "sha256": "d5164efc0221f84cd3cc9573db3d8a4805691e04e67b738b4160c042a7b9fb9d",
+    "bytes": 402214,
+    "license": "MIT (psd-tools test file)",
+    "source_page": "https://github.com/psd-tools/psd-tools/tree/d6efd7b4504b48868a74563f49f69c08d56c81ae/tests/psd_files",
+    "why_hard": "CMYK PSD with spot-colour channel.",
+    "expected": "convert",
+    "targets": [
+      "png",
+      "jpg",
+      "tiff"
+    ]
+  },
+  {
+    "id": "heic-samsung-200mp-gainmap",
+    "category": "image",
+    "url": "https://raw.githubusercontent.com/bigcat88/pillow_heif/5a6eb1e29f9ae3cbdcfa99d352f15c925e512a4c/tests/images/heif_special/200MP.heic",
+    "sha256": "4dd7209010986a50b1049e54de47ae2188faef6d548213a9799e11fae1a317c6",
+    "bytes": 2407522,
+    "license": "BSD-3-Clause (pillow_heif repository test image)",
+    "source_page": "https://github.com/bigcat88/pillow_heif/tree/5a6eb1e29f9ae3cbdcfa99d352f15c925e512a4c/tests/images",
+    "why_hard": "Huge image: 16320x12240 (199.8 MP) Samsung HEIC with 800+ grid tiles and a Samsung HDR gain map, only 2.4 MB on disk; decodes to ~800 MB RGBA. Memory/tiling stress test.",
+    "expected": "convert",
+    "targets": [
+      "jpg",
+      "png",
+      "tiff"
+    ]
+  },
+  {
+    "id": "jpeg-exif-orientation-6",
+    "category": "image",
+    "url": "https://raw.githubusercontent.com/recurser/exif-orientation-examples/219294e144531b0c01247913cb58b6f5531b5081/Landscape_6.jpg",
+    "sha256": "9b344e9f0c869d8637ea22e672df9451d8d3cc1d2d0b291af3b284e538e5f124",
+    "bytes": 352727,
+    "license": "MIT (recurser/exif-orientation-examples)",
+    "source_page": "https://github.com/recurser/exif-orientation-examples",
+    "why_hard": "JPEG stored portrait with EXIF Orientation=6 (rotate 90 CW): output must be visually landscape and the tag reset to 1.",
+    "expected": "convert",
+    "targets": [
+      "png",
+      "jpg",
+      "heic",
+      "webp",
+      "pdf"
+    ]
+  },
+  {
+    "id": "gif-decompression-bomb",
+    "category": "image",
+    "url": "https://raw.githubusercontent.com/python-pillow/Pillow/6085656229c7babd093b2b065141e9936fd3c261/Tests/images/decompression_bomb.gif",
+    "sha256": "7357284ef3ce2f16a3eb5e6f64ba9eeaded1487661b36ed6ac73476bce24a38e",
+    "bytes": 44,
+    "license": "MIT-CMU (Pillow test image)",
+    "source_page": "https://github.com/python-pillow/Pillow/tree/6085656229c7babd093b2b065141e9936fd3c261/Tests/images",
+    "why_hard": "44-byte GIF declaring an enormous canvas: must be refused with a clean error before allocating memory.",
+    "expected": "clean-error",
+    "targets": [
+      "png",
+      "jpg"
+    ]
+  }
+]

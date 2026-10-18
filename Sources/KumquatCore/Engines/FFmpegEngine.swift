@@ -50,8 +50,11 @@ public enum FFmpegEngine {
 
     /// What FFmpeg says about a file: the first video stream's codec, like "h264", and the length in seconds.
     struct Probe {
+        /// False when FFmpeg couldn't open the file at all.
+        var found = false
         var codec: String?
         var duration: Double?
+        var hasAudio = false
     }
 
     static func probe(_ ffmpeg: URL, input: URL) async -> Probe {
@@ -59,6 +62,8 @@ public enum FFmpegEngine {
             ffmpeg.path, ["-hide_banner", "-nostdin", "-i", input.path, "-t", "0", "-f", "null", "-"]
         ) else { return Probe() }
         var probe = Probe()
+        probe.found = info.contains("Input #0")
+        probe.hasAudio = info.contains("Audio: ")
         if let range = info.range(of: "Video: ") {
             probe.codec = info[range.upperBound...].prefix { $0.isLetter || $0.isNumber }.lowercased()
         }

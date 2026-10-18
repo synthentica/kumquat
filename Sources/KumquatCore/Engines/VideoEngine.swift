@@ -35,8 +35,12 @@ public enum VideoEngine {
                     }
                 }
             }
-            await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-                session.exportAsynchronously { continuation.resume() }
+            await withTaskCancellationHandler {
+                await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+                    session.exportAsynchronously { continuation.resume() }
+                }
+            } onCancel: {
+                session.cancelExport()
             }
             poll?.cancel()
         }
