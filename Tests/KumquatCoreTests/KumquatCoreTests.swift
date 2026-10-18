@@ -140,6 +140,89 @@ final class TextFormatTests: XCTestCase {
         XCTAssertEqual(back, rows)
     }
 
+    /// Builds a tiny Excel 97 file: a Compound File with one Workbook stream of BIFF8 records.
+    func makeXLS() -> Data {
+        func le16(_ value: UInt16) -> [UInt8] { [UInt8(value & 0xFF), UInt8(value >> 8)] }
+        func le32(_ value: UInt32) -> [UInt8] { le16(UInt16(value & 0xFFFF)) + le16(UInt16(value >> 16)) }
+        func record(_ type: UInt16, _ body: [UInt8]) -> [UInt8] {
+            le16(type) + le16(UInt16(body.count)) + body
+        }
+        func cell(_ row: UInt16, _ column: UInt16) -> [UInt8] { le16(row) + le16(column) + le16(0) }
+
+        // "Helsinki" is split across the SST and a CONTINUE record, which repeats the flags byte.
+        var strings: [UInt8] = le32(3) + le32(3)
+        strings += le16(4)
+        strings += [0]
+        strings += Array("City".utf8)
+        strings += le16(5)
+        strings += [1]
+        for unit in "Åbo!!".utf16 { strings += le16(unit) }
+        strings += le16(8)
+        strings += [0]
+        strings += Array("Hels".utf8)
+        let sst = record(0x00FC, strings)
+        let continuation = record(0x003C, [UInt8(0)] + Array("inki".utf8))
+        let bof = record(0x0809, le16(0x0600) + le16(0x0005) + [UInt8](repeating: 0, count: 12))
+        let eof = record(0x000A, [])
+        var globals = bof
+        let sheetRecordIndex = globals.count
+        let sheetName: [UInt8] = [0, 0, 5, 0] + Array("Sheet".utf8)
+        globals += record(0x0085, le32(0) + sheetName)
+        globals += sst + continuation + eof
+        let sheetOffset = UInt32(globals.count)
+        globals.replaceSubrange(sheetRecordIndex + 4..<sheetRecordIndex + 8, with: le32(sheetOffset))
+        var number = 1.5.bitPattern
+        let numberBytes = (0..<8).map { _ -> UInt8 in defer { number >>= 8 }; return UInt8(number & 0xFF) }
+        var sheet = record(0x0809, le16(0x0600) + le16(0x0010) + [UInt8](repeating: 0, count: 12))
+        sheet += record(0x00FD, cell(0, 0) + le32(0))
+        sheet += record(0x00FD, cell(1, 0) + le32(2))
+        sheet += record(0x00FD, cell(2, 0) + le32(1))
+        sheet += record(0x027E, cell(1, 1) + le32(UInt32(674_500) << 2 | 0x02))
+        sheet += record(0x0203, cell(2, 1) + numberBytes)
+        sheet += eof
+        var stream = globals + sheet
+        stream += [UInt8](repeating: 0, count: max(0, 4_096 - stream.count))
+
+        let sectors = (stream.count + 511) / 512
+        stream += [UInt8](repeating: 0, count: sectors * 512 - stream.count)
+        var header = [UInt8](repeating: 0, count: 512)
+        header.replaceSubrange(0..<8, with: [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1])
+        func put(_ bytes: [UInt8], _ offset: Int) { header.replaceSubrange(offset..<offset + bytes.count, with: bytes) }
+        put(le16(0x3E), 0x18); put(le16(3), 0x1A); put(le16(0xFFFE), 0x1C); put(le16(9), 0x1E); put(le16(6), 0x20)
+        put(le32(1), 0x2C); put(le32(1), 0x30); put(le32(4_096), 0x38)
+        put(le32(0xFFFF_FFFE), 0x3C); put(le32(0xFFFF_FFFE), 0x44)
+        for index in 0..<109 { put(le32(index == 0 ? 0 : 0xFFFF_FFFF), 0x4C + index * 4) }
+        // Sector 0 is the FAT, sector 1 the directory, then the workbook.
+        var fat = le32(0xFFFF_FFFD) + le32(0xFFFF_FFFE)
+        for index in 0..<sectors { fat += le32(index == sectors - 1 ? 0xFFFF_FFFE : UInt32(index + 3)) }
+        fat += [UInt8](repeating: 0xFF, count: 512 - fat.count)
+        func entry(_ name: String, type: UInt8, start: UInt32, size: UInt32) -> [UInt8] {
+            var bytes = [UInt8](repeating: 0, count: 128)
+            var units: [UInt8] = []
+            for unit in name.utf16 { units += le16(unit) }
+            units += [0, 0]
+            bytes.replaceSubrange(0..<units.count, with: units)
+            bytes.replaceSubrange(0x40..<0x42, with: le16(UInt16(units.count)))
+            bytes[0x42] = type
+            bytes.replaceSubrange(0x74..<0x78, with: le32(start))
+            bytes.replaceSubrange(0x78..<0x7C, with: le32(size))
+            return bytes
+        }
+        var directory = entry("Root Entry", type: 5, start: 0xFFFF_FFFE, size: 0)
+            + entry("Workbook", type: 2, start: 2, size: UInt32(stream.count))
+        directory += [UInt8](repeating: 0, count: 512 - directory.count)
+        return Data(header + fat + directory + stream)
+    }
+
+    func testXLS() throws {
+        let dir = try FileManager.default.makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let url = dir.appendingPathComponent("old.xls")
+        try makeXLS().write(to: url)
+        XCTAssertEqual(try XLS.read(url), [["City", ""], ["Helsinki", "674500"], ["Åbo!!", "1.5"]])
+        XCTAssertEqual(XLS.rk(UInt32(bitPattern: Int32(-12) << 2) | 0x03), -0.12, accuracy: 0.0001)
+    }
+
     func testJSON() {
         let json = Spreadsheet.json([["a", "b"], ["1", "x\"y"]])
         XCTAssertTrue(json.contains("\"a\": 1"))
@@ -355,6 +438,25 @@ final class EngineTests: XCTestCase {
             XCTAssertNoThrow(try XMLDocument(contentsOf: unpacked.appendingPathComponent(part), options: []), part)
         }
         XCTAssertThrowsError(try PDFEngine.tableRows(pdfURL), "Image-only pages have no text")
+    }
+
+    func testPowerPointRendering() async throws {
+        let png = try makePNG()
+        let pdfURL = dir.appendingPathComponent("source.pdf")
+        try ImageEngine.makePDF(from: [png, png, png], to: pdfURL)
+        let pptx = try await PPTX.fromPDF(pdfURL, context: context)
+        let rendered = try await PPTXRenderer.toPDF(pptx, context: context)
+        let document = try XCTUnwrap(PDFDocument(url: rendered))
+        XCTAssertEqual(document.pageCount, 3)
+        // The picture fills the left of the slide with orange, so the page isn't blank.
+        let page = try PDFEngine.render(try XCTUnwrap(document.page(at: 0)), dpi: 36)
+        let context = ImageEngine.makeContext(width: page.width, height: page.height, alpha: true)!
+        context.draw(page, in: CGRect(x: 0, y: 0, width: page.width, height: page.height))
+        let pixels = context.data!.bindMemory(to: UInt8.self, capacity: context.bytesPerRow * page.height)
+        let middle = (page.height / 2) * context.bytesPerRow + (page.width / 4) * 4
+        XCTAssertLessThan(pixels[middle + 2], 200, "expected orange, not white")
+        let images = try await PPTXRenderer.slideImages(pptx, as: .png, context: self.context)
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: images.path).count, 3)
     }
 
     func testTextClipping() async throws {

@@ -220,7 +220,9 @@ public enum Spreadsheet {
             return CSV.parse(text, delimiter: guessDelimiter(text))
         case .ods:
             return try await ODS.read(url)
-        case .xls, .numbers:
+        case .xls:
+            return try XLS.read(url)
+        case .numbers:
             return try await OfficeEngine.withIntermediate(url, as: .xlsx) { try await XLSX.read($0) }
         case .pdf:
             return try PDFEngine.tableRows(url)

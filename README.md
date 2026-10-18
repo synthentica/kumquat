@@ -38,22 +38,22 @@ All keys can be changed in Settings.
 
 ## What it converts
 
-Everything runs on your Mac with the frameworks built into macOS (ImageIO, AVFoundation, PDFKit, the Cocoa text system and the system archive tools), so it's fast and works offline.
+Everything runs on your Mac, offline. Kumquat uses what's built into macOS (ImageIO, AVFoundation with the hardware video encoders, PDFKit, the Cocoa text system and the system archive tools), its own readers and writers for Office, OpenDocument and EPUB files, and a copy of [FFmpeg](https://ffmpeg.org) built into the app for the audio and video formats macOS can't write.
 
 | Kind | From | To |
 | --- | --- | --- |
-| Images | JPG, PNG, HEIC, TIFF, GIF, BMP, WebP, AVIF, SVG, PSD | PNG, JPG, HEIC, TIFF, GIF, BMP, AVIF\*, WebP†, PDF |
-| Video | MP4, MOV, M4V (+ MKV, WebM, AVI, WMV, FLV†) | MP4, MOV, HEVC, GIF, M4A (+ WebM, MKV, AVI, WMV, MP3†) |
-| Audio | MP3, M4A, AAC, WAV, AIFF, FLAC, CAF (+ OGG, Opus, WMA†) | M4A, WAV, AIFF, FLAC, ALAC (+ MP3, OGG, Opus, WMA†) |
+| Images | JPG, PNG, HEIC, TIFF, GIF, BMP, WebP, AVIF, SVG, PSD | PNG, JPG, HEIC, TIFF, GIF, BMP, WebP, AVIF\*, PDF |
+| Video | MP4, MOV, M4V, MKV, WebM, AVI, WMV, FLV | MP4, MOV, HEVC, GIF, M4A, WebM, MKV, AVI, WMV, MP3 |
+| Audio | MP3, M4A, AAC, WAV, AIFF, FLAC, CAF, OGG, Opus, WMA | M4A, MP3, WAV, AIFF, FLAC, ALAC, OGG, Opus, WMA |
 | PDF | PDF | PNG, JPG (every page at 300 DPI), DOCX, PPTX, XLSX, TXT, Markdown, RTF, HTML, EPUB, Pages‡ |
 | Documents | DOCX, DOC, RTF, RTFD, ODT, HTML, TXT, Markdown, EPUB, text clippings, Pages‡ | PDF, DOCX, Markdown, TXT, RTF, ODT, HTML, EPUB, Pages‡ |
-| Slides‡ | PPTX, PPT, Keynote, ODP | PDF, PNG, JPG (every slide), PPTX, Keynote, ODP |
-| Spreadsheets | XLSX, CSV, TSV, ODS, XLS‡, Numbers‡ | XLSX, ODS, CSV, TSV, JSON, PDF, Markdown, HTML, Numbers‡ |
+| Slides | PPTX, PPT‡, Keynote‡, ODP‡ | PDF, PNG, JPG (every slide), PPTX‡, Keynote‡, ODP‡ |
+| Spreadsheets | XLSX, XLS, CSV, TSV, ODS, Numbers‡ | XLSX, ODS, CSV, TSV, JSON, PDF, Markdown, HTML, Numbers‡ |
 | Subtitles | SRT, VTT | SRT, VTT, TXT |
 | Archives | ZIP, TAR, TAR.GZ, GZ, RAR, 7Z | Extract; files and folders to ZIP, TAR.GZ, TAR, GZIP |
 
-\* When your version of macOS can encode it. † With [FFmpeg](https://ffmpeg.org) installed (`brew install ffmpeg`); Kumquat finds it automatically.
-‡ With [LibreOffice](https://www.libreoffice.org) or Apple's free Keynote, Pages and Numbers installed. Kumquat uses LibreOffice in the background when it's there, and otherwise asks the Apple app to do the export.
+\* When your version of macOS can encode it.
+‡ Apple's own formats and old PowerPoint files go through Keynote, Pages or Numbers (free, and on most Macs already), or [LibreOffice](https://www.libreoffice.org) when it's installed.
 
 ### Tools
 
@@ -96,6 +96,10 @@ scripts               App bundling and the icon, drawn in code
 ```
 
 Adding a format usually means a few lines in `OperationCatalog.swift` and, if needed, a small engine in `Sources/KumquatCore/Engines`.
+
+## Third-party software
+
+Kumquat.app includes FFmpeg, built by `scripts/build-ffmpeg.sh` under the LGPL 2.1 with LAME (LGPL), Opus, Vorbis, libvpx and libwebp (BSD). The script fetches the exact sources it builds from.
 
 ## Privacy
 

@@ -114,10 +114,16 @@ public enum OperationCatalog {
 
         case .presentation:
             let sources = formats
+            // PowerPoint files are drawn natively; the rest need Keynote or LibreOffice.
+            let native = sources == [.pptx]
             func available(_ target: FileFormat) -> Bool {
                 sources.allSatisfy { OfficeEngine.canConvert($0, to: target) }
             }
-            if available(.pdf) {
+            if native {
+                ops.append(convert(.pdf) { try await PPTXRenderer.toPDF($0, context: $1) })
+                ops.append(convert(.png, subtitle: "Slides") { try await PPTXRenderer.slideImages($0, as: .png, context: $1) })
+                ops.append(convert(.jpeg, subtitle: "Slides") { try await PPTXRenderer.slideImages($0, as: .jpeg, context: $1) })
+            } else if available(.pdf) {
                 ops.append(convert(.pdf) { try await OfficeEngine.convert($0, to: .pdf, context: $1) })
                 ops.append(convert(.png, subtitle: "Slides") { try await OfficeEngine.slideImages($0, as: .png, context: $1) })
                 ops.append(convert(.jpeg, subtitle: "Slides") { try await OfficeEngine.slideImages($0, as: .jpeg, context: $1) })
@@ -127,8 +133,8 @@ public enum OperationCatalog {
             }
 
         case .spreadsheet:
-            // XLS and Numbers files are read through LibreOffice or Numbers.
-            let readable = formats.allSatisfy { ![.xls, .numbers].contains($0) || OfficeEngine.canConvert($0, to: .xlsx) }
+            // Numbers files are read through Numbers or LibreOffice.
+            let readable = !formats.contains(.numbers) || OfficeEngine.canConvert(.numbers, to: .xlsx)
             guard readable else { break }
             for target in [FileFormat.xlsx, .csv, .tsv, .json, .ods, .pdf, .markdown, .html] where isNew(target) {
                 ops.append(convert(target) { try await Spreadsheet.convert($0, to: target, context: $1) })
