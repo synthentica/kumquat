@@ -247,10 +247,7 @@ public enum Spreadsheet {
         case .json: try json(rows).write(to: output, atomically: true, encoding: .utf8)
         case .markdown: try markdownTable(rows).write(to: output, atomically: true, encoding: .utf8)
         case .html: try htmlDocument(rows, title: url.baseName).write(to: output, atomically: true, encoding: .utf8)
-        case .pdf:
-            let html = htmlDocument(rows, title: url.baseName)
-            let text = try await DocumentEngine.attributed(html: html, baseURL: nil)
-            try await DocumentEngine.printPDF(text, to: output, landscape: (rows.first?.count ?? 0) > 6)
+        case .pdf: try TablePDF.write(rows, to: output)
         default: throw OperationError.unsupported(format.displayName)
         }
         return output

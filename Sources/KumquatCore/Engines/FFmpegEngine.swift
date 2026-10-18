@@ -153,10 +153,13 @@ public enum FFmpegEngine {
                 }
             }
         }
+        // Decoding on the media engine: a 4K HEVC clip to GIF took 49 s in the corpus with software decoding.
+        // FFmpeg falls back to software by itself for codecs the Mac can't decode in hardware.
+        let decode = input.fileCategory == .video ? ["-hwaccel", "videotoolbox"] : []
         do {
             try await Shell.run(
                 ffmpeg.path,
-                ["-hide_banner", "-loglevel", "error", "-nostdin", "-y"] + progressArguments + ["-i", input.path]
+                ["-hide_banner", "-loglevel", "error", "-nostdin", "-y"] + progressArguments + decode + ["-i", input.path]
                     + arguments + [output.path],
                 onOutputLine: onLine
             )

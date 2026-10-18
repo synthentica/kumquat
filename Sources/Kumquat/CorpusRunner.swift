@@ -75,7 +75,20 @@ enum CorpusRunner {
                 try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
                 var itemContext = context
                 itemContext.outputDirectory = folder
+                // If the conversion blocks the main thread, the run loop below never gets to check the time.
+                // A watchdog on another thread then logs the hang and ends the run; corpus.sh starts the next one.
+                var hung = line
+                hung["operation"] = operation.id
+                hung["status"] = "timeout"
+                hung["error"] = "Blocked the main thread for more than \(Int(timeout + 30)) s."
+                let hangLine = hung
+                let watchdog = DispatchWorkItem {
+                    journal.write(hangLine, key: key)
+                    exit(3)
+                }
+                DispatchQueue.global().asyncAfter(deadline: .now() + timeout + 30, execute: watchdog)
                 let result = perform(operation, on: source, context: itemContext)
+                watchdog.cancel()
                 line["operation"] = operation.id
                 line["ms"] = Int(Date().timeIntervalSince(started) * 1000)
                 switch result {
@@ -190,7 +203,8 @@ enum Generated {
         }
 
         // A long document: 500 pages of text and shapes.
-        add("gen-pdf-500-pages", "pdf", "convert", ["png", "docx", "txt"], { url in
+        // Shapes only, no text, so the text targets would rightly come out empty.
+        add("gen-pdf-500-pages", "pdf", "convert", ["png", "jpeg"], { url in
             let made = try Fixtures.pdf(pages: 500, in: folder)
             try fm.moveItem(at: made, to: url)
         }, ext: "pdf")

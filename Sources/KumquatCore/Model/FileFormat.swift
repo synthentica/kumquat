@@ -63,7 +63,7 @@ public enum FileFormat: String, Sendable, CaseIterable {
         case .mkv: ["mkv"]
         case .webm: ["webm"]
         case .avi: ["avi"]
-        case .wmv: ["wmv"]
+        case .wmv: ["wmv", "asf"]
         case .flv: ["flv"]
         case .mp3: ["mp3"]
         case .m4a: ["m4a"]
