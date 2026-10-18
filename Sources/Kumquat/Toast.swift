@@ -1,4 +1,6 @@
 import AppKit
+import KumquatCore
+import QuartzCore
 import SwiftUI
 
 final class ToastModel: ObservableObject {
@@ -56,9 +58,14 @@ final class ToastController {
     /// Shows work starting, and returns the ticket its progress updates must carry.
     @discardableResult
     func showProgress(_ title: String, detail: String) -> Int {
+        let signpost = Trace.signposter.beginInterval("First feedback", id: Trace.signposter.makeSignpostID())
         job += 1
         model.progress = nil
         show(.working, title, detail, onClick: nil, autoHide: nil)
+        // The first sign that the drop worked: get it on screen before the work starts.
+        panel.displayIfNeeded()
+        CATransaction.flush()
+        Trace.signposter.endInterval("First feedback", signpost)
         return job
     }
 

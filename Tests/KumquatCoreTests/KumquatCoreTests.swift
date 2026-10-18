@@ -587,3 +587,51 @@ final class ConcurrencyCounter: @unchecked Sendable {
     func enter() { lock.lock(); current += 1; peak = max(peak, current); lock.unlock() }
     func leave() { lock.lock(); current -= 1; lock.unlock() }
 }
+
+/// Time and memory for the work people do most, against the budgets in Budget.swift.
+/// CI runners are slower and noisier than a Mac on a desk, so these fail only at twice the budget;
+/// the exact comparison is `Kumquat --benchmark` on a real Mac (scripts/profile.sh).
+final class PerformanceTests: XCTestCase {
+    var dir: URL!
+
+    override func setUpWithError() throws {
+        dir = try FileManager.default.makeTemporaryDirectory()
+    }
+
+    override func tearDownWithError() throws {
+        try? FileManager.default.removeItem(at: dir)
+    }
+
+    func testWheelLookupIsInstant() {
+        let urls = ["png", "mp4", "mp3", "pdf", "docx", "pptx", "xlsx", "zip"].map { URL(fileURLWithPath: "/tmp/a.\($0)") }
+        let context = OperationContext()
+        OperationCatalog.prewarm(context: context)
+        var samples: [Double] = []
+        measure(metrics: [XCTClockMetric(), XCTMemoryMetric()]) {
+            let start = DispatchTime.now().uptimeNanoseconds
+            for url in urls {
+                for wheel in [Wheel.convert, .tools] { _ = OperationCatalog.operations(for: [url], wheel: wheel, context: context) }
+            }
+            samples.append(Double(DispatchTime.now().uptimeNanoseconds - start) / 1e6 / Double(urls.count * 2))
+        }
+        // Looking up a wheel is part of opening it, so it gets a small slice of the 16 ms frame.
+        XCTAssertLessThan(Stats.median(samples), 2, "ms per wheel lookup")
+    }
+
+    func testPhotoConversionPerformance() throws {
+        let photo = try Fixtures.photo(in: dir)
+        let context = OperationContext(outputDirectory: dir)
+        measure(metrics: [XCTClockMetric(), XCTMemoryMetric()]) {
+            _ = try? ImageEngine.convert(photo, to: .jpeg, context: context)
+        }
+    }
+
+    func testConversionBudgets() async throws {
+        let results = try await ConversionBenchmark.run(in: dir)
+        XCTAssertEqual(results.count, 4)
+        for result in results {
+            print("\(result.title): \(String(format: "%.1f", result.value)) \(result.unit), budget \(result.limit)")
+            XCTAssertLessThanOrEqual(result.value, result.limit * 2, result.title)
+        }
+    }
+}

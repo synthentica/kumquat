@@ -56,6 +56,12 @@ jobs:
         run: ./scripts/bundle.sh
       - name: Render previews
         run: .build/debug/Kumquat --render-previews build/previews
+      - name: Benchmark against the budgets
+        # The release app, with the real wheel and toast. A CI runner is a shared VM, so this reports
+        # instead of failing; the budgets are judged on a real Mac with scripts/profile.sh.
+        run: |
+          build/Kumquat.app/Contents/MacOS/Kumquat --benchmark build/previews/benchmark.json | tee build/benchmark.txt
+          { echo '### Budgets on the CI runner'; echo '```'; cat build/benchmark.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         with:
           name: Kumquat
@@ -70,7 +76,7 @@ jobs:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p /tmp/previews
-          cp build/previews/*.png build/previews/*.gif build/icon-1024.png /tmp/previews/
+          cp build/previews/*.png build/previews/*.gif build/previews/*.json build/icon-1024.png /tmp/previews/
           cd /tmp/previews
           git init -q -b previews
           git config user.name "github-actions[bot]"

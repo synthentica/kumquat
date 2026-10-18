@@ -35,7 +35,9 @@ final class OperationRunner {
         Task.detached(priority: .userInitiated) {
             do {
                 let outcome = try await WorkProgress.$sink.withValue(sink) {
-                    try await operation.perform(urls, context)
+                    try await Trace.operation(operation.id, files: urls.count) {
+                        try await operation.perform(urls, context)
+                    }
                 }
                 await MainActor.run {
                     if !isAction { self.running -= 1 }

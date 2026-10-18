@@ -8,6 +8,11 @@ if let flag = CommandLine.arguments.firstIndex(of: "--render-previews") {
     exit(0)
 }
 
+if let flag = CommandLine.arguments.firstIndex(of: "--benchmark") {
+    let report = CommandLine.arguments.indices.contains(flag + 1) ? CommandLine.arguments[flag + 1] : "benchmark.json"
+    Benchmark.run(report: report, strict: CommandLine.arguments.contains("--strict"))
+}
+
 let delegate = AppDelegate()
 app.delegate = delegate
 app.setActivationPolicy(.accessory)

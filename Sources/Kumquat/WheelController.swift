@@ -1,4 +1,5 @@
 import AppKit
+import QuartzCore
 import KumquatCore
 import SwiftUI
 
@@ -41,7 +42,12 @@ final class WheelController {
 
     var isVisible: Bool { panel.isVisible && model.isShown }
 
+    /// Seconds the last opening took, from the call to the first frame handed to the window server.
+    private(set) var lastOpenDuration: TimeInterval = 0
+
     func show(urls: [URL], wheel: Wheel, at point: NSPoint, keyboard: Bool) {
+        let started = DispatchTime.now()
+        let signpost = Trace.signposter.beginInterval("Open wheel", id: Trace.signposter.makeSignpostID())
         hideWork?.cancel()
         withoutAnimation {
             model.isShown = false
@@ -65,6 +71,11 @@ final class WheelController {
         }
         withAnimation(.spring(response: 0.3, dampingFraction: 0.78)) { model.isShown = true }
         playBloom(appearing: true)
+        // Draw and send the first frame now instead of at the end of this run loop pass.
+        panel.displayIfNeeded()
+        CATransaction.flush()
+        lastOpenDuration = Double(DispatchTime.now().uptimeNanoseconds - started.uptimeNanoseconds) / 1e9
+        Trace.signposter.endInterval("Open wheel", signpost)
     }
 
     /// Builds the panel and draws the wheel once, invisibly, so the first real opening is as quick as the rest.
