@@ -13,6 +13,10 @@ if let flag = CommandLine.arguments.firstIndex(of: "--benchmark") {
     Benchmark.run(report: report, strict: CommandLine.arguments.contains("--strict"))
 }
 
+if let flag = CommandLine.arguments.firstIndex(of: "--corpus") {
+    CorpusRunner.run(arguments: Array(CommandLine.arguments.dropFirst(flag + 1)))
+}
+
 let delegate = AppDelegate()
 app.delegate = delegate
 app.setActivationPolicy(.accessory)

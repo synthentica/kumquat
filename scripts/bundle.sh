@@ -21,6 +21,9 @@ if [ -x .ffmpeg/bin/ffmpeg ]; then
 else
   echo "warning: .ffmpeg/bin/ffmpeg not found, building without FFmpeg (run scripts/build-ffmpeg.sh)" >&2
 fi
+# The licenses FFmpeg and its libraries ship under, next to the binary they cover.
+cp -R Resources/Licenses "$APP/Contents/Resources/Licenses"
+cp LICENSE "$APP/Contents/Resources/Licenses/Kumquat-LICENSE.txt"
 sed -e "s/__VERSION__/$VERSION/" -e "s/__BUILD__/$BUILD/" Resources/Info.plist > "$APP/Contents/Info.plist"
 
 # App icon, drawn in code so there are no binary assets to keep in sync.

@@ -81,19 +81,30 @@ final class WheelController {
     /// Builds the panel and draws the wheel once, invisibly, so the first real opening is as quick as the rest.
     func prewarm() {
         guard !panel.isVisible else { return }
-        withoutAnimation {
-            model.urls = [URL(fileURLWithPath: "/kumquat-prewarm.png")]
-            model.wheel = .convert
-            reloadOperations()
-        }
         panel.alphaValue = 0
         panel.setFrameOrigin(NSPoint(x: -10_000, y: -10_000))
         panel.orderFrontRegardless()
-        panel.contentView?.layoutSubtreeIfNeeded()
-        panel.contentView?.displayIfNeeded()
+        // Draw every wheel fully open, so segments, labels, symbols and gradients are all built and cached.
+        for wheel in Wheel.allCases {
+            withoutAnimation {
+                model.urls = [URL(fileURLWithPath: "/kumquat-prewarm.png")]
+                model.wheel = wheel
+                reloadOperations()
+                model.isShown = true
+                model.appear = 1
+                model.bloom = 1
+                model.exitScale = 1
+            }
+            highlight(0)
+            panel.contentView?.layoutSubtreeIfNeeded()
+            panel.displayIfNeeded()
+            CATransaction.flush()
+        }
         panel.orderOut(nil)
         panel.alphaValue = 1
         withoutAnimation {
+            model.isShown = false
+            model.highlighted = nil
             model.urls = []
             model.operations = []
         }

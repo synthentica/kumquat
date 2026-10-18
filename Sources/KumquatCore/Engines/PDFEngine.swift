@@ -26,8 +26,8 @@ public enum PDFEngine {
         let count = document.pageCount
         let digits = String(count).count
         // Pages render side by side, each worker with its own copy of the document so PDFKit is never shared
-        // across threads. A few workers is enough: each page at 300 DPI takes tens of megabytes.
-        let workers = min(count, max(1, min(4, ProcessInfo.processInfo.activeProcessorCount / 2)))
+        // across threads. Up to four workers, one core left free: each page at 300 DPI takes tens of megabytes.
+        let workers = min(count, max(2, min(4, ProcessInfo.processInfo.activeProcessorCount - 1)))
         let state = PageState()
         // Read here: the worker threads aren't part of this task, so they can't see its task-locals.
         let progress = WorkProgress.sink

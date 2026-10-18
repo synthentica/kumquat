@@ -5,3 +5,5 @@ build/
 DerivedData/
 .DS_Store
 .ffmpeg/
+.corpus/
+__pycache__/

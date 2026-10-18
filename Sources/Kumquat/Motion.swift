@@ -138,10 +138,12 @@ struct CheckShape: Shape {
 /// The kumquat slice spinning while something converts: segments light up one after another.
 struct SliceSpinner: View {
     var size: CGFloat = 22
+    /// Stops the clock while nobody can see the spinner, so a hidden window costs nothing.
+    var paused = false
 
     var body: some View {
         // The glow moves slowly, so 30 frames a second looks the same as 120 and costs a quarter.
-        TimelineView(.animation(minimumInterval: 1.0 / 30)) { timeline in
+        TimelineView(.animation(minimumInterval: 1.0 / 30, paused: paused)) { timeline in
             let time = timeline.date.timeIntervalSinceReferenceDate
             ZStack {
                 ForEach(0..<6, id: \.self) { index in

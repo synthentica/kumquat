@@ -130,7 +130,7 @@ private struct ToastView: View {
                 switch model.state {
                 case .working:
                     Circle().fill(Color.white.opacity(0.1)).frame(width: 30, height: 30)
-                    SliceSpinner(size: 22)
+                    SliceSpinner(size: 22, paused: !model.isShown)
                         .transition(.scale(scale: 0.5).combined(with: .opacity))
                 case .done:
                     StatusBadge(colors: Palette.leaf, drawsCheck: true)
@@ -172,7 +172,7 @@ private struct ToastView: View {
                     if let progress = model.progress {
                         ProgressFill(fraction: progress)
                     } else {
-                        ProgressSweep()
+                        ProgressSweep(paused: !model.isShown)
                     }
                 }
                     .frame(height: 2)
@@ -241,9 +241,11 @@ private struct ProgressFill: View {
 
 /// An endless highlight sliding along a track.
 private struct ProgressSweep: View {
+    var paused = false
+
     var body: some View {
         // 40 frames a second is smooth for a soft gradient and leaves the GPU alone on 120 Hz screens.
-        TimelineView(.animation(minimumInterval: 1.0 / 40)) { timeline in
+        TimelineView(.animation(minimumInterval: 1.0 / 40, paused: paused)) { timeline in
             let phase = (timeline.date.timeIntervalSinceReferenceDate * 0.9).truncatingRemainder(dividingBy: 1)
             GeometryReader { proxy in
                 let width = proxy.size.width

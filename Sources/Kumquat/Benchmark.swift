@@ -53,10 +53,17 @@ enum Benchmark {
         // Idle: nothing on screen, nobody dragging. Settle first, then count processor time for 10 seconds.
         spin(2)
         let cpuBefore = ProcessStats.cpuSeconds()
+        let threadsBefore = ProcessStats.threads()
         let idleStart = Date()
         spin(10)
-        let idleCPU = (ProcessStats.cpuSeconds() - cpuBefore) / Date().timeIntervalSince(idleStart) * 100
+        let idleSeconds = Date().timeIntervalSince(idleStart)
+        let idleCPU = (ProcessStats.cpuSeconds() - cpuBefore) / idleSeconds * 100
         results.append(BudgetResult(.idleCPU, idleCPU))
+        // Which threads were awake, so a miss points at its cause.
+        busyThreads = ProcessStats.threads().compactMap { id, now -> (String, Double)? in
+            let used = now.seconds - (threadsBefore[id]?.seconds ?? 0)
+            return used > 0.0005 ? (now.name, used / idleSeconds * 100) : nil
+        }.sorted { $0.1 > $1.1 }
         results.append(BudgetResult(.idleMemory, ProcessStats.memoryFootprintMB()))
 
         do {
@@ -69,8 +76,14 @@ enum Benchmark {
         exit(strict && results.contains { !$0.pass } ? 1 : 0)
     }
 
+    /// Threads that used the processor while the app was idle, with their share in percent.
+    private static var busyThreads: [(String, Double)] = []
+
     private static func report(_ results: [BudgetResult], to path: String) {
         print("")
+        if !busyThreads.isEmpty {
+            print("Awake while idle: " + busyThreads.prefix(6).map { "\($0.0) \(String(format: "%.2f", $0.1)) %" }.joined(separator: ", "))
+        }
         for result in results {
             let mark = result.pass ? "pass" : "MISS"
             let value = String(format: "%.2f", result.value)
@@ -90,6 +103,7 @@ enum Benchmark {
                 "arch": architecture,
             ],
             "date": ISO8601DateFormatter().string(from: Date()),
+            "idle_threads": busyThreads.prefix(10).map { ["name": $0.0, "percent": ($0.1 * 100).rounded() / 100] },
         ]
         if let data = try? JSONSerialization.data(withJSONObject: document, options: [.prettyPrinted, .sortedKeys]) {
             let url = URL(fileURLWithPath: path)
