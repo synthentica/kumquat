@@ -99,6 +99,76 @@ public enum VideoEngine {
         return output
     }
 
+    /// Copies the video and audio tracks of `range` into a new composition.
+    static func composition(of asset: AVAsset, range: CMTimeRange, rotate: Bool = false) async throws -> AVMutableComposition {
+        let composition = AVMutableComposition()
+        for type in [AVMediaType.video, .audio] {
+            for track in try await asset.loadTracks(withMediaType: type) {
+                guard let target = composition.addMutableTrack(withMediaType: type, preferredTrackID: kCMPersistentTrackID_Invalid) else { continue }
+                try target.insertTimeRange(range, of: track, at: .zero)
+                guard type == .video else { continue }
+                var transform = try await track.load(.preferredTransform)
+                if rotate {
+                    // A quarter turn clockwise, moved back so the picture starts at the origin again.
+                    let size = try await track.load(.naturalSize)
+                    transform = transform.concatenating(CGAffineTransform(rotationAngle: .pi / 2))
+                    let bounds = CGRect(origin: .zero, size: size).applying(transform)
+                    transform = transform.concatenating(CGAffineTransform(translationX: -bounds.minX, y: -bounds.minY))
+                }
+                target.preferredTransform = transform
+            }
+        }
+        return composition
+    }
+
+    static func sameContainer(_ url: URL) -> FileFormat {
+        FileFormat.detect(url) == .mov ? .mov : .mp4
+    }
+
+    /// Turns the video a quarter turn without re-encoding: only the orientation flag changes.
+    public static func rotate(_ url: URL, context: OperationContext) async throws -> URL {
+        let asset = AVURLAsset(url: url)
+        let duration = try await asset.load(.duration)
+        let rotated = try await composition(of: asset, range: CMTimeRange(start: .zero, duration: duration), rotate: true)
+        let format = sameContainer(url)
+        let output = context.destination(for: url, extension: format.primaryExtension, suffix: "rotated")
+        try await exportFast(rotated, as: fileType(for: format), to: output)
+        return output
+    }
+
+    /// Cuts the video into one-minute parts, the length most apps accept for stories and statuses.
+    public static func split(_ url: URL, every seconds: Double = 60, context: OperationContext) async throws -> URL {
+        let asset = AVURLAsset(url: url)
+        let duration = try await asset.load(.duration)
+        guard duration.seconds > seconds else { throw OperationError.failed("The video is shorter than \(Int(seconds)) seconds.") }
+        let folder = context.folderDestination(for: url, suffix: "parts")
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        let format = sameContainer(url)
+        let count = Int((duration.seconds / seconds).rounded(.up))
+        let digits = String(count).count
+        for index in 0..<count {
+            try Task.checkCancellation()
+            let start = CMTime(seconds: Double(index) * seconds, preferredTimescale: 600)
+            let end = CMTimeMinimum(CMTime(seconds: Double(index + 1) * seconds, preferredTimescale: 600), duration)
+            let part = try await composition(of: asset, range: CMTimeRange(start: start, end: end))
+            let name = "\(url.baseName) \(String(index + 1).leftPadded(to: digits)).\(format.primaryExtension)"
+            try await exportFast(part, as: fileType(for: format), to: folder.appendingPathComponent(name))
+        }
+        return folder
+    }
+
+    /// Plays twice as fast, keeping the pitch of voices.
+    public static func speedUp(_ url: URL, context: OperationContext) async throws -> URL {
+        let asset = AVURLAsset(url: url)
+        let duration = try await asset.load(.duration)
+        let range = CMTimeRange(start: .zero, duration: duration)
+        let fast = try await composition(of: asset, range: range)
+        fast.scaleTimeRange(range, toDuration: CMTimeMultiplyByFloat64(duration, multiplier: 0.5))
+        let output = context.destination(for: url, extension: "mp4", suffix: "2x")
+        try await export(fast, preset: AVAssetExportPresetHighestQuality, as: .mp4, to: output)
+        return output
+    }
+
     public static func snapshot(_ url: URL, context: OperationContext) async throws -> URL {
         let asset = AVURLAsset(url: url)
         let duration = try await asset.load(.duration).seconds

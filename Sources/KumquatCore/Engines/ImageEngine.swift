@@ -146,6 +146,9 @@ public enum ImageEngine {
         case grayscale
         case stripMetadata
         case removeBackground
+        case squareCrop
+        case trimEdges
+        case roundCorners
 
         var suffix: String {
             switch self {
@@ -156,6 +159,9 @@ public enum ImageEngine {
             case .grayscale: "mono"
             case .stripMetadata: "clean"
             case .removeBackground: "cutout"
+            case .squareCrop: "square"
+            case .trimEdges: "trimmed"
+            case .roundCorners: "rounded"
             }
         }
     }
@@ -185,6 +191,16 @@ public enum ImageEngine {
             guard #available(macOS 14.0, *) else { throw OperationError.unsupported("Background removal before macOS 14") }
             image = try cutout(loaded.image)
             format = .png
+        case .squareCrop:
+            let side = min(loaded.image.width, loaded.image.height)
+            let rect = CGRect(x: (loaded.image.width - side) / 2, y: (loaded.image.height - side) / 2, width: side, height: side)
+            guard let cropped = loaded.image.cropping(to: rect) else { throw OperationError.failed("Couldn't crop the image.") }
+            image = cropped
+        case .trimEdges:
+            image = try trimmed(loaded.image)
+        case .roundCorners:
+            image = try rounded(loaded.image)
+            if !format.supportsAlpha { format = .png }
         }
         let output = context.destination(for: url, extension: format.primaryExtension, suffix: edit.suffix)
         try write(image, properties: properties, to: output, format: format, quality: context.imageQuality)
@@ -278,6 +294,64 @@ public enum ImageEngine {
         }
         context.interpolationQuality = .high
         draw(context)
+        guard let result = context.makeImage() else { throw OperationError.failed("Couldn't process the image.") }
+        return result
+    }
+
+    /// Crops away borders that are transparent or the same color as the corners, like screenshot margins.
+    static func trimmed(_ image: CGImage) throws -> CGImage {
+        let width = image.width
+        let height = image.height
+        guard let context = makeContext(width: width, height: height, alpha: true), let data = context.data else {
+            throw OperationError.failed("Couldn't process the image.")
+        }
+        context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
+        let pixels = data.bindMemory(to: UInt8.self, capacity: context.bytesPerRow * height)
+        let stride = context.bytesPerRow
+        func pixel(_ x: Int, _ y: Int) -> (Int, Int, Int, Int) {
+            let offset = y * stride + x * 4
+            return (Int(pixels[offset]), Int(pixels[offset + 1]), Int(pixels[offset + 2]), Int(pixels[offset + 3]))
+        }
+        let background = pixel(0, 0)
+        func isBackground(_ x: Int, _ y: Int) -> Bool {
+            let p = pixel(x, y)
+            if background.3 < 8 { return p.3 < 8 }
+            return abs(p.0 - background.0) <= 10 && abs(p.1 - background.1) <= 10 && abs(p.2 - background.2) <= 10 && abs(p.3 - background.3) <= 10
+        }
+        func rowIsBackground(_ y: Int) -> Bool { (0..<width).allSatisfy { isBackground($0, y) } }
+        func columnIsBackground(_ x: Int, rows: Range<Int>) -> Bool { rows.allSatisfy { isBackground(x, $0) } }
+
+        var top = 0
+        while top < height, rowIsBackground(top) { top += 1 }
+        guard top < height else { throw OperationError.failed("The image is a single color.") }
+        var bottom = height - 1
+        while bottom > top, rowIsBackground(bottom) { bottom -= 1 }
+        var left = 0
+        while left < width, columnIsBackground(left, rows: top..<bottom + 1) { left += 1 }
+        var right = width - 1
+        while right > left, columnIsBackground(right, rows: top..<bottom + 1) { right -= 1 }
+        guard top > 0 || left > 0 || bottom < height - 1 || right < width - 1 else {
+            throw OperationError.failed("There are no edges to trim.")
+        }
+        // The bitmap's rows run top to bottom, the same way CGImage cropping counts them.
+        let rect = CGRect(x: left, y: top, width: right - left + 1, height: bottom - top + 1)
+        guard let result = image.cropping(to: rect) else { throw OperationError.failed("Couldn't crop the image.") }
+        return result
+    }
+
+    /// Rounds the corners like a macOS window, with a radius of 4% of the shorter side.
+    static func rounded(_ image: CGImage) throws -> CGImage {
+        let width = image.width
+        let height = image.height
+        guard let context = makeContext(width: width, height: height, alpha: true, colorSpace: image.colorSpace) else {
+            throw OperationError.failed("Couldn't process the image.")
+        }
+        let rect = CGRect(x: 0, y: 0, width: width, height: height)
+        let radius = CGFloat(min(width, height)) * 0.04
+        context.addPath(CGPath(roundedRect: rect, cornerWidth: radius, cornerHeight: radius, transform: nil))
+        context.clip()
+        context.interpolationQuality = .high
+        context.draw(image, in: rect)
         guard let result = context.makeImage() else { throw OperationError.failed("Couldn't process the image.") }
         return result
     }

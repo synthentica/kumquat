@@ -43,25 +43,27 @@ Everything runs on your Mac with the frameworks built into macOS (ImageIO, AVFou
 | Kind | From | To |
 | --- | --- | --- |
 | Images | JPG, PNG, HEIC, TIFF, GIF, BMP, WebP, AVIF, SVG, PSD | PNG, JPG, HEIC, TIFF, GIF, BMP, AVIF\*, WebP†, PDF |
-| Video | MP4, MOV, M4V (+ MKV, WebM, AVI, WMV, FLV†) | MP4, MOV, HEVC, GIF, M4A (+ WebM, MKV, AVI, MP3†) |
-| Audio | MP3, M4A, AAC, WAV, AIFF, FLAC, CAF (+ OGG, Opus, WMA†) | M4A, WAV, AIFF, FLAC, ALAC (+ MP3, OGG, Opus†) |
-| PDF | PDF | PNG, JPG (every page at 300 DPI), DOCX, TXT, Markdown, RTF, HTML, EPUB |
-| Documents | DOCX, DOC, RTF, RTFD, ODT, HTML, TXT, Markdown, EPUB | PDF, DOCX, Markdown, TXT, RTF, ODT, HTML, EPUB |
-| Spreadsheets | XLSX, CSV, TSV | XLSX, CSV, TSV, JSON, PDF, Markdown, HTML |
+| Video | MP4, MOV, M4V (+ MKV, WebM, AVI, WMV, FLV†) | MP4, MOV, HEVC, GIF, M4A (+ WebM, MKV, AVI, WMV, MP3†) |
+| Audio | MP3, M4A, AAC, WAV, AIFF, FLAC, CAF (+ OGG, Opus, WMA†) | M4A, WAV, AIFF, FLAC, ALAC (+ MP3, OGG, Opus, WMA†) |
+| PDF | PDF | PNG, JPG (every page at 300 DPI), DOCX, PPTX, XLSX, TXT, Markdown, RTF, HTML, EPUB, Pages‡ |
+| Documents | DOCX, DOC, RTF, RTFD, ODT, HTML, TXT, Markdown, EPUB, text clippings, Pages‡ | PDF, DOCX, Markdown, TXT, RTF, ODT, HTML, EPUB, Pages‡ |
+| Slides‡ | PPTX, PPT, Keynote, ODP | PDF, PNG, JPG (every slide), PPTX, Keynote, ODP |
+| Spreadsheets | XLSX, CSV, TSV, ODS, XLS‡, Numbers‡ | XLSX, ODS, CSV, TSV, JSON, PDF, Markdown, HTML, Numbers‡ |
 | Subtitles | SRT, VTT | SRT, VTT, TXT |
-| Archives | ZIP, TAR, TAR.GZ, GZ, RAR, 7Z | Extract; folders and files to ZIP, TAR.GZ, TAR |
+| Archives | ZIP, TAR, TAR.GZ, GZ, RAR, 7Z | Extract; files and folders to ZIP, TAR.GZ, TAR, GZIP |
 
 \* When your version of macOS can encode it. † With [FFmpeg](https://ffmpeg.org) installed (`brew install ffmpeg`); Kumquat finds it automatically.
+‡ With [LibreOffice](https://www.libreoffice.org) or Apple's free Keynote, Pages and Numbers installed. Kumquat uses LibreOffice in the background when it's there, and otherwise asks the Apple app to do the export.
 
 ### Tools
 
 | Kind | Tools |
 | --- | --- |
-| Images | Compress, half size, fit to 1920 px, rotate, flip, black and white, remove EXIF and GPS, cut out the subject (macOS 14+), combine into one PDF |
-| Video | Compress (HEVC), 720p, mute, snapshot, merge clips |
-| Audio | Compress, mono, merge |
+| Images | Compress, half size, fit to 1920 px, rotate, flip, black and white, remove EXIF and GPS, square crop, trim edges, round corners, cut out the subject (macOS 14+), combine into one PDF |
+| Video | Compress (HEVC), 720p, mute, snapshot, rotate, split into 1-minute parts, 2× speed, merge clips |
+| Audio | Compress, mono, normalize, trim silence, split into 1-minute parts, merge |
 | PDF | Compress, split pages, rotate, merge |
-| Anything | ZIP |
+| Anything | ZIP, GZIP |
 
 ## Install
 

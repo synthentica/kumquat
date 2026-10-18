@@ -70,16 +70,149 @@ public enum AudioEngine {
         return try keepIfSmaller(output, than: url)
     }
 
-    public static func mono(_ url: URL, context: OperationContext) throws -> URL {
-        let format = FileFormat.detect(url)
-        let encoding: Encoding
-        switch format {
-        case .wav: encoding = .wav
-        case .aiff: encoding = .aiff
-        case .flac: encoding = .flac
-        default: encoding = .aac(bitRate: 128_000)
+    /// Keeps lossless files lossless; everything else becomes AAC.
+    static func encoding(matching url: URL) -> Encoding {
+        switch FileFormat.detect(url) {
+        case .wav: .wav
+        case .aiff: .aiff
+        case .flac: .flac
+        default: .aac(bitRate: 192_000)
         }
-        return try encode(url, encoding, channels: 1, suffix: "mono", context: context)
+    }
+
+    public static func mono(_ url: URL, context: OperationContext) throws -> URL {
+        try encode(url, encoding(matching: url), channels: 1, suffix: "mono", context: context)
+    }
+
+    /// Raises the volume so the loudest peak sits just under full scale.
+    public static func normalize(_ url: URL, context: OperationContext) throws -> URL {
+        let source = try AVAudioFile(forReading: url)
+        var peak: Float = 0
+        try forEachBuffer(of: source) { buffer, _ in
+            for channel in 0..<Int(buffer.format.channelCount) {
+                guard let samples = buffer.floatChannelData?[channel] else { continue }
+                for frame in 0..<Int(buffer.frameLength) { peak = max(peak, abs(samples[frame])) }
+            }
+        }
+        guard peak > 0.0001 else { throw OperationError.failed("The audio is silent.") }
+        let gain = 0.98 / peak
+        guard abs(gain - 1) > 0.01 else { throw OperationError.failed("The audio is already as loud as it gets.") }
+        return try rewrite(url, suffix: "normalized", context: context) { buffer in
+            for channel in 0..<Int(buffer.format.channelCount) {
+                guard let samples = buffer.floatChannelData?[channel] else { continue }
+                for frame in 0..<Int(buffer.frameLength) { samples[frame] *= gain }
+            }
+        }
+    }
+
+    /// Cuts the silence off the start and the end.
+    public static func trimSilence(_ url: URL, threshold: Float = 0.01, context: OperationContext) throws -> URL {
+        let source = try AVAudioFile(forReading: url)
+        var first: AVAudioFramePosition?
+        var last: AVAudioFramePosition = 0
+        try forEachBuffer(of: source) { buffer, start in
+            for frame in 0..<Int(buffer.frameLength) {
+                var loud = false
+                for channel in 0..<Int(buffer.format.channelCount) where abs(buffer.floatChannelData?[channel][frame] ?? 0) > threshold {
+                    loud = true
+                }
+                if loud {
+                    if first == nil { first = start + AVAudioFramePosition(frame) }
+                    last = start + AVAudioFramePosition(frame)
+                }
+            }
+        }
+        guard let first else { throw OperationError.failed("The audio is silent.") }
+        // Keep a breath of silence on both sides so the cut doesn't sound abrupt.
+        let pad = AVAudioFramePosition(source.processingFormat.sampleRate * 0.05)
+        let start = max(0, first - pad)
+        let end = min(source.length, last + pad + 1)
+        guard start > 0 || end < source.length else { throw OperationError.failed("There's no silence to trim.") }
+        let output = context.destination(for: url, extension: encoding(matching: url).fileExtension, suffix: "trimmed")
+        try copyFrames(of: url, range: start..<end, to: output, settings: encoding(matching: url).settings)
+        return output
+    }
+
+    /// Cuts the audio into parts of a minute each, keeping the original quality where it's lossless.
+    public static func split(_ url: URL, every seconds: Double = 60, context: OperationContext) throws -> URL {
+        let source = try AVAudioFile(forReading: url)
+        let partLength = AVAudioFramePosition(source.processingFormat.sampleRate * seconds)
+        guard source.length > partLength else {
+            throw OperationError.failed("The audio is shorter than \(Int(seconds)) seconds.")
+        }
+        let target = encoding(matching: url)
+        let folder = context.folderDestination(for: url, suffix: "parts")
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        let count = Int((Double(source.length) / Double(partLength)).rounded(.up))
+        let digits = String(count).count
+        for index in 0..<count {
+            let start = AVAudioFramePosition(index) * partLength
+            let end = min(source.length, start + partLength)
+            let name = "\(url.baseName) \(String(index + 1).leftPadded(to: digits)).\(target.fileExtension)"
+            try copyFrames(of: url, range: start..<end, to: folder.appendingPathComponent(name), settings: target.settings)
+        }
+        return folder
+    }
+
+    /// Reads the whole file in its processing format (32-bit float), passing each buffer and its first frame.
+    static func forEachBuffer(of source: AVAudioFile, _ body: (AVAudioPCMBuffer, AVAudioFramePosition) throws -> Void) throws {
+        guard let buffer = AVAudioPCMBuffer(pcmFormat: source.processingFormat, frameCapacity: 32_768) else {
+            throw OperationError.failed("Out of memory.")
+        }
+        source.framePosition = 0
+        while source.framePosition < source.length {
+            let start = source.framePosition
+            try source.read(into: buffer)
+            if buffer.frameLength == 0 { break }
+            try body(buffer, start)
+        }
+    }
+
+    /// Writes a copy of the file with every buffer passed through `process`.
+    static func rewrite(_ url: URL, suffix: String, context: OperationContext, _ process: (AVAudioPCMBuffer) -> Void) throws -> URL {
+        let target = encoding(matching: url)
+        let output = context.destination(for: url, extension: target.fileExtension, suffix: suffix)
+        do {
+            let source = try AVAudioFile(forReading: url)
+            let destination = try makeDestination(output, like: source, settings: target.settings)
+            try forEachBuffer(of: source) { buffer, _ in
+                process(buffer)
+                try destination.write(from: buffer)
+            }
+        } catch {
+            try? FileManager.default.removeItem(at: output)
+            throw error
+        }
+        return output
+    }
+
+    /// Copies the frames in `range` into a new file.
+    static func copyFrames(of url: URL, range: Range<AVAudioFramePosition>, to output: URL, settings: [String: Any]) throws {
+        do {
+            let source = try AVAudioFile(forReading: url)
+            let destination = try makeDestination(output, like: source, settings: settings)
+            guard let buffer = AVAudioPCMBuffer(pcmFormat: source.processingFormat, frameCapacity: 32_768) else {
+                throw OperationError.failed("Out of memory.")
+            }
+            source.framePosition = range.lowerBound
+            while source.framePosition < range.upperBound {
+                let remaining = AVAudioFrameCount(range.upperBound - source.framePosition)
+                try source.read(into: buffer, frameCount: min(buffer.frameCapacity, remaining))
+                if buffer.frameLength == 0 { break }
+                try destination.write(from: buffer)
+            }
+        } catch {
+            try? FileManager.default.removeItem(at: output)
+            throw error
+        }
+    }
+
+    /// A file that takes buffers in the source's processing format and encodes them with `settings`.
+    static func makeDestination(_ output: URL, like source: AVAudioFile, settings: [String: Any]) throws -> AVAudioFile {
+        var settings = settings
+        settings[AVSampleRateKey] = source.processingFormat.sampleRate
+        settings[AVNumberOfChannelsKey] = source.processingFormat.channelCount
+        return try AVAudioFile(forWriting: output, settings: settings, commonFormat: .pcmFormatFloat32, interleaved: false)
     }
 
     public static func merge(_ urls: [URL], context: OperationContext) async throws -> URL {

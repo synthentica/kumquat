@@ -1,7 +1,7 @@
 import Foundation
 
 /// Optional FFmpeg support. When FFmpeg is installed (for example with Homebrew),
-/// formats macOS can't encode natively appear on the wheel: MP3, OGG, Opus, WebM, MKV, AVI and WebP.
+/// formats macOS can't encode natively appear on the wheel: MP3, OGG, Opus, WMA, WebM, MKV, AVI, WMV and WebP.
 public enum FFmpegEngine {
     public static let searchPaths = [
         "/opt/homebrew/bin/ffmpeg",
@@ -30,7 +30,9 @@ public enum FFmpegEngine {
         case .m4a: ["-vn", "-c:a", "aac", "-b:a", "256k"]
         case .webm: ["-c:v", "libvpx-vp9", "-crf", "32", "-b:v", "0", "-row-mt", "1", "-c:a", "libopus"]
         case .mkv: ["-map", "0", "-c", "copy"]
+        case .wma: ["-vn", "-c:a", "wmav2", "-b:a", "192k"]
         case .avi: ["-c:v", "mpeg4", "-q:v", "3", "-c:a", "libmp3lame", "-q:a", "3"]
+        case .wmv: ["-c:v", "wmv2", "-q:v", "3", "-c:a", "wmav2", "-b:a", "192k"]
         case .mp4, .mov, .m4v:
             ["-c:v", "libx264", "-crf", "20", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart"]
         case .gif:

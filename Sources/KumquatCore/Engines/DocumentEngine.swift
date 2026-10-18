@@ -25,6 +25,8 @@ public enum DocumentEngine {
             return try await attributed(html: book.html, baseURL: book.baseURL)
         case .pdf:
             return try PDFEngine.attributedText(url)
+        case .textClipping:
+            return try clipping(url)
         default:
             throw OperationError.unsupported("This document type")
         }
@@ -74,9 +76,35 @@ public enum DocumentEngine {
             try await EPUB.write(title: title, bodyXHTML: XHTMLWriter.body(from: text), to: output)
         case .pdf:
             try await printPDF(text, to: output)
+        case .pages:
+            // Pages builds its own file from a Word document.
+            let document = output.deletingLastPathComponent().appendingPathComponent(".\(title)-kumquat-\(UUID().uuidString.prefix(8)).docx")
+            defer { try? FileManager.default.removeItem(at: document) }
+            try data(text, .officeOpenXML).write(to: document)
+            try await OfficeEngine.convert(document, to: .pages, output: output)
         default:
             throw OperationError.unsupported(format.displayName)
         }
+    }
+
+    /// A text clipping dragged out of an app: a property list with the text in several flavors.
+    static func clipping(_ url: URL) throws -> NSAttributedString {
+        let data = try Data(contentsOf: url)
+        guard let plist = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any],
+              let flavors = plist["UTI-Data"] as? [String: Any]
+        else { throw OperationError.unreadable(url.lastPathComponent) }
+        if let rtf = flavors["public.rtf"] as? Data,
+           let text = try? NSAttributedString(data: rtf, options: [.documentType: NSAttributedString.DocumentType.rtf], documentAttributes: nil) {
+            return text
+        }
+        for key in ["public.utf8-plain-text", "public.utf16-plain-text", "public.plain-text"] {
+            if let string = flavors[key] as? String { return plain(string) }
+            if let data = flavors[key] as? Data {
+                let encoding: String.Encoding = key == "public.utf16-plain-text" ? .utf16 : .utf8
+                if let string = String(data: data, encoding: encoding) { return plain(string) }
+            }
+        }
+        throw OperationError.unreadable(url.lastPathComponent)
     }
 
     static func load(_ url: URL, _ type: NSAttributedString.DocumentType) throws -> NSAttributedString {

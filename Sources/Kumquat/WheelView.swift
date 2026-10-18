@@ -81,6 +81,12 @@ struct WheelView: View {
                 .opacity(model.highlighted == nil ? 0 : 1)
                 .frame(width: WheelLayout.canvas, height: WheelLayout.canvas)
 
+            // Pale membranes between the segments, like a real slice.
+            SegmentShape(inner: WheelLayout.hubRadius, outer: layout.outerRadius, start: 0, end: 360, gap: 0)
+                .fill(Palette.pith.opacity(0.13))
+                .frame(width: WheelLayout.canvas, height: WheelLayout.canvas)
+                .modifier(PopEffect(progress: model.bloom, from: 0.7))
+
             // Juice ring: spreads out from the hub when a wheel opens.
             Circle()
                 .strokeBorder(Palette.pith, lineWidth: 2)
@@ -156,7 +162,7 @@ private struct SegmentView: View {
             end: segment.end
         )
         ZStack {
-            shape.fill(wheel.radial(from: segment.inner - 20, to: segment.outer + 40)).opacity(0.2)
+            shape.fill(wheel.radial(from: segment.inner - 20, to: segment.outer + 40)).opacity(0.24)
             shape
                 .fill(wheel.radial(from: segment.inner, to: segment.outer + 4.5))
                 .shadow(color: wheel.tint.opacity(0.7), radius: 14)

@@ -49,14 +49,16 @@ public enum OperationCatalog {
                 if hasFFmpeg {
                     ops.append(convert(.gif) { try await FFmpegEngine.convert($0, to: .gif, context: $1) })
                     ops.append(convert(.webm) { try await FFmpegEngine.convert($0, to: .webm, context: $1) })
-                    ops.append(convert(.mkv) { try await FFmpegEngine.convert($0, to: .mkv, context: $1) })
+                    for target in [FileFormat.mkv, .avi, .wmv] {
+                        ops.append(convert(target) { try await FFmpegEngine.convert($0, to: target, context: $1) })
+                    }
                     ops.append(convert(.mp3, subtitle: "Audio") { try await FFmpegEngine.convert($0, to: .mp3, context: $1) })
                 } else {
                     ops.append(convert(.gif) { try await VideoEngine.convert($0, to: .gif, context: $1) })
                 }
                 ops.append(convert(.m4a, subtitle: "Audio") { try await VideoEngine.convert($0, to: .m4a, context: $1) })
             } else if hasFFmpeg {
-                for target in [FileFormat.mp4, .mov, .webm, .mkv, .avi, .gif] where isNew(target) {
+                for target in [FileFormat.mp4, .mov, .webm, .mkv, .avi, .wmv, .gif] where isNew(target) {
                     ops.append(convert(target) { try await FFmpegEngine.convert($0, to: target, context: $1) })
                 }
                 ops.append(convert(.mp3, subtitle: "Audio") { try await FFmpegEngine.convert($0, to: .mp3, context: $1) })
@@ -65,7 +67,7 @@ public enum OperationCatalog {
 
         case .audio:
             let native = formats.isSubset(of: nativeAudio)
-            for target in [FileFormat.m4a, .mp3, .wav, .aiff, .flac, .ogg, .opus] where isNew(target) {
+            for target in [FileFormat.m4a, .mp3, .wav, .aiff, .flac, .ogg, .opus, .wma] where isNew(target) {
                 let subtitle: String? = target == .m4a ? "AAC" : nil
                 if native, [.m4a, .wav, .aiff, .flac].contains(target) {
                     ops.append(convert(target, subtitle: subtitle) { try await AudioEngine.convert($0, to: target, context: $1) })
@@ -89,15 +91,50 @@ public enum OperationCatalog {
             for target in [FileFormat.docx, .txt, .markdown, .rtf, .html, .epub] {
                 ops.append(convert(target) { try await DocumentEngine.convert($0, to: target, context: $1) })
             }
+            ops.append(convert(.pptx) { try await PPTX.fromPDF($0, context: $1) })
+            ops.append(convert(.xlsx) { try await Spreadsheet.convert($0, to: .xlsx, context: $1) })
+            if OfficeEngine.canConvert(.docx, to: .pages) {
+                ops.append(convert(.pages) { try await DocumentEngine.convert($0, to: .pages, context: $1) })
+            }
+
+        case .document where formats == [.pages]:
+            // Pages files only open in Pages (or LibreOffice), which export these directly.
+            for target in [FileFormat.pdf, .docx, .epub, .txt] where OfficeEngine.canConvert(.pages, to: target) {
+                ops.append(convert(target) { try await OfficeEngine.convert($0, to: target, context: $1) })
+            }
 
         case .document, .ebook:
+            guard !formats.contains(.pages) else { break }
             for target in [FileFormat.pdf, .docx, .markdown, .txt, .rtf, .odt, .html, .epub] where isNew(target) {
                 ops.append(convert(target) { try await DocumentEngine.convert($0, to: target, context: $1) })
             }
+            if OfficeEngine.canConvert(.docx, to: .pages) {
+                ops.append(convert(.pages) { try await DocumentEngine.convert($0, to: .pages, context: $1) })
+            }
+
+        case .presentation:
+            let sources = formats
+            func available(_ target: FileFormat) -> Bool {
+                sources.allSatisfy { OfficeEngine.canConvert($0, to: target) }
+            }
+            if available(.pdf) {
+                ops.append(convert(.pdf) { try await OfficeEngine.convert($0, to: .pdf, context: $1) })
+                ops.append(convert(.png, subtitle: "Slides") { try await OfficeEngine.slideImages($0, as: .png, context: $1) })
+                ops.append(convert(.jpeg, subtitle: "Slides") { try await OfficeEngine.slideImages($0, as: .jpeg, context: $1) })
+            }
+            for target in [FileFormat.pptx, .key, .odp] where isNew(target) && available(target) {
+                ops.append(convert(target) { try await OfficeEngine.convert($0, to: target, context: $1) })
+            }
 
         case .spreadsheet:
-            for target in [FileFormat.xlsx, .csv, .tsv, .json, .pdf, .markdown, .html] where isNew(target) {
+            // XLS and Numbers files are read through LibreOffice or Numbers.
+            let readable = formats.allSatisfy { ![.xls, .numbers].contains($0) || OfficeEngine.canConvert($0, to: .xlsx) }
+            guard readable else { break }
+            for target in [FileFormat.xlsx, .csv, .tsv, .json, .ods, .pdf, .markdown, .html] where isNew(target) {
                 ops.append(convert(target) { try await Spreadsheet.convert($0, to: target, context: $1) })
+            }
+            if isNew(.numbers), OfficeEngine.canConvert(.xlsx, to: .numbers) {
+                ops.append(convert(.numbers) { try await Spreadsheet.convert($0, to: .numbers, context: $1) })
             }
 
         case .subtitle:
@@ -136,6 +173,9 @@ public enum OperationCatalog {
             })
             ops.append(tool("mono", "B&W", "circle.lefthalf.filled", "Desaturating") { try ImageEngine.edit($0, .grayscale, context: $1) })
             ops.append(tool("strip", "No EXIF", "location.slash", "Removing metadata") { try ImageEngine.edit($0, .stripMetadata, context: $1) })
+            ops.append(tool("square", "Square", "square.dashed", "Cropping") { try ImageEngine.edit($0, .squareCrop, context: $1) })
+            ops.append(tool("trim", "Trim edges", "crop", "Trimming") { try ImageEngine.edit($0, .trimEdges, context: $1) })
+            ops.append(tool("round", "Round", "app", "Rounding corners") { try ImageEngine.edit($0, .roundCorners, context: $1) })
             if #available(macOS 14.0, *) {
                 ops.append(tool("cutout", "Cutout", "person.crop.rectangle", "Removing background") {
                     try ImageEngine.edit($0, .removeBackground, context: $1)
@@ -154,6 +194,9 @@ public enum OperationCatalog {
             ops.append(tool("720p", "720p", "tv", "Resizing") { try await VideoEngine.resize720($0, context: $1) })
             ops.append(tool("mute", "Mute", "speaker.slash", "Removing audio") { try await VideoEngine.removeAudio($0, context: $1) })
             ops.append(tool("snapshot", "Snapshot", "camera", "Capturing a frame") { try await VideoEngine.snapshot($0, context: $1) })
+            ops.append(tool("rotate", "Rotate", "rotate.right", "Rotating") { try await VideoEngine.rotate($0, context: $1) })
+            ops.append(tool("split", "Split", "scissors", "Splitting into 1-minute parts") { try await VideoEngine.split($0, context: $1) })
+            ops.append(tool("speed", "2× speed", "hare", "Speeding up") { try await VideoEngine.speedUp($0, context: $1) })
             if many {
                 ops.append(combine("merge", "Merge", "square.on.square", "Merging") { try await VideoEngine.merge($0, context: $1) })
             }
@@ -161,6 +204,9 @@ public enum OperationCatalog {
         case .audio where Set(urls.compactMap(FileFormat.detect)).isSubset(of: nativeAudio):
             ops.append(tool("compress", "Compress", "arrow.down.right.and.arrow.up.left", "Compressing") { try AudioEngine.compress($0, context: $1) })
             ops.append(tool("mono", "Mono", "speaker.wave.1", "Mixing to mono") { try AudioEngine.mono($0, context: $1) })
+            ops.append(tool("normalize", "Normalize", "waveform.path.ecg", "Normalizing") { try AudioEngine.normalize($0, context: $1) })
+            ops.append(tool("trim", "Trim silence", "speaker.zzz", "Trimming silence") { try AudioEngine.trimSilence($0, context: $1) })
+            ops.append(tool("split", "Split", "scissors", "Splitting into 1-minute parts") { try AudioEngine.split($0, context: $1) })
             if many {
                 ops.append(combine("merge", "Merge", "square.on.square", "Merging") { try await AudioEngine.merge($0, context: $1) })
             }
@@ -179,6 +225,11 @@ public enum OperationCatalog {
 
         if commonCategory(urls) != .folder {
             ops += archiveOperations(wheel: .tools).prefix(1)
+            if urls.count == 1, !urls[0].isDirectory {
+                ops.append(tool("gzip", "GZIP", "doc.zipper", "Compressing") { url, context in
+                    try await ArchiveEngine.compress([url], as: .gzip, context: context)
+                })
+            }
         }
         return ops
     }
@@ -235,6 +286,7 @@ public extension FileCategory {
         case .pdf: "doc.richtext"
         case .document: "doc.text"
         case .ebook: "book"
+        case .presentation: "rectangle.on.rectangle"
         case .spreadsheet: "tablecells"
         case .subtitle: "captions.bubble"
         case .archive: "archivebox"

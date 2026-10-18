@@ -11,21 +11,23 @@ public enum PDFEngine {
     }
 
     /// Every page as an image at 300 DPI. One page gives one file; more pages give a folder.
-    public static func renderPages(_ url: URL, as format: FileFormat, dpi: CGFloat = 300, context: OperationContext) throws -> URL {
+    /// `original` names the results when `url` is an intermediate file.
+    public static func renderPages(_ url: URL, as format: FileFormat, dpi: CGFloat = 300, naming original: URL? = nil, context: OperationContext) throws -> URL {
         let document = try open(url)
+        let named = original ?? url
         guard document.pageCount > 0 else { throw OperationError.failed("The PDF has no pages.") }
         if document.pageCount == 1, let page = document.page(at: 0) {
-            let output = context.destination(for: url, extension: format.primaryExtension)
+            let output = context.destination(for: named, extension: format.primaryExtension)
             try ImageEngine.write(try render(page, dpi: dpi), to: output, format: format, quality: context.imageQuality)
             return output
         }
-        let folder = context.folderDestination(for: url, suffix: "pages")
+        let folder = context.folderDestination(for: named, suffix: original == nil ? "pages" : "slides")
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         let digits = String(document.pageCount).count
         for index in 0..<document.pageCount {
             guard let page = document.page(at: index) else { continue }
             let number = String(index + 1).leftPadded(to: digits)
-            let output = folder.appendingPathComponent("\(url.baseName) \(number).\(format.primaryExtension)")
+            let output = folder.appendingPathComponent("\(named.baseName) \(number).\(format.primaryExtension)")
             try ImageEngine.write(try render(page, dpi: dpi), to: output, format: format, quality: context.imageQuality)
         }
         return folder
@@ -64,6 +66,25 @@ public enum PDFEngine {
             text.append(page)
         }
         return text
+    }
+
+    /// Text laid out in rows, with columns split where the text has wide gaps or tabs.
+    static func tableRows(_ url: URL) throws -> [[String]] {
+        let document = try open(url)
+        var rows: [[String]] = []
+        for index in 0..<document.pageCount {
+            guard let text = document.page(at: index)?.string else { continue }
+            for line in text.components(separatedBy: .newlines) {
+                let cells = line
+                    .replacingOccurrences(of: "\t| {2,}", with: "\u{1F}", options: .regularExpression)
+                    .components(separatedBy: "\u{1F}")
+                    .map { $0.trimmingCharacters(in: .whitespaces) }
+                if cells.contains(where: { !$0.isEmpty }) { rows.append(cells) }
+            }
+        }
+        guard !rows.isEmpty else { throw OperationError.failed("The PDF has no text. Scanned pages can't become a table.") }
+        let width = rows.map(\.count).max() ?? 0
+        return rows.map { $0 + Array(repeating: "", count: width - $0.count) }
     }
 
     public static func compress(_ url: URL, context: OperationContext) throws -> URL {

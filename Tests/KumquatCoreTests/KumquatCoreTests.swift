@@ -11,6 +11,9 @@ final class FormatTests: XCTestCase {
         XCTAssertEqual(URL(fileURLWithPath: "/a/archive.tar.gz").baseName, "archive")
         XCTAssertEqual(FileFormat.detect(URL(fileURLWithPath: "/a/notes.md")), .markdown)
         XCTAssertNil(FileFormat.detect(URL(fileURLWithPath: "/a/unknown.xyz")))
+        XCTAssertEqual(URL(fileURLWithPath: "/a/deck.PPTX").fileCategory, .presentation)
+        XCTAssertEqual(FileFormat.detect(URL(fileURLWithPath: "/a/Clip.textClipping")), .textClipping)
+        XCTAssertEqual(URL(fileURLWithPath: "/a/budget.numbers").fileCategory, .spreadsheet)
     }
 
     func testUniqueNames() throws {
@@ -32,6 +35,27 @@ final class FormatTests: XCTestCase {
         XCTAssertTrue(ids.contains("convert.jpeg"))
         XCTAssertFalse(ids.contains("convert.heic"))
         XCTAssertTrue(ids.contains("convert.pdf"))
+    }
+
+    func testCatalogMatchesTangerine() {
+        let context = OperationContext()
+        let pdf = OperationCatalog.operations(for: [URL(fileURLWithPath: "/tmp/a.pdf")], wheel: .convert, context: context).map(\.id)
+        XCTAssertTrue(pdf.contains("convert.pptx"))
+        XCTAssertTrue(pdf.contains("convert.xlsx"))
+        let sheet = OperationCatalog.operations(for: [URL(fileURLWithPath: "/tmp/a.csv")], wheel: .convert, context: context).map(\.id)
+        XCTAssertTrue(sheet.contains("convert.ods"))
+        let image = OperationCatalog.operations(for: [URL(fileURLWithPath: "/tmp/a.png")], wheel: .tools, context: context).map(\.id)
+        for id in ["tools.square", "tools.trim", "tools.round", "tools.zip", "tools.gzip"] {
+            XCTAssertTrue(image.contains(id), id)
+        }
+        let audio = OperationCatalog.operations(for: [URL(fileURLWithPath: "/tmp/a.wav")], wheel: .tools, context: context).map(\.id)
+        for id in ["tools.normalize", "tools.trim", "tools.split"] {
+            XCTAssertTrue(audio.contains(id), id)
+        }
+        let video = OperationCatalog.operations(for: [URL(fileURLWithPath: "/tmp/a.mov")], wheel: .tools, context: context).map(\.id)
+        for id in ["tools.rotate", "tools.split", "tools.speed"] {
+            XCTAssertTrue(video.contains(id), id)
+        }
     }
 }
 
@@ -106,6 +130,16 @@ final class TextFormatTests: XCTestCase {
         XCTAssertEqual(XLSX.columnIndex("AB12"), 27)
     }
 
+    func testODSRoundTrip() async throws {
+        let dir = try FileManager.default.makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let url = dir.appendingPathComponent("sheet.ods")
+        let rows = [["City", "Zip", "Population"], ["Helsinki", "00100", "674500"], ["Åbo & Turku", "", "1.5"]]
+        try await ODS.write(rows, to: url)
+        let back = try await ODS.read(url)
+        XCTAssertEqual(back, rows)
+    }
+
     func testJSON() {
         let json = Spreadsheet.json([["a", "b"], ["1", "x\"y"]])
         XCTAssertTrue(json.contains("\"a\": 1"))
@@ -171,18 +205,20 @@ final class EngineTests: XCTestCase {
         XCTAssertEqual(PDFDocument(url: rotated)?.page(at: 0)?.rotation, 90)
     }
 
-    func makeWAV(seconds: Double = 0.5) throws -> URL {
-        let url = dir.appendingPathComponent("tone.wav")
+    func makeWAV(seconds: Double = 0.5, silence: Double = 0) throws -> URL {
+        let url = dir.appendingPathComponent("tone \(seconds) \(silence).wav")
         let format = AVAudioFormat(standardFormatWithSampleRate: 44_100, channels: 2)!
         let file = try AVAudioFile(forWriting: url, settings: AudioEngine.Encoding.wav.settings.merging([
             AVSampleRateKey: 44_100, AVNumberOfChannelsKey: 2,
         ]) { $1 }, commonFormat: .pcmFormatFloat32, interleaved: false)
-        let frames = AVAudioFrameCount(44_100 * seconds)
+        let quiet = Int(44_100 * silence)
+        let frames = AVAudioFrameCount(44_100 * seconds) + AVAudioFrameCount(quiet * 2)
         let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frames)!
         buffer.frameLength = frames
         for channel in 0..<2 {
             for frame in 0..<Int(frames) {
-                buffer.floatChannelData![channel][frame] = Float(sin(Double(frame) * 2 * .pi * 440 / 44_100) * 0.4)
+                let tone = frame >= quiet && frame < Int(frames) - quiet
+                buffer.floatChannelData![channel][frame] = tone ? Float(sin(Double(frame) * 2 * .pi * 440 / 44_100) * 0.4) : 0
             }
         }
         try file.write(from: buffer)
@@ -200,6 +236,26 @@ final class EngineTests: XCTestCase {
         XCTAssertEqual(try AVAudioFile(forReading: mono).fileFormat.channelCount, 1)
         let m4a = try await AudioEngine.convert(wav, to: .m4a, context: context)
         XCTAssertGreaterThan(try AVAudioFile(forReading: m4a).length, 10_000)
+    }
+
+    func testAudioTools() throws {
+        let wav = try makeWAV(seconds: 0.5, silence: 0.3)
+        let original = try AVAudioFile(forReading: wav).length
+
+        let normalized = try AudioEngine.normalize(wav, context: context)
+        let file = try AVAudioFile(forReading: normalized)
+        var peak: Float = 0
+        try AudioEngine.forEachBuffer(of: file) { buffer, _ in
+            for frame in 0..<Int(buffer.frameLength) { peak = max(peak, abs(buffer.floatChannelData![0][frame])) }
+        }
+        XCTAssertEqual(peak, 0.98, accuracy: 0.02)
+
+        let trimmed = try AVAudioFile(forReading: try AudioEngine.trimSilence(wav, context: context)).length
+        XCTAssertLessThan(trimmed, original - 20_000)
+        XCTAssertGreaterThan(trimmed, 22_000)
+
+        let parts = try AudioEngine.split(try makeWAV(seconds: 1.4), every: 0.5, context: context)
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: parts.path).count, 3)
     }
 
     func makeVideo() async throws -> URL {
@@ -240,6 +296,48 @@ final class EngineTests: XCTestCase {
         XCTAssertTrue(pixelSize(snapshot) == (160, 120))
         let muted = try await VideoEngine.removeAudio(mp4, context: context)
         XCTAssertTrue(FileManager.default.fileExists(atPath: muted.path))
+
+        let rotated = try await VideoEngine.rotate(mp4, context: context)
+        XCTAssertTrue(pixelSize(try await VideoEngine.snapshot(rotated, context: context)) == (120, 160))
+        let parts = try await VideoEngine.split(mp4, every: 0.4, context: context)
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: parts.path).count, 3)
+        let fast = try await VideoEngine.speedUp(mp4, context: context)
+        let duration = try await AVURLAsset(url: fast).load(.duration).seconds
+        XCTAssertEqual(duration, 0.5, accuracy: 0.1)
+    }
+
+    func testNewImageTools() throws {
+        let png = try makePNG()
+        XCTAssertTrue(pixelSize(try ImageEngine.edit(png, .squareCrop, context: context)) == (20, 20))
+        XCTAssertTrue(pixelSize(try ImageEngine.edit(png, .trimEdges, context: context)) == (20, 20))
+        let rounded = try ImageEngine.edit(png, .roundCorners, context: context)
+        XCTAssertTrue(pixelSize(rounded) == (40, 20))
+        let jpeg = try ImageEngine.convert(png, to: .jpeg, context: context)
+        XCTAssertEqual(try ImageEngine.edit(jpeg, .roundCorners, context: context).pathExtension, "png")
+    }
+
+    func testPDFToSlidesAndTable() async throws {
+        let png = try makePNG()
+        let pdfURL = dir.appendingPathComponent("deck.pdf")
+        try ImageEngine.makePDF(from: [png, png], to: pdfURL)
+        let pptx = try await PPTX.fromPDF(pdfURL, context: context)
+        let unpacked = dir.appendingPathComponent("unpacked")
+        try await Zip.extract(pptx, to: unpacked)
+        let parts = try XCTUnwrap(FileManager.default.subpaths(atPath: unpacked.path))
+        XCTAssertTrue(parts.contains("ppt/slides/slide2.xml"))
+        XCTAssertTrue(parts.contains("ppt/media/image2.jpeg"))
+        for part in parts where part.hasSuffix(".xml") || part.hasSuffix(".rels") {
+            XCTAssertNoThrow(try XMLDocument(contentsOf: unpacked.appendingPathComponent(part), options: []), part)
+        }
+        XCTAssertThrowsError(try PDFEngine.tableRows(pdfURL), "Image-only pages have no text")
+    }
+
+    func testTextClipping() async throws {
+        let url = dir.appendingPathComponent("Snippet.textClipping")
+        let plist: [String: Any] = ["UTI-Data": ["public.utf8-plain-text": "Hello from a clipping"]]
+        try PropertyListSerialization.data(fromPropertyList: plist, format: .binary, options: 0).write(to: url)
+        let text = try await DocumentEngine.read(url)
+        XCTAssertEqual(text.string, "Hello from a clipping")
     }
 
     func testDocuments() async throws {
@@ -283,5 +381,10 @@ final class EngineTests: XCTestCase {
             let extracted = try await ArchiveEngine.extract(archive, context: context)
             XCTAssertEqual(try String(contentsOf: extracted.appendingPathComponent("a.txt")), "hi")
         }
+        let file = folder.appendingPathComponent("a.txt")
+        let gzip = try await ArchiveEngine.compress([file], as: .gzip, context: context)
+        XCTAssertEqual(gzip.lastPathComponent, "a.txt.gz")
+        let unzipped = try await ArchiveEngine.extract(gzip, context: context)
+        XCTAssertEqual(try String(contentsOf: unzipped), "hi")
     }
 }

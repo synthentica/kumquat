@@ -218,6 +218,12 @@ public enum Spreadsheet {
         case .csv:
             let text = try readText(url)
             return CSV.parse(text, delimiter: guessDelimiter(text))
+        case .ods:
+            return try await ODS.read(url)
+        case .xls, .numbers:
+            return try await OfficeEngine.withIntermediate(url, as: .xlsx) { try await XLSX.read($0) }
+        case .pdf:
+            return try PDFEngine.tableRows(url)
         default:
             throw OperationError.unsupported("This spreadsheet")
         }
@@ -228,6 +234,12 @@ public enum Spreadsheet {
         let output = context.destination(for: url, extension: format.primaryExtension)
         switch format {
         case .xlsx: try await XLSX.write(rows, to: output)
+        case .ods: try await ODS.write(rows, to: output)
+        case .numbers:
+            let workbook = output.deletingLastPathComponent().appendingPathComponent(".\(url.baseName)-kumquat-\(UUID().uuidString.prefix(8)).xlsx")
+            defer { try? FileManager.default.removeItem(at: workbook) }
+            try await XLSX.write(rows, to: workbook)
+            try await OfficeEngine.convert(workbook, to: .numbers, output: output)
         case .csv: try CSV.write(rows).write(to: output, atomically: true, encoding: .utf8)
         case .tsv: try CSV.write(rows, delimiter: "\t").write(to: output, atomically: true, encoding: .utf8)
         case .json: try json(rows).write(to: output, atomically: true, encoding: .utf8)

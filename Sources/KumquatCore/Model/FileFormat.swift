@@ -2,7 +2,7 @@ import Foundation
 
 /// Broad family a file belongs to. Decides which wheel options are offered.
 public enum FileCategory: String, Sendable, CaseIterable {
-    case image, video, audio, pdf, document, ebook, spreadsheet, subtitle, archive, folder, other
+    case image, video, audio, pdf, document, ebook, presentation, spreadsheet, subtitle, archive, folder, other
 
     public var displayName: String {
         switch self {
@@ -12,6 +12,7 @@ public enum FileCategory: String, Sendable, CaseIterable {
         case .pdf: "PDF"
         case .document: "Document"
         case .ebook: "E-book"
+        case .presentation: "Slides"
         case .spreadsheet: "Spreadsheet"
         case .subtitle: "Subtitles"
         case .archive: "Archive"
@@ -32,11 +33,13 @@ public enum FileFormat: String, Sendable, CaseIterable {
     // PDF
     case pdf
     // Documents
-    case docx, doc, rtf, rtfd, odt, txt, html, markdown
+    case docx, doc, rtf, rtfd, odt, txt, html, markdown, pages, textClipping
     // E-books
     case epub
+    // Slides
+    case pptx, ppt, key, odp
     // Spreadsheets & data
-    case csv, tsv, xlsx, json
+    case csv, tsv, xlsx, json, xls, ods, numbers
     // Subtitles
     case srt, vtt
     // Archives
@@ -81,7 +84,16 @@ public enum FileFormat: String, Sendable, CaseIterable {
         case .txt: ["txt", "text"]
         case .html: ["html", "htm", "xhtml"]
         case .markdown: ["md", "markdown", "mdown", "mkd"]
+        case .pages: ["pages"]
+        case .textClipping: ["textclipping"]
         case .epub: ["epub"]
+        case .pptx: ["pptx"]
+        case .ppt: ["ppt", "pps", "ppsx"]
+        case .key: ["key"]
+        case .odp: ["odp"]
+        case .xls: ["xls"]
+        case .ods: ["ods"]
+        case .numbers: ["numbers"]
         case .csv: ["csv"]
         case .tsv: ["tsv", "tab"]
         case .xlsx: ["xlsx"]
@@ -108,6 +120,10 @@ public enum FileFormat: String, Sendable, CaseIterable {
         case .webm: "WebM"
         case .opus: "Opus"
         case .markdown: "Markdown"
+        case .pages: "Pages"
+        case .key: "Keynote"
+        case .numbers: "Numbers"
+        case .textClipping: "Clipping"
         case .tgz: "TAR.GZ"
         case .sevenZip: "7Z"
         default: rawValue.uppercased()
@@ -120,9 +136,10 @@ public enum FileFormat: String, Sendable, CaseIterable {
         case .mp4, .mov, .m4v, .mkv, .webm, .avi, .wmv, .flv: .video
         case .mp3, .m4a, .aac, .wav, .aiff, .flac, .caf, .ogg, .opus, .wma: .audio
         case .pdf: .pdf
-        case .docx, .doc, .rtf, .rtfd, .odt, .txt, .html, .markdown: .document
+        case .docx, .doc, .rtf, .rtfd, .odt, .txt, .html, .markdown, .pages, .textClipping: .document
         case .epub: .ebook
-        case .csv, .tsv, .xlsx, .json: .spreadsheet
+        case .pptx, .ppt, .key, .odp: .presentation
+        case .csv, .tsv, .xlsx, .json, .xls, .ods, .numbers: .spreadsheet
         case .srt, .vtt: .subtitle
         case .zip, .tar, .tgz, .gz, .rar, .sevenZip: .archive
         }
