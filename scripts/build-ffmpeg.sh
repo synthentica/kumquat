@@ -100,7 +100,8 @@ lipo -create "$ROOT/arm64/ffmpeg" "$ROOT/x86_64/ffmpeg" -output "$OUT/ffmpeg"
 strip -x "$OUT/ffmpeg" || true
 "$OUT/ffmpeg" -hide_banner -version | head -1
 # Nothing but system libraries may be linked, or the app breaks on other Macs.
-if otool -L "$OUT/ffmpeg" | tail -n +2 | grep -v -e '/usr/lib/' -e '/System/Library/'; then
+# otool prints a "path (architecture …):" header per slice; only the indented lines are libraries.
+if otool -L "$OUT/ffmpeg" | grep '^[[:space:]]' | grep -v -e '/usr/lib/' -e '/System/Library/'; then
   echo "FFmpeg links a non-system library" >&2
   exit 1
 fi
