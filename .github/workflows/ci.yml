@@ -10,6 +10,9 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: macos-15
@@ -34,3 +37,17 @@ jobs:
             build/icon-1024.png
             build/previews
           retention-days: 14
+      - name: Publish previews
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p /tmp/previews
+          cp build/previews/*.png build/icon-1024.png /tmp/previews/
+          cd /tmp/previews
+          git init -q -b previews
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -qm "Previews for ${GITHUB_SHA::7}"
+          git push -qf "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}" previews
