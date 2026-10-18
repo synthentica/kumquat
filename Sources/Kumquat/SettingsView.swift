@@ -24,7 +24,6 @@ final class SettingsWindowController {
 
 struct SettingsView: View {
     @ObservedObject private var settings = Settings.shared
-    @State private var ffmpeg = Settings.shared.ffmpeg
 
     var body: some View {
         Form {
@@ -57,26 +56,6 @@ struct SettingsView: View {
                             .frame(width: 40, alignment: .trailing)
                     }
                 }
-            }
-
-            Section {
-                LabeledContent("FFmpeg") {
-                    if let ffmpeg {
-                        Label(ffmpeg.path, systemImage: "checkmark.circle.fill")
-                            .foregroundStyle(.green)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                    } else {
-                        Text("Not installed").foregroundStyle(.secondary)
-                    }
-                }
-                TextField("Custom path", text: $settings.ffmpegPath, prompt: Text("Found automatically"))
-                    .onChange(of: settings.ffmpegPath) { _ in ffmpeg = Settings.shared.ffmpeg }
-            } header: {
-                Text("More formats")
-            } footer: {
-                Text("Everything works offline with what's built into macOS. Install FFmpeg (`brew install ffmpeg`) to also get MP3, OGG, Opus, WebM, MKV, AVI and WebP.")
-                    .foregroundStyle(.secondary)
             }
 
             Section {

@@ -14,6 +14,13 @@ BIN_DIR="$(swift build -c release "${ARCHS[@]}" --show-bin-path)"
 rm -rf build
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN_DIR/Kumquat" "$APP/Contents/MacOS/Kumquat"
+# FFmpeg for the formats macOS can't encode (MP3, OGG, Opus, WMA, WebM, MKV, AVI, WMV, WebP).
+# Built by scripts/build-ffmpeg.sh; the app also runs without it, with fewer formats.
+if [ -x .ffmpeg/bin/ffmpeg ]; then
+  cp .ffmpeg/bin/ffmpeg "$APP/Contents/MacOS/ffmpeg"
+else
+  echo "warning: .ffmpeg/bin/ffmpeg not found, building without FFmpeg (run scripts/build-ffmpeg.sh)" >&2
+fi
 sed -e "s/__VERSION__/$VERSION/" -e "s/__BUILD__/$BUILD/" Resources/Info.plist > "$APP/Contents/Info.plist"
 
 # App icon, drawn in code so there are no binary assets to keep in sync.

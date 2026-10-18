@@ -8,22 +8,49 @@ on:
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: write
 
 jobs:
+  # The bundled FFmpeg is slow to build, so it has its own job and is cached until the script changes.
+  ffmpeg:
+    runs-on: macos-15
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache FFmpeg
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: .ffmpeg/bin
+          key: ffmpeg-${{ hashFiles('scripts/build-ffmpeg.sh') }}
+      - name: Build FFmpeg
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          brew install nasm
+          ./scripts/build-ffmpeg.sh
+
   build:
+    needs: ffmpeg
     runs-on: macos-15
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - name: Toolchain
         run: swift --version
+      - name: Restore FFmpeg
+        uses: actions/cache/restore@v4
+        with:
+          path: .ffmpeg/bin
+          key: ffmpeg-${{ hashFiles('scripts/build-ffmpeg.sh') }}
+          fail-on-cache-miss: true
       - name: Build
         run: swift build
       - name: Test
+        env:
+          KUMQUAT_FFMPEG: ${{ github.workspace }}/.ffmpeg/bin/ffmpeg
         run: swift test
       - name: Bundle app
         run: ./scripts/bundle.sh

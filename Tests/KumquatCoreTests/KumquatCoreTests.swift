@@ -307,6 +307,30 @@ final class EngineTests: XCTestCase {
         XCTAssertEqual(duration, 0.5, accuracy: 0.1)
     }
 
+    /// Runs against the FFmpeg that ships in the app when CI provides it.
+    func testBundledFFmpeg() async throws {
+        guard let path = ProcessInfo.processInfo.environment["KUMQUAT_FFMPEG"], FileManager.default.isExecutableFile(atPath: path) else {
+            throw XCTSkip("Set KUMQUAT_FFMPEG to the bundled FFmpeg to run this test.")
+        }
+        let context = OperationContext(outputDirectory: dir, ffmpeg: URL(fileURLWithPath: path))
+        let wav = try makeWAV(seconds: 1)
+        for format in [FileFormat.mp3, .ogg, .opus, .wma, .flac] {
+            let output = try await FFmpegEngine.convert(wav, to: format, context: context)
+            XCTAssertGreaterThan(FileManager.default.fileSize(output), 1_000, format.displayName)
+        }
+        let mp4 = try await makeVideo()
+        for format in [FileFormat.webm, .mkv, .avi, .wmv, .mov] {
+            let output = try await FFmpegEngine.convert(mp4, to: format, context: context)
+            XCTAssertGreaterThan(FileManager.default.fileSize(output), 1_000, format.displayName)
+        }
+        let webm = try await FFmpegEngine.convert(mp4, to: .webm, context: context)
+        let back = try await FFmpegEngine.convert(webm, to: .mp4, context: context)
+        let duration = try await AVURLAsset(url: back).load(.duration).seconds
+        XCTAssertGreaterThan(duration, 0.5)
+        let webp = try await FFmpegEngine.convert(try makePNG(), to: .webp, context: context)
+        XCTAssertNotNil(CGImageSourceCreateWithURL(webp as CFURL, nil))
+    }
+
     func testNewImageTools() throws {
         let png = try makePNG()
         XCTAssertTrue(pixelSize(try ImageEngine.edit(png, .squareCrop, context: context)) == (20, 20))
