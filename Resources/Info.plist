@@ -5,17 +5,17 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
     <key>CFBundleDisplayName</key>
-    <string>Converter</string>
+    <string>Kumquat</string>
     <key>CFBundleExecutable</key>
-    <string>Converter</string>
+    <string>Kumquat</string>
     <key>CFBundleIconFile</key>
     <string>AppIcon</string>
     <key>CFBundleIdentifier</key>
-    <string>com.synthentica.converter</string>
+    <string>com.synthentica.kumquat</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>Converter</string>
+    <string>Kumquat</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
@@ -31,7 +31,7 @@
     <key>NSHighResolutionCapable</key>
     <true/>
     <key>NSAppleEventsUsageDescription</key>
-    <string>Converter reads the files you have selected in Finder so you can convert them from the keyboard.</string>
+    <string>Kumquat reads the files you have selected in Finder so you can convert them from the keyboard.</string>
     <key>NSHumanReadableCopyright</key>
     <string>MIT License</string>
     <key>CFBundleDocumentTypes</key>

@@ -69,10 +69,11 @@ public enum PDFEngine {
     public static func compress(_ url: URL, context: OperationContext) throws -> URL {
         let document = try open(url)
         let output = context.destination(for: url, extension: "pdf", suffix: "compressed")
-        let options: [PDFDocumentWriteOption: Any] = [
-            .saveImagesAsJPEGOption: true,
-            .optimizeImagesForScreenOption: true,
-        ]
+        var options: [PDFDocumentWriteOption: Any] = [:]
+        if #available(macOS 13.4, *) {
+            options[.saveImagesAsJPEGOption] = true
+            options[.optimizeImagesForScreenOption] = true
+        }
         guard document.write(to: output, withOptions: options) else { throw OperationError.failed("Couldn't write the PDF.") }
         return try keepIfSmaller(output, than: url)
     }

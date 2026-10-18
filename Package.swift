@@ -2,26 +2,26 @@
 import PackageDescription
 
 let package = Package(
-    name: "Converter",
+    name: "Kumquat",
     platforms: [.macOS(.v13)],
     products: [
-        .executable(name: "Converter", targets: ["Converter"]),
-        .library(name: "ConverterCore", targets: ["ConverterCore"]),
+        .executable(name: "Kumquat", targets: ["Kumquat"]),
+        .library(name: "KumquatCore", targets: ["KumquatCore"]),
     ],
     targets: [
         .target(
-            name: "ConverterCore",
-            path: "Sources/ConverterCore"
+            name: "KumquatCore",
+            path: "Sources/KumquatCore"
         ),
         .executableTarget(
-            name: "Converter",
-            dependencies: ["ConverterCore"],
-            path: "Sources/Converter"
+            name: "Kumquat",
+            dependencies: ["KumquatCore"],
+            path: "Sources/Kumquat"
         ),
         .testTarget(
-            name: "ConverterCoreTests",
-            dependencies: ["ConverterCore"],
-            path: "Tests/ConverterCoreTests"
+            name: "KumquatCoreTests",
+            dependencies: ["KumquatCore"],
+            path: "Tests/KumquatCoreTests"
         ),
     ]
 )

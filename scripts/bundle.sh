@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Builds a universal Converter.app into build/ and zips it.
+# Builds a universal Kumquat.app into build/ and zips it.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 VERSION="${VERSION:-0.1.0}"
 BUILD="${BUILD:-$(git rev-list --count HEAD 2>/dev/null || echo 1)}"
-APP="build/Converter.app"
+APP="build/Kumquat.app"
 ARCHS=(--arch arm64 --arch x86_64)
 
 swift build -c release "${ARCHS[@]}"
@@ -13,7 +13,7 @@ BIN_DIR="$(swift build -c release "${ARCHS[@]}" --show-bin-path)"
 
 rm -rf build
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp "$BIN_DIR/Converter" "$APP/Contents/MacOS/Converter"
+cp "$BIN_DIR/Kumquat" "$APP/Contents/MacOS/Kumquat"
 sed -e "s/__VERSION__/$VERSION/" -e "s/__BUILD__/$BUILD/" Resources/Info.plist > "$APP/Contents/Info.plist"
 
 # App icon, drawn in code so there are no binary assets to keep in sync.
@@ -28,5 +28,5 @@ done
 iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/AppIcon.icns"
 
 codesign --force --deep --sign - "$APP"
-ditto -c -k --keepParent "$APP" build/Converter.zip
+ditto -c -k --keepParent "$APP" build/Kumquat.zip
 echo "Built $APP ($VERSION, build $BUILD)"

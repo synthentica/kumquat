@@ -1,4 +1,4 @@
-// Draws the 1024 px app icon: a warm squircle with the conversion wheel.
+// Draws the 1024 px app icon: a kumquat slice, whose segments double as the wheel.
 // Usage: swift scripts/make-icon.swift output.png
 import AppKit
 
@@ -23,25 +23,38 @@ let body = NSRect(x: 100, y: 100, width: 824, height: 824)
 let squircle = NSBezierPath(roundedRect: body, xRadius: 186, yRadius: 186)
 NSGraphicsContext.saveGraphicsState()
 let shadow = NSShadow()
-shadow.shadowColor = NSColor.black.withAlphaComponent(0.28)
+shadow.shadowColor = NSColor.black.withAlphaComponent(0.3)
 shadow.shadowBlurRadius = 30
 shadow.shadowOffset = NSSize(width: 0, height: -14)
 shadow.set()
-color(0xFF7A3D).setFill()
+color(0x1E6B45).setFill()
 squircle.fill()
 NSGraphicsContext.restoreGraphicsState()
+// Leaf green, lighter at the top.
+NSGradient(colors: [color(0x3FA06A), color(0x1E6B45), color(0x124A30)])!.draw(in: squircle, angle: -90)
 
-NSGradient(colors: [color(0xFFB347), color(0xFF6B4A), color(0xF0457A)])!.draw(in: squircle, angle: -62)
-// Glassy top highlight.
-NSGradient(colors: [NSColor.white.withAlphaComponent(0.28), NSColor.white.withAlphaComponent(0)])!
-    .draw(in: NSBezierPath(roundedRect: body.insetBy(dx: 6, dy: 6), xRadius: 180, yRadius: 180), angle: -90)
+func circle(_ radius: CGFloat) -> NSBezierPath {
+    NSBezierPath(ovalIn: NSRect(x: 512 - radius, y: 512 - radius, width: radius * 2, height: radius * 2))
+}
 
-// The wheel: six segments around a hub, one lit.
+// The slice: rind, pith, then juicy segments around a pale core.
+NSGraphicsContext.saveGraphicsState()
+let sliceShadow = NSShadow()
+sliceShadow.shadowColor = NSColor.black.withAlphaComponent(0.35)
+sliceShadow.shadowBlurRadius = 36
+sliceShadow.shadowOffset = NSSize(width: 0, height: -18)
+sliceShadow.set()
+color(0xFF8A1C).setFill()
+circle(338).fill()
+NSGraphicsContext.restoreGraphicsState()
+NSGradient(colors: [color(0xFFB13B), color(0xFF7A12)])!.draw(in: circle(338), angle: -90)
+NSGradient(colors: [color(0xFFF8E8), color(0xFFE9C4)])!.draw(in: circle(312), angle: -90)
+
 let center = NSPoint(x: 512, y: 512)
-let inner: CGFloat = 168
-let outer: CGFloat = 318
-let segments = 6
-let gap: CGFloat = 7
+let inner: CGFloat = 64
+let outer: CGFloat = 292
+let segments = 8
+let gap: CGFloat = 9
 for index in 0..<segments {
     let span = 360 / CGFloat(segments)
     let mid = 90 - CGFloat(index) * span
@@ -51,24 +64,15 @@ for index in 0..<segments {
     path.appendArc(withCenter: center, radius: outer, startAngle: mid + span / 2 - outerPad, endAngle: mid - span / 2 + outerPad, clockwise: true)
     path.appendArc(withCenter: center, radius: inner, startAngle: mid - span / 2 + innerPad, endAngle: mid + span / 2 - innerPad, clockwise: false)
     path.close()
-    (index == 1 ? NSColor.white : NSColor.white.withAlphaComponent(0.34)).setFill()
-    path.fill()
+    let lit = index == 1
+    let colors = lit ? [color(0xFFF1B0), color(0xFFC94A)] : [color(0xFFB547), color(0xFF8A1F)]
+    NSGradient(colors: colors)!.draw(in: path, angle: -90)
 }
-let hub = NSBezierPath(ovalIn: NSRect(x: center.x - 128, y: center.y - 128, width: 256, height: 256))
-NSColor.white.setFill()
-hub.fill()
-// Arrow in the hub, pointing at the lit segment.
-let arrow = NSBezierPath()
-arrow.lineWidth = 30
-arrow.lineCapStyle = .round
-arrow.lineJoinStyle = .round
-arrow.move(to: NSPoint(x: 462, y: 462))
-arrow.line(to: NSPoint(x: 566, y: 566))
-arrow.move(to: NSPoint(x: 500, y: 572))
-arrow.line(to: NSPoint(x: 570, y: 570))
-arrow.line(to: NSPoint(x: 568, y: 500))
-color(0xFF6B4A).setStroke()
-arrow.stroke()
+NSGradient(colors: [color(0xFFFBF0), color(0xFFEBC8)])!.draw(in: circle(54), angle: -90)
+
+// A glassy sheen across the top half.
+let sheen = NSBezierPath(roundedRect: body.insetBy(dx: 6, dy: 6), xRadius: 180, yRadius: 180)
+NSGradient(colors: [NSColor.white.withAlphaComponent(0.18), NSColor.white.withAlphaComponent(0)])!.draw(in: sheen, angle: -90)
 
 NSGraphicsContext.restoreGraphicsState()
 try! rep.representation(using: .png, properties: [:])!.write(to: URL(fileURLWithPath: output))

@@ -179,7 +179,7 @@ enum Batch {
 
 extension FileManager {
     func makeTemporaryDirectory() throws -> URL {
-        let url = temporaryDirectory.appendingPathComponent("Converter-\(UUID().uuidString)", isDirectory: true)
+        let url = temporaryDirectory.appendingPathComponent("Kumquat-\(UUID().uuidString)", isDirectory: true)
         try createDirectory(at: url, withIntermediateDirectories: true)
         return url
     }

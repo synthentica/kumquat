@@ -2,7 +2,7 @@ import AppKit
 import AVFoundation
 import PDFKit
 import XCTest
-@testable import ConverterCore
+@testable import KumquatCore
 
 final class FormatTests: XCTestCase {
     func testDetection() {
