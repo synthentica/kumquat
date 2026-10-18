@@ -298,7 +298,8 @@ final class EngineTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: muted.path))
 
         let rotated = try await VideoEngine.rotate(mp4, context: context)
-        XCTAssertTrue(pixelSize(try await VideoEngine.snapshot(rotated, context: context)) == (120, 160))
+        let rotatedFrame = try await VideoEngine.snapshot(rotated, context: context)
+        XCTAssertTrue(pixelSize(rotatedFrame) == (120, 160))
         let parts = try await VideoEngine.split(mp4, every: 0.4, context: context)
         XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: parts.path).count, 3)
         let fast = try await VideoEngine.speedUp(mp4, context: context)
