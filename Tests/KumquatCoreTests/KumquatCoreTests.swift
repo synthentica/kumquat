@@ -406,7 +406,11 @@ final class EngineTests: XCTestCase {
             let output = try await FFmpegEngine.convert(mp4, to: format, context: context)
             XCTAssertGreaterThan(FileManager.default.fileSize(output), 1_000, format.displayName)
         }
-        let webm = try await FFmpegEngine.convert(mp4, to: .webm, context: context)
+        let recorder = ProgressRecorder()
+        let webm = try await WorkProgress.$sink.withValue(recorder.sink) {
+            try await FFmpegEngine.convert(mp4, to: .webm, context: context)
+        }
+        XCTAssertGreaterThan(recorder.last, 0.9, "FFmpeg reports its progress")
         let back = try await FFmpegEngine.convert(webm, to: .mp4, context: context)
         let duration = try await AVURLAsset(url: back).load(.duration).seconds
         XCTAssertGreaterThan(duration, 0.5)
@@ -514,4 +518,72 @@ final class EngineTests: XCTestCase {
         let unzipped = try await ArchiveEngine.extract(gzip, context: context)
         XCTAssertEqual(try String(contentsOf: unzipped), "hi")
     }
+
+    func testProgressAndParallelPages() async throws {
+        let png = try makePNG()
+        let pdfURL = dir.appendingPathComponent("seven.pdf")
+        try ImageEngine.makePDF(from: Array(repeating: png, count: 7), to: pdfURL)
+        let recorder = ProgressRecorder()
+        let pages = try WorkProgress.$sink.withValue(recorder.sink) {
+            try PDFEngine.renderPages(pdfURL, as: .png, dpi: 72, context: context)
+        }
+        let names = try FileManager.default.contentsOfDirectory(atPath: pages.path).sorted()
+        XCTAssertEqual(names.count, 7)
+        XCTAssertEqual(names.first, "seven 1.png")
+        XCTAssertEqual(recorder.last, 1, accuracy: 0.001)
+
+        // A batch adds up its files, never moving backwards.
+        let wavs = try (0..<3).map { index -> URL in
+            let url = dir.appendingPathComponent("tone \(index).wav")
+            try FileManager.default.moveItem(at: try makeWAV(seconds: 1), to: url)
+            return url
+        }
+        let operation = FileOperation.perFile(id: "test", title: "FLAC", symbol: "waveform", wheel: .convert, verb: "Encoding") {
+            try AudioEngine.encode($0, .flac, context: $1)
+        }
+        let batch = ProgressRecorder()
+        let outcome = try await WorkProgress.$sink.withValue(batch.sink) {
+            try await operation.perform(wavs, context)
+        }
+        XCTAssertEqual(outcome.outputs.count, 3)
+        XCTAssertEqual(batch.last, 1, accuracy: 0.001)
+        XCTAssertEqual(batch.values, batch.values.sorted())
+    }
+
+    func testLaneCapsConcurrency() async throws {
+        let lane = Lane(limit: 2)
+        let counter = ConcurrencyCounter()
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            for _ in 0..<6 {
+                group.addTask {
+                    try await lane.run {
+                        counter.enter()
+                        try await Task.sleep(nanoseconds: 40_000_000)
+                        counter.leave()
+                    }
+                }
+            }
+            try await group.waitForAll()
+        }
+        XCTAssertEqual(counter.peak, 2)
+    }
+}
+
+/// Collects what an operation reports, from whichever thread it reports on.
+final class ProgressRecorder: @unchecked Sendable {
+    private let lock = NSLock()
+    private var recorded: [Double] = []
+
+    var sink: @Sendable (Double) -> Void { { [self] value in lock.lock(); recorded.append(value); lock.unlock() } }
+    var values: [Double] { lock.lock(); defer { lock.unlock() }; return recorded }
+    var last: Double { values.last ?? 0 }
+}
+
+final class ConcurrencyCounter: @unchecked Sendable {
+    private let lock = NSLock()
+    private var current = 0
+    private(set) var peak = 0
+
+    func enter() { lock.lock(); current += 1; peak = max(peak, current); lock.unlock() }
+    func leave() { lock.lock(); current -= 1; lock.unlock() }
 }

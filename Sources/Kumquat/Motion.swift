@@ -140,7 +140,8 @@ struct SliceSpinner: View {
     var size: CGFloat = 22
 
     var body: some View {
-        TimelineView(.animation) { timeline in
+        // The glow moves slowly, so 30 frames a second looks the same as 120 and costs a quarter.
+        TimelineView(.animation(minimumInterval: 1.0 / 30)) { timeline in
             let time = timeline.date.timeIntervalSinceReferenceDate
             ZStack {
                 ForEach(0..<6, id: \.self) { index in

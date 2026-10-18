@@ -151,6 +151,7 @@ enum Batch {
         let limit = max(2, ProcessInfo.processInfo.activeProcessorCount)
         var outputs = [URL?](repeating: nil, count: urls.count)
         var failures: [String] = []
+        let progress = BatchProgress(count: urls.count, sink: WorkProgress.sink)
         await withTaskGroup(of: (Int, Result<URL, Error>).self) { group in
             var next = 0
             func enqueue() {
@@ -159,7 +160,17 @@ enum Batch {
                 let url = urls[index]
                 next += 1
                 group.addTask {
-                    do { return (index, .success(try await body(url))) } catch { return (index, .failure(error)) }
+                    // Each file reports its own 0…1; the batch adds them up.
+                    let result: Result<URL, Error>
+                    do {
+                        result = .success(try await WorkProgress.$sink.withValue({ progress.set(index, $0) }) {
+                            try await body(url)
+                        })
+                    } catch {
+                        result = .failure(error)
+                    }
+                    progress.set(index, 1)
+                    return (index, result)
                 }
             }
             for _ in 0..<min(limit, urls.count) { enqueue() }

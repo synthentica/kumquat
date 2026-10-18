@@ -1,3 +1,4 @@
+import Accelerate
 import AVFoundation
 import Foundation
 
@@ -91,16 +92,19 @@ public enum AudioEngine {
         try forEachBuffer(of: source) { buffer, _ in
             for channel in 0..<Int(buffer.format.channelCount) {
                 guard let samples = buffer.floatChannelData?[channel] else { continue }
-                for frame in 0..<Int(buffer.frameLength) { peak = max(peak, abs(samples[frame])) }
+                var channelPeak: Float = 0
+                vDSP_maxmgv(samples, 1, &channelPeak, vDSP_Length(buffer.frameLength))
+                peak = max(peak, channelPeak)
             }
         }
         guard peak > 0.0001 else { throw OperationError.failed("The audio is silent.") }
         let gain = 0.98 / peak
         guard abs(gain - 1) > 0.01 else { throw OperationError.failed("The audio is already as loud as it gets.") }
         return try rewrite(url, suffix: "normalized", context: context) { buffer in
+            var scale = gain
             for channel in 0..<Int(buffer.format.channelCount) {
                 guard let samples = buffer.floatChannelData?[channel] else { continue }
-                for frame in 0..<Int(buffer.frameLength) { samples[frame] *= gain }
+                vDSP_vsmul(samples, 1, &scale, samples, 1, vDSP_Length(buffer.frameLength))
             }
         }
     }
@@ -252,6 +256,7 @@ public enum AudioEngine {
                 try source.read(into: inputBuffer)
                 if inputBuffer.frameLength == 0 { break }
                 try destination.write(from: inputBuffer)
+                WorkProgress.report(Int(source.framePosition), of: Int(source.length))
             }
             return
         }
@@ -291,6 +296,7 @@ public enum AudioEngine {
             if let conversionError { throw conversionError }
             if let readError { throw readError }
             if outputBuffer.frameLength > 0 { try destination.write(from: outputBuffer) }
+            WorkProgress.report(Int(source.framePosition), of: Int(source.length))
             if status == .endOfStream || status == .error { break }
         }
     }

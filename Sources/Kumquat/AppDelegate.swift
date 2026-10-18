@@ -34,9 +34,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.convertFinderSelection()
         }
 
+        prewarm()
+
         if !UserDefaults.standard.bool(forKey: "hasLaunched") {
             UserDefaults.standard.set(true, forKey: "hasLaunched")
             settingsWindow.show()
+        }
+    }
+
+    /// Does the one-time setup behind the wheel and the toast right after launch, while nothing is waiting on it.
+    private func prewarm() {
+        let context = Settings.shared.context
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            OperationCatalog.prewarm(context: context)
+            DispatchQueue.main.async {
+                self?.wheel.prewarm()
+                self?.runner.prewarm()
+            }
         }
     }
 
@@ -88,6 +102,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             frame = (frame + 1) % frames.count
             self?.statusItem?.button?.image = frames[frame]
         }
+        // Lets macOS line the ticks up with other wake-ups instead of waking just for the icon.
+        spinTimer?.tolerance = 0.02
     }
 
     private func setUpStatusItem() {

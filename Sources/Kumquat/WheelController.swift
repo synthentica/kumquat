@@ -67,6 +67,27 @@ final class WheelController {
         playBloom(appearing: true)
     }
 
+    /// Builds the panel and draws the wheel once, invisibly, so the first real opening is as quick as the rest.
+    func prewarm() {
+        guard !panel.isVisible else { return }
+        withoutAnimation {
+            model.urls = [URL(fileURLWithPath: "/kumquat-prewarm.png")]
+            model.wheel = .convert
+            reloadOperations()
+        }
+        panel.alphaValue = 0
+        panel.setFrameOrigin(NSPoint(x: -10_000, y: -10_000))
+        panel.orderFrontRegardless()
+        panel.contentView?.layoutSubtreeIfNeeded()
+        panel.contentView?.displayIfNeeded()
+        panel.orderOut(nil)
+        panel.alphaValue = 1
+        withoutAnimation {
+            model.urls = []
+            model.operations = []
+        }
+    }
+
     func switchTo(_ wheel: Wheel) {
         guard wheel != model.wheel else { return }
         withAnimation(Motion.switchWheel) {

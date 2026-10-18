@@ -14,6 +14,8 @@ final class ToastModel: ObservableObject {
     @Published var isShown = false
     /// Bumped on each failure; the toast shakes once per step.
     @Published var shakes = 0
+    /// How far the work has come, once the engine can tell. Until then the line sweeps.
+    @Published var progress: Double?
 }
 
 /// A small glass capsule at the bottom of the screen showing progress and results.
@@ -21,6 +23,7 @@ final class ToastController {
     private let model = ToastModel()
     private var onClick: (() -> Void)?
     private var hideWork: DispatchWorkItem?
+    private var job = 0
     private static let size = NSSize(width: 420, height: 76)
 
     private lazy var panel: NSPanel = {
@@ -45,8 +48,27 @@ final class ToastController {
         return panel
     }()
 
-    func showProgress(_ title: String, detail: String) {
+    /// Builds the panel ahead of time, so the first toast appears without a hitch.
+    func prewarm() {
+        panel.contentView?.layoutSubtreeIfNeeded()
+    }
+
+    /// Shows work starting, and returns the ticket its progress updates must carry.
+    @discardableResult
+    func showProgress(_ title: String, detail: String) -> Int {
+        job += 1
+        model.progress = nil
         show(.working, title, detail, onClick: nil, autoHide: nil)
+        return job
+    }
+
+    /// Moves the progress line for the job shown last. Updates from an older job, or ones arriving
+    /// after the result is already up, are dropped.
+    func setProgress(_ fraction: Double, job: Int) {
+        guard job == self.job, model.state == .working, model.isShown else { return }
+        // A change too small to see isn't worth a redraw.
+        if let current = model.progress, abs(current - fraction) < 0.004 { return }
+        withAnimation(.linear(duration: 0.2)) { model.progress = fraction }
     }
 
     func showDone(_ title: String, detail: String, onClick: (() -> Void)?) {
@@ -139,7 +161,13 @@ private struct ToastView: View {
         .overlay(alignment: .bottom) {
             // A thin rind-colored line that sweeps along the bottom while working.
             if model.state == .working {
-                ProgressSweep()
+                Group {
+                    if let progress = model.progress {
+                        ProgressFill(fraction: progress)
+                    } else {
+                        ProgressSweep()
+                    }
+                }
                     .frame(height: 2)
                     .padding(.horizontal, 22)
                     .padding(.bottom, 1)
@@ -187,10 +215,28 @@ private struct StatusBadge: View {
     }
 }
 
+/// A rind-colored line that fills as the work goes.
+private struct ProgressFill: View {
+    var fraction: Double
+
+    var body: some View {
+        GeometryReader { proxy in
+            ZStack(alignment: .leading) {
+                Capsule().fill(Color.white.opacity(0.1))
+                Capsule()
+                    .fill(LinearGradient(colors: Palette.rind, startPoint: .leading, endPoint: .trailing))
+                    .frame(width: max(2, proxy.size.width * fraction))
+            }
+        }
+        .clipShape(Capsule())
+    }
+}
+
 /// An endless highlight sliding along a track.
 private struct ProgressSweep: View {
     var body: some View {
-        TimelineView(.animation) { timeline in
+        // 40 frames a second is smooth for a soft gradient and leaves the GPU alone on 120 Hz screens.
+        TimelineView(.animation(minimumInterval: 1.0 / 40)) { timeline in
             let phase = (timeline.date.timeIntervalSinceReferenceDate * 0.9).truncatingRemainder(dividingBy: 1)
             GeometryReader { proxy in
                 let width = proxy.size.width

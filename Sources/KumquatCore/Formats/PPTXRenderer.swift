@@ -24,8 +24,11 @@ public enum PPTXRenderer {
         let work = try FileManager.default.makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: work) }
         let pdf = work.appendingPathComponent("slides.pdf")
-        try await render(url, to: pdf)
-        return try PDFEngine.renderPages(pdf, as: format, dpi: 200, naming: url, context: context)
+        // Drawing the slides is the first half of the work, turning them into images the second.
+        try await WorkProgress.stage(0, 0.5) { try await render(url, to: pdf) }
+        return try await WorkProgress.stage(0.5, 1) {
+            try PDFEngine.renderPages(pdf, as: format, dpi: 200, naming: url, context: context)
+        }
     }
 
     static func render(_ url: URL, to output: URL) async throws {
@@ -45,7 +48,8 @@ public enum PPTXRenderer {
         guard !slides.isEmpty else { throw OperationError.failed("The presentation has no slides.") }
 
         guard let pdf = CGContext(output as CFURL, mediaBox: nil, nil) else { throw OperationError.failed("Couldn't create the PDF.") }
-        for slidePath in slides {
+        for (number, slidePath) in slides.enumerated() {
+            WorkProgress.report(number, of: slides.count)
             var box = CGRect(x: 0, y: 0, width: width, height: height)
             pdf.beginPage(mediaBox: &box)
             // Slides are laid out from the top left, so draw with y pointing down.

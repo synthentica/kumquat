@@ -100,11 +100,15 @@ public enum OfficeEngine {
             throw OperationError.unsupported("\(target.displayName) without LibreOffice, Keynote, Pages or Numbers")
         }
         do {
-            switch route {
-            case .libreOffice(let soffice):
-                try await runLibreOffice(soffice, input: url, target: target, output: output)
-            case .app(let app):
-                try await runApp(app, input: url, target: target, output: output)
+            // One document at a time: the iWork apps work through a single scripting session,
+            // and each LibreOffice run starts a whole office suite.
+            try await Lane.office.run {
+                switch route {
+                case .libreOffice(let soffice):
+                    try await runLibreOffice(soffice, input: url, target: target, output: output)
+                case .app(let app):
+                    try await runApp(app, input: url, target: target, output: output)
+                }
             }
         } catch {
             try? FileManager.default.removeItem(at: output)

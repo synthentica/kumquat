@@ -12,18 +12,31 @@ final class OperationRunner {
         }
     }
 
+    func prewarm() {
+        toast.prewarm()
+    }
+
     func run(_ operation: FileOperation, on urls: [URL]) {
         let settings = Settings.shared
         let context = settings.context
         let subject = urls.count == 1 ? urls[0].lastPathComponent : "\(urls.count) items"
         let isAction = operation.wheel == .actions
-        if !isAction { toast.showProgress(operation.verb + "…", detail: subject) }
+        let job = isAction ? 0 : toast.showProgress(operation.verb + "…", detail: subject)
         let started = Date()
         if !isAction { running += 1 }
 
+        let sink: (@Sendable (Double) -> Void)?
+        if isAction {
+            sink = nil
+        } else {
+            let relay = ProgressRelay { [weak self] fraction in self?.toast.setProgress(fraction, job: job) }
+            sink = { relay.send($0) }
+        }
         Task.detached(priority: .userInitiated) {
             do {
-                let outcome = try await operation.perform(urls, context)
+                let outcome = try await WorkProgress.$sink.withValue(sink) {
+                    try await operation.perform(urls, context)
+                }
                 await MainActor.run {
                     if !isAction { self.running -= 1 }
                     self.finish(outcome, operation: operation, started: started)
@@ -65,5 +78,34 @@ final class OperationRunner {
     private func playSound(success: Bool) {
         guard Settings.shared.playSound else { return }
         NSSound(named: success ? "Pop" : "Basso")?.play()
+    }
+}
+
+/// Carries progress from the worker threads to the toast about 15 times a second,
+/// so a fast loop reporting thousands of steps never floods the main thread.
+final class ProgressRelay: @unchecked Sendable {
+    private let lock = NSLock()
+    private var latest: Double = 0
+    private var scheduled = false
+    private let deliver: (Double) -> Void
+
+    init(_ deliver: @escaping (Double) -> Void) {
+        self.deliver = deliver
+    }
+
+    func send(_ fraction: Double) {
+        lock.lock()
+        latest = fraction
+        let schedule = !scheduled
+        scheduled = true
+        lock.unlock()
+        guard schedule else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 / 15) { [self] in
+            lock.lock()
+            let value = latest
+            scheduled = false
+            lock.unlock()
+            deliver(value)
+        }
     }
 }

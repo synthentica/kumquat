@@ -1,3 +1,4 @@
+import AVFoundation
 import Foundation
 
 /// FFmpeg for the formats macOS can't encode natively: MP3, OGG, Opus, WMA, WebM, MKV, AVI, WMV and WebP.
@@ -47,22 +48,37 @@ public enum FFmpegEngine {
         }
     }
 
-    /// The first video stream's codec name, like "h264", from FFmpeg's description of the file.
-    static func videoCodec(_ ffmpeg: URL, input: URL) async -> String? {
+    /// What FFmpeg says about a file: the first video stream's codec, like "h264", and the length in seconds.
+    struct Probe {
+        var codec: String?
+        var duration: Double?
+    }
+
+    static func probe(_ ffmpeg: URL, input: URL) async -> Probe {
         guard let info = try? await Shell.run(
             ffmpeg.path, ["-hide_banner", "-nostdin", "-i", input.path, "-t", "0", "-f", "null", "-"]
-        ) else { return nil }
-        guard let range = info.range(of: "Video: ") else { return nil }
-        return info[range.upperBound...].prefix { $0.isLetter || $0.isNumber }.lowercased()
+        ) else { return Probe() }
+        var probe = Probe()
+        if let range = info.range(of: "Video: ") {
+            probe.codec = info[range.upperBound...].prefix { $0.isLetter || $0.isNumber }.lowercased()
+        }
+        // "Duration: 00:01:02.34,"
+        if let range = info.range(of: "Duration: ") {
+            let parts = info[range.upperBound...].prefix { $0 != "," }.split(separator: ":").compactMap { Double($0) }
+            if parts.count == 3 { probe.duration = parts[0] * 3600 + parts[1] * 60 + parts[2] }
+        }
+        return probe
     }
+
+    static let videoTargets: Set<FileFormat> = [.mp4, .mov, .m4v, .webm, .mkv, .avi, .wmv, .gif]
 
     /// What to try, in order. H.264 and HEVC video is copied as is when only the container changes,
     /// which takes a moment instead of a re-encode. Constant-quality hardware encoding needs Apple silicon,
     /// so Intel Macs fall back to a bitrate.
-    static func attempts(for format: FileFormat, ffmpeg: URL, input: URL) async -> [[String]] {
+    static func attempts(for format: FileFormat, codec: String?) -> [[String]] {
         guard [.mp4, .mov, .m4v].contains(format) else { return [arguments(for: format)] }
         var attempts: [[String]] = []
-        switch await videoCodec(ffmpeg, input: input) ?? "" {
+        switch codec ?? "" {
         case "h264":
             attempts.append(["-map", "0:v:0", "-map", "0:a:0?", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart"])
         case "hevc":
@@ -79,16 +95,36 @@ public enum FFmpegEngine {
     public static func convert(_ url: URL, to format: FileFormat, extension ext: String? = nil, context: OperationContext) async throws -> URL {
         guard let ffmpeg = context.ffmpeg else { throw OperationError.unsupported("\(format.displayName) without FFmpeg") }
         let output = context.destination(for: url, extension: ext ?? format.primaryExtension)
-        var lastError: Error?
-        for arguments in await attempts(for: format, ffmpeg: ffmpeg, input: url) {
-            do {
-                try await run(ffmpeg, input: url, output: output, arguments: arguments)
-                return output
-            } catch {
-                lastError = error
-            }
+        guard videoTargets.contains(format) else {
+            // Audio and stills: light enough to run one per core.
+            try await run(ffmpeg, input: url, output: output, arguments: arguments(for: format),
+                          duration: await duration(of: url, ffmpeg: ffmpeg))
+            return output
         }
-        throw lastError ?? OperationError.failed("FFmpeg couldn't convert \(url.lastPathComponent).")
+        return try await Lane.encoder.run {
+            let info = await probe(ffmpeg, input: url)
+            var lastError: Error?
+            for arguments in attempts(for: format, codec: info.codec) {
+                do {
+                    try await run(ffmpeg, input: url, output: output, arguments: arguments, duration: info.duration)
+                    return output
+                } catch {
+                    lastError = error
+                }
+            }
+            throw lastError ?? OperationError.failed("FFmpeg couldn't convert \(url.lastPathComponent).")
+        }
+    }
+
+    /// The length of a file in seconds, for the progress bar. Asks FFmpeg only for big files macOS can't read,
+    /// since a small one is done before the answer would matter.
+    static func duration(of url: URL, ffmpeg: URL) async -> Double? {
+        guard WorkProgress.sink != nil else { return nil }
+        if let seconds = try? await AVURLAsset(url: url).load(.duration).seconds, seconds.isFinite, seconds > 0 {
+            return seconds
+        }
+        guard FileManager.default.fileSize(url) > 8_000_000 else { return nil }
+        return await probe(ffmpeg, input: url).duration
     }
 
     public static func alac(_ url: URL, context: OperationContext) async throws -> URL {
@@ -98,11 +134,26 @@ public enum FFmpegEngine {
         return output
     }
 
-    static func run(_ ffmpeg: URL, input: URL, output: URL, arguments: [String]) async throws {
+    static func run(_ ffmpeg: URL, input: URL, output: URL, arguments: [String], duration: Double? = nil) async throws {
+        // With a known length, FFmpeg's machine-readable progress on stdout drives the progress bar.
+        var progressArguments: [String] = []
+        var onLine: (@Sendable (String) -> Void)?
+        if let duration, duration > 0, let sink = WorkProgress.sink {
+            progressArguments = ["-progress", "pipe:1", "-nostats"]
+            onLine = { line in
+                if line.hasPrefix("out_time_us="), let micros = Double(line.dropFirst(12)) {
+                    sink(min(1, max(0, micros / 1_000_000 / duration)))
+                } else if line == "progress=end" {
+                    sink(1)
+                }
+            }
+        }
         do {
             try await Shell.run(
                 ffmpeg.path,
-                ["-hide_banner", "-loglevel", "error", "-nostdin", "-y", "-i", input.path] + arguments + [output.path]
+                ["-hide_banner", "-loglevel", "error", "-nostdin", "-y"] + progressArguments + ["-i", input.path]
+                    + arguments + [output.path],
+                onOutputLine: onLine
             )
         } catch {
             try? FileManager.default.removeItem(at: output)

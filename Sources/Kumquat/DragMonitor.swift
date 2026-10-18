@@ -13,6 +13,8 @@ final class DragMonitor {
     private let pasteboard = NSPasteboard(name: .drag)
     private var changeCountAtMouseDown = 0
     private var isFileDrag = false
+    /// Drag events left before an ordinary drag (a selection, a window, a slider) stops being checked.
+    private var checksLeft = 0
     private var activeWheel: Wheel?
     private var timer: Timer?
 
@@ -39,15 +41,23 @@ final class DragMonitor {
     private func mouseDown() {
         changeCountAtMouseDown = pasteboard.changeCount
         isFileDrag = false
+        checksLeft = 24
     }
 
+    /// Runs for every mouse movement with the button down, anywhere on screen, so it gives up quickly:
+    /// a file drag fills the drag pasteboard within its first few events, and any other drag
+    /// is left alone after that instead of asking the pasteboard server on every event.
     private func mouseDragged() {
-        guard !isFileDrag, pasteboard.changeCount != changeCountAtMouseDown else { return }
+        guard !isFileDrag, checksLeft > 0 else { return }
+        checksLeft -= 1
+        guard pasteboard.changeCount != changeCountAtMouseDown else { return }
+        checksLeft = 0
         guard pasteboard.types?.contains(.fileURL) == true else { return }
         isFileDrag = true
         activeWheel = nil
         // Poll the modifier keys while the drag lasts, so a key pressed with the mouse still is noticed.
         let timer = Timer(timeInterval: 1.0 / 60, repeats: true) { [weak self] _ in self?.poll() }
+        timer.tolerance = 1.0 / 240
         RunLoop.main.add(timer, forMode: .common)
         self.timer = timer
         poll()

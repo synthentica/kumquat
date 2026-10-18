@@ -2,6 +2,16 @@ import Foundation
 
 /// Decides which operations a set of files gets on each wheel.
 public enum OperationCatalog {
+    /// Answers once for every kind of file, off the main thread, so the lookups behind the wheel
+    /// (installed apps, encoders, FFmpeg) are cached before the first drag instead of during it.
+    public static func prewarm(context: OperationContext) {
+        let samples = ["png", "mp4", "mkv", "mp3", "ogg", "pdf", "docx", "pages", "pptx", "key", "xlsx", "numbers", "srt", "zip"]
+        for ext in samples {
+            let url = URL(fileURLWithPath: "/kumquat-prewarm.\(ext)")
+            for wheel in [Wheel.convert, .tools] { _ = operations(for: [url], wheel: wheel, context: context) }
+        }
+    }
+
     public static func operations(for urls: [URL], wheel: Wheel, context: OperationContext) -> [FileOperation] {
         guard !urls.isEmpty else { return [] }
         switch wheel {

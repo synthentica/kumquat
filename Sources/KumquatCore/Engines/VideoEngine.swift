@@ -24,8 +24,21 @@ public enum VideoEngine {
         session.outputURL = output
         session.outputFileType = fileType
         session.shouldOptimizeForNetworkUse = true
-        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-            session.exportAsynchronously { continuation.resume() }
+        // Audio-only exports are light; anything with video waits for a free encoder.
+        let lane = preset == AVAssetExportPresetAppleM4A ? nil : Lane.encoder
+        try await (lane ?? Lane.unlimited).run {
+            let poll = WorkProgress.sink.map { sink in
+                Task {
+                    while !Task.isCancelled {
+                        sink(Double(session.progress))
+                        try? await Task.sleep(nanoseconds: 120_000_000)
+                    }
+                }
+            }
+            await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+                session.exportAsynchronously { continuation.resume() }
+            }
+            poll?.cancel()
         }
         switch session.status {
         case .completed:
@@ -229,6 +242,7 @@ public enum VideoEngine {
             let time = CMTime(seconds: Double(index) / fps, preferredTimescale: 600)
             let (image, _) = try await generator.image(at: time)
             CGImageDestinationAddImage(destination, image, frame as CFDictionary)
+            WorkProgress.report(index + 1, of: count)
         }
         guard CGImageDestinationFinalize(destination) else {
             try? FileManager.default.removeItem(at: output)

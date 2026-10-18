@@ -23,12 +23,41 @@ public enum PDFEngine {
         }
         let folder = context.folderDestination(for: named, suffix: original == nil ? "pages" : "slides")
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        let digits = String(document.pageCount).count
-        for index in 0..<document.pageCount {
-            guard let page = document.page(at: index) else { continue }
-            let number = String(index + 1).leftPadded(to: digits)
-            let output = folder.appendingPathComponent("\(named.baseName) \(number).\(format.primaryExtension)")
-            try ImageEngine.write(try render(page, dpi: dpi), to: output, format: format, quality: context.imageQuality)
+        let count = document.pageCount
+        let digits = String(count).count
+        // Pages render side by side, each worker with its own copy of the document so PDFKit is never shared
+        // across threads. A few workers is enough: each page at 300 DPI takes tens of megabytes.
+        let workers = min(count, max(1, min(4, ProcessInfo.processInfo.activeProcessorCount / 2)))
+        let state = PageState()
+        // Read here: the worker threads aren't part of this task, so they can't see its task-locals.
+        let progress = WorkProgress.sink
+        DispatchQueue.concurrentPerform(iterations: workers) { worker in
+            let copy: PDFDocument
+            if worker == 0 {
+                copy = document
+            } else if let opened = try? open(url) {
+                copy = opened
+            } else {
+                state.fail(OperationError.unreadable(url.lastPathComponent))
+                return
+            }
+            for index in stride(from: worker, to: count, by: workers) where !state.failed {
+                autoreleasepool {
+                    guard let page = copy.page(at: index) else { return }
+                    let number = String(index + 1).leftPadded(to: digits)
+                    let output = folder.appendingPathComponent("\(named.baseName) \(number).\(format.primaryExtension)")
+                    do {
+                        try ImageEngine.write(try render(page, dpi: dpi), to: output, format: format, quality: context.imageQuality)
+                        state.finishPage { done in progress?(Double(done) / Double(count)) }
+                    } catch {
+                        state.fail(error)
+                    }
+                }
+            }
+        }
+        if let error = state.error {
+            try? FileManager.default.removeItem(at: folder)
+            throw error
         }
         return folder
     }
@@ -144,5 +173,32 @@ public enum PDFEngine {
 extension String {
     func leftPadded(to length: Int, with pad: Character = "0") -> String {
         count >= length ? self : String(repeating: pad, count: length - count) + self
+    }
+}
+
+/// Shared bookkeeping for pages rendered in parallel.
+private final class PageState: @unchecked Sendable {
+    private let lock = NSLock()
+    private var done = 0
+    private(set) var error: Error?
+
+    var failed: Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        return error != nil
+    }
+
+    /// Counts a page and reports the new total while still locked, so reports arrive in order.
+    func finishPage(_ report: (Int) -> Void) {
+        lock.lock()
+        defer { lock.unlock() }
+        done += 1
+        report(done)
+    }
+
+    func fail(_ error: Error) {
+        lock.lock()
+        if self.error == nil { self.error = error }
+        lock.unlock()
     }
 }
