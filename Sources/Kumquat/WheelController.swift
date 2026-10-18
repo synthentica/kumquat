@@ -39,6 +39,8 @@ final class WheelController {
     var onPerform: ((FileOperation, [URL]) -> Void)?
     private lazy var panel = WheelPanel(controller: self)
     private var hideWork: DispatchWorkItem?
+    /// The invisible practice opening after launch, cut short if a real one comes first.
+    private var rehearsal: DispatchWorkItem?
 
     var isVisible: Bool { panel.isVisible && model.isShown }
 
@@ -58,6 +60,11 @@ final class WheelController {
         }
         let signpost = Trace.signposter.beginInterval("Open wheel", id: Trace.signposter.makeSignpostID())
         hideWork?.cancel()
+        if let rehearsal {
+            rehearsal.cancel()
+            self.rehearsal = nil
+            panel.alphaValue = 1
+        }
         withoutAnimation {
             model.isShown = false
             model.exitScale = 0.9
@@ -115,14 +122,31 @@ final class WheelController {
             panel.displayIfNeeded()
             CATransaction.flush()
         }
-        panel.orderOut(nil)
-        panel.alphaValue = 1
+        // Then rehearse one animated opening, still invisible. The first spring and bloom transactions were
+        // most of a cold opening (130 of 149 ms on the CI runner), and drawing alone doesn't warm them up.
         withoutAnimation {
             model.isShown = false
             model.highlighted = nil
-            model.urls = []
-            model.operations = []
         }
+        panel.displayIfNeeded()
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.78)) { model.isShown = true }
+        playBloom(appearing: true)
+        panel.displayIfNeeded()
+        CATransaction.flush()
+        let finish = DispatchWorkItem { [weak self] in
+            guard let self else { return }
+            self.rehearsal = nil
+            self.panel.orderOut(nil)
+            self.panel.alphaValue = 1
+            self.withoutAnimation {
+                self.model.isShown = false
+                self.model.highlighted = nil
+                self.model.urls = []
+                self.model.operations = []
+            }
+        }
+        rehearsal = finish
+        DispatchQueue.main.asyncAfter(deadline: .now() + Motion.bloomDuration + 0.2, execute: finish)
     }
 
     func switchTo(_ wheel: Wheel) {

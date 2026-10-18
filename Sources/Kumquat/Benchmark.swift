@@ -20,7 +20,8 @@ enum Benchmark {
         OperationCatalog.prewarm(context: Settings.shared.context)
         wheel.prewarm()
         toast.prewarm()
-        spin(0.5)
+        // Long enough for the wheel's practice opening to finish, as it does in the app long before the first drag.
+        spin(1)
 
         let screen = NSScreen.main?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1440, height: 900)
         let center = NSPoint(x: screen.midX, y: screen.midY)
