@@ -43,7 +43,7 @@ jobs:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p /tmp/previews
-          cp build/previews/*.png build/icon-1024.png /tmp/previews/
+          cp build/previews/*.png build/previews/*.gif build/icon-1024.png /tmp/previews/
           cd /tmp/previews
           git init -q -b previews
           git config user.name "github-actions[bot]"

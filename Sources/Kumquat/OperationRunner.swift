@@ -4,6 +4,13 @@ import KumquatCore
 /// Runs an operation in the background and reports through the toast.
 final class OperationRunner {
     private let toast = ToastController()
+    /// Called with true when the first operation starts and false when the last one ends.
+    var onBusyChanged: ((Bool) -> Void)?
+    private var running = 0 {
+        didSet {
+            if (oldValue == 0) != (running == 0) { onBusyChanged?(running > 0) }
+        }
+    }
 
     func run(_ operation: FileOperation, on urls: [URL]) {
         let settings = Settings.shared
@@ -12,13 +19,18 @@ final class OperationRunner {
         let isAction = operation.wheel == .actions
         if !isAction { toast.showProgress(operation.verb + "…", detail: subject) }
         let started = Date()
+        if !isAction { running += 1 }
 
         Task.detached(priority: .userInitiated) {
             do {
                 let outcome = try await operation.perform(urls, context)
-                await MainActor.run { self.finish(outcome, operation: operation, started: started) }
+                await MainActor.run {
+                    if !isAction { self.running -= 1 }
+                    self.finish(outcome, operation: operation, started: started)
+                }
             } catch {
                 await MainActor.run {
+                    if !isAction { self.running -= 1 }
                     self.toast.showFailure("Couldn't finish", detail: error.localizedDescription)
                     self.playSound(success: false)
                 }

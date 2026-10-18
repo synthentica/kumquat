@@ -66,11 +66,12 @@ struct WheelLayout {
     }
 
     /// Point for a segment's label in a y-down view space centered at `center`.
-    func labelPoint(_ segment: Segment, center: CGPoint) -> CGPoint {
+    func labelPoint(_ segment: Segment, center: CGPoint, outward: CGFloat = 0) -> CGPoint {
         let radians = segment.midAngle * .pi / 180
+        let radius = segment.midRadius + outward
         return CGPoint(
-            x: center.x + segment.midRadius * CGFloat(sin(radians)),
-            y: center.y - segment.midRadius * CGFloat(cos(radians))
+            x: center.x + radius * CGFloat(sin(radians)),
+            y: center.y - radius * CGFloat(cos(radians))
         )
     }
 }

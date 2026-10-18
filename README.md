@@ -14,6 +14,10 @@
 </p>
 
 <p align="center">
+  <img src="https://github.com/synthentica/converter/raw/previews/wheel.gif" width="420" alt="The wheel opening, following the pointer and switching between Convert, Tools and Actions">
+</p>
+
+<p align="center">
   <img src="https://github.com/synthentica/converter/raw/previews/wheel-convert.png" width="32%" alt="Convert wheel">
   <img src="https://github.com/synthentica/converter/raw/previews/wheel-tools.png" width="32%" alt="Tools wheel">
   <img src="https://github.com/synthentica/converter/raw/previews/wheel-actions.png" width="32%" alt="Actions wheel">

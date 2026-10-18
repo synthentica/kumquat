@@ -9,8 +9,21 @@ final class WheelModel: ObservableObject {
     @Published var highlighted: Int?
     @Published var isKeyboardMode = false
     @Published var isShown = false
-    /// Offscreen rendering can't show live blur, so previews use a solid tint instead.
+    /// 0 → 1 while the wheel opens: the disc, hub and hint bar pop in.
+    @Published var appear: Double = 1
+    /// 0 → 1 each time a wheel's segments bloom out of the hub, on opening and on switching wheels.
+    @Published var bloom: Double = 1
+    /// Angles of the light on the rind, which follows the highlighted segment.
+    @Published var indicatorStart: Double = 0
+    @Published var indicatorEnd: Double = 0
+    /// The segment a file was just dropped on, which flashes as the wheel closes.
+    @Published var pressed: Int?
+    /// Scale the wheel grows from when opening, and shrinks or swells to when closing.
+    @Published var exitScale: CGFloat = 0.9
+    /// Offscreen rendering can't show live blur, so previews use solid glass instead.
     var isPreview = false
+    /// Lets the preview renderer draw the frames between two highlighted segments.
+    var liftOverride: [Int: Double]?
 
     var layout: WheelLayout { WheelLayout(count: operations.count) }
 
@@ -30,12 +43,17 @@ final class WheelController {
 
     func show(urls: [URL], wheel: Wheel, at point: NSPoint, keyboard: Bool) {
         hideWork?.cancel()
-        model.isKeyboardMode = keyboard
-        model.urls = urls
-        model.wheel = wheel
-        model.highlighted = nil
-        reloadOperations()
-        if keyboard, !model.operations.isEmpty { model.highlighted = 0 }
+        withoutAnimation {
+            model.isShown = false
+            model.exitScale = 0.9
+            model.pressed = nil
+            model.isKeyboardMode = keyboard
+            model.urls = urls
+            model.wheel = wheel
+            model.highlighted = nil
+            reloadOperations()
+        }
+        if keyboard, !model.operations.isEmpty { highlight(0) }
 
         panel.position(wheelCenter: point)
         if keyboard {
@@ -46,16 +64,47 @@ final class WheelController {
             panel.orderFrontRegardless()
         }
         withAnimation(.spring(response: 0.3, dampingFraction: 0.78)) { model.isShown = true }
+        playBloom(appearing: true)
     }
 
     func switchTo(_ wheel: Wheel) {
         guard wheel != model.wheel else { return }
-        withAnimation(.spring(response: 0.28, dampingFraction: 0.82)) {
+        withAnimation(Motion.switchWheel) {
             model.wheel = wheel
             model.highlighted = nil
             reloadOperations()
-            if model.isKeyboardMode, !model.operations.isEmpty { model.highlighted = 0 }
         }
+        playBloom(appearing: false)
+        if model.isKeyboardMode, !model.operations.isEmpty { highlight(0) }
+    }
+
+    /// Restarts the opening choreography from the first frame.
+    private func playBloom(appearing: Bool) {
+        guard !Motion.reduced else {
+            withoutAnimation {
+                model.bloom = 1
+                model.appear = 1
+            }
+            return
+        }
+        withoutAnimation {
+            model.bloom = 0
+            if appearing { model.appear = 0 }
+        }
+        // On the next pass of the run loop, so SwiftUI sees the reset before it animates.
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            withAnimation(.linear(duration: Motion.bloomDuration)) { self.model.bloom = 1 }
+            if appearing {
+                withAnimation(.linear(duration: Motion.appearDuration)) { self.model.appear = 1 }
+            }
+        }
+    }
+
+    private func withoutAnimation(_ changes: () -> Void) {
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction, changes)
     }
 
     func cycleWheel(forward: Bool = true) {
@@ -83,7 +132,26 @@ final class WheelController {
 
     func highlight(_ index: Int?) {
         guard index != model.highlighted else { return }
-        withAnimation(.spring(response: 0.22, dampingFraction: 0.75)) { model.highlighted = index }
+        if let index, let segment = model.layout.segments.first(where: { $0.index == index }) {
+            // Take the short way around the rind.
+            let turns = ((model.indicatorStart - segment.start) / 360).rounded()
+            let start = segment.start + turns * 360
+            let end = start + segment.end - segment.start
+            if model.highlighted == nil {
+                // Fade in where the pointer is instead of gliding over from the last spot.
+                withoutAnimation {
+                    model.indicatorStart = start
+                    model.indicatorEnd = end
+                }
+            }
+            withAnimation(Motion.highlight) {
+                model.highlighted = index
+                model.indicatorStart = start
+                model.indicatorEnd = end
+            }
+        } else {
+            withAnimation(Motion.highlight) { model.highlighted = nil }
+        }
         if index != nil {
             NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .now)
         }
@@ -100,7 +168,8 @@ final class WheelController {
         guard model.operations.indices.contains(index) else { return cancel() }
         let operation = model.operations[index]
         let urls = (dropped?.isEmpty == false ? dropped : nil) ?? model.urls
-        hide()
+        withoutAnimation { model.pressed = index }
+        hide(absorbing: true)
         guard !urls.isEmpty else { return }
         onPerform?(operation, urls)
     }
@@ -117,14 +186,20 @@ final class WheelController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.35, execute: work)
     }
 
-    func hide() {
+    /// Closes the wheel. After a drop it swells and fades as if it took the file in; otherwise it shrinks away.
+    func hide(absorbing: Bool = false) {
         hideWork?.cancel()
         guard model.isShown else { return }
-        withAnimation(.easeOut(duration: 0.12)) { model.isShown = false }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.14) { [weak self] in
+        let duration = absorbing ? 0.22 : 0.13
+        withAnimation(absorbing ? .easeIn(duration: duration) : .easeOut(duration: duration)) {
+            model.exitScale = absorbing ? 1.07 : 0.86
+            model.pressed = nil
+            model.isShown = false
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration + 0.02) { [weak self] in
             guard let self, !self.model.isShown else { return }
             self.panel.orderOut(nil)
-            self.model.highlighted = nil
+            self.withoutAnimation { self.model.highlighted = nil }
         }
     }
 

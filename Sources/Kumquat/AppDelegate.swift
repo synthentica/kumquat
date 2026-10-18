@@ -9,6 +9,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let settingsWindow = SettingsWindowController()
     private var statusItem: NSStatusItem?
     private var hotKey: HotKey?
+    private var spinTimer: Timer?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
@@ -17,6 +18,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         wheel.onPerform = { [weak self] operation, urls in
             self?.runner.run(operation, on: urls)
         }
+        runner.onBusyChanged = { [weak self] busy in self?.setSpinning(busy) }
         dragMonitor.onWheelKey = { [weak self] chosen in
             guard let self else { return }
             if self.wheel.isVisible {
@@ -70,6 +72,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func openRepository() {
         NSWorkspace.shared.open(AppInfo.repository)
+    }
+
+    /// Spins the menu bar slice while something is converting.
+    private func setSpinning(_ spinning: Bool) {
+        spinTimer?.invalidate()
+        spinTimer = nil
+        guard spinning, !Motion.reduced else {
+            statusItem?.button?.image = Glyphs.menuBarIcon()
+            return
+        }
+        let frames = (0..<6).map { Glyphs.menuBarIcon(lit: $0) }
+        var frame = 1
+        spinTimer = Timer.scheduledTimer(withTimeInterval: 0.11, repeats: true) { [weak self] _ in
+            frame = (frame + 1) % frames.count
+            self?.statusItem?.button?.image = frames[frame]
+        }
     }
 
     private func setUpStatusItem() {

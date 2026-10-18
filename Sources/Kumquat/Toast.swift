@@ -12,6 +12,8 @@ final class ToastModel: ObservableObject {
     @Published var title = ""
     @Published var detail = ""
     @Published var isShown = false
+    /// Bumped on each failure; the toast shakes once per step.
+    @Published var shakes = 0
 }
 
 /// A small glass capsule at the bottom of the screen showing progress and results.
@@ -69,6 +71,9 @@ final class ToastController {
             model.detail = detail
             model.isShown = true
         }
+        if state == .failed, !Motion.reduced {
+            withAnimation(.linear(duration: 0.45)) { model.shakes += 1 }
+        }
         if let autoHide {
             let work = DispatchWorkItem { [weak self] in self?.hide() }
             hideWork = work
@@ -93,16 +98,20 @@ private struct ToastView: View {
     var body: some View {
         HStack(spacing: 12) {
             ZStack {
-                Circle().fill(iconBackground).frame(width: 30, height: 30)
                 switch model.state {
                 case .working:
-                    ProgressView().controlSize(.small).tint(.white)
+                    Circle().fill(Color.white.opacity(0.1)).frame(width: 30, height: 30)
+                    SliceSpinner(size: 22)
+                        .transition(.scale(scale: 0.5).combined(with: .opacity))
                 case .done:
-                    Image(systemName: "checkmark").font(.system(size: 13, weight: .heavy)).foregroundStyle(.white)
+                    StatusBadge(colors: Palette.leaf, drawsCheck: true)
+                        .transition(.scale(scale: 0.4).combined(with: .opacity))
                 case .failed:
-                    Image(systemName: "exclamationmark").font(.system(size: 13, weight: .heavy)).foregroundStyle(.white)
+                    StatusBadge(colors: [Color(hex: 0xFF7A5C), Color(hex: 0xE5484D)], drawsCheck: false)
+                        .transition(.scale(scale: 0.4).combined(with: .opacity))
                 }
             }
+            .frame(width: 30, height: 30)
             VStack(alignment: .leading, spacing: 1) {
                 Text(model.title)
                     .font(.system(size: 13, weight: .semibold, design: .rounded))
@@ -113,26 +122,84 @@ private struct ToastView: View {
                     .lineLimit(2)
             }
             .frame(maxWidth: 300, alignment: .leading)
+            .id(model.title)
+            .transition(.opacity.combined(with: .offset(y: 6)))
         }
         .padding(.leading, 10)
         .padding(.trailing, 18)
         .padding(.vertical, 9)
-        .background(VisualEffect(material: .hudWindow).clipShape(Capsule()))
+        .background(
+            ZStack {
+                VisualEffect(material: .hudWindow)
+                Palette.glass.opacity(0.35)
+            }
+            .clipShape(Capsule())
+        )
         .overlay(Capsule().strokeBorder(Color.white.opacity(0.14), lineWidth: 0.75))
+        .overlay(alignment: .bottom) {
+            // A thin rind-colored line that sweeps along the bottom while working.
+            if model.state == .working {
+                ProgressSweep()
+                    .frame(height: 2)
+                    .padding(.horizontal, 22)
+                    .padding(.bottom, 1)
+                    .transition(.opacity)
+            }
+        }
         .shadow(color: .black.opacity(0.25), radius: 14, y: 6)
+        .modifier(ShakeEffect(progress: Double(model.shakes)))
         .environment(\.colorScheme, .dark)
         .contentShape(Capsule())
         .onTapGesture(perform: onClick)
-        .offset(y: model.isShown ? 0 : 24)
+        .scaleEffect(model.isShown ? 1 : 0.9)
+        .offset(y: model.isShown ? 0 : 28)
         .opacity(model.isShown ? 1 : 0)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
+}
 
-    private var iconBackground: AnyShapeStyle {
-        switch model.state {
-        case .working: AnyShapeStyle(Color.white.opacity(0.14))
-        case .done: AnyShapeStyle(LinearGradient(colors: [Color(hex: 0x34C77B), Color(hex: 0x1FA463)], startPoint: .top, endPoint: .bottom))
-        case .failed: AnyShapeStyle(LinearGradient(colors: [Color(hex: 0xFF6B5A), Color(hex: 0xE5484D)], startPoint: .top, endPoint: .bottom))
+/// A colored circle that pops in and draws its checkmark, or shows an exclamation mark.
+private struct StatusBadge: View {
+    let colors: [Color]
+    let drawsCheck: Bool
+    @State private var drawn: CGFloat = 0
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(LinearGradient(colors: colors, startPoint: .top, endPoint: .bottom))
+                .shadow(color: colors.last?.opacity(0.6) ?? .clear, radius: 6)
+            if drawsCheck {
+                CheckShape()
+                    .trim(from: 0, to: drawn)
+                    .stroke(Color.white, style: StrokeStyle(lineWidth: 2.6, lineCap: .round, lineJoin: .round))
+            } else {
+                Image(systemName: "exclamationmark")
+                    .font(.system(size: 13, weight: .heavy))
+                    .foregroundStyle(.white)
+            }
+        }
+        .frame(width: 30, height: 30)
+        .onAppear {
+            drawn = 0
+            withAnimation(.easeOut(duration: 0.32).delay(0.1)) { drawn = 1 }
+        }
+    }
+}
+
+/// An endless highlight sliding along a track.
+private struct ProgressSweep: View {
+    var body: some View {
+        TimelineView(.animation) { timeline in
+            let phase = (timeline.date.timeIntervalSinceReferenceDate * 0.9).truncatingRemainder(dividingBy: 1)
+            GeometryReader { proxy in
+                let width = proxy.size.width
+                Capsule()
+                    .fill(LinearGradient(colors: [Color.clear] + Palette.rind + [Color.clear], startPoint: .leading, endPoint: .trailing))
+                    .frame(width: width * 0.4)
+                    .offset(x: -width * 0.4 + (width * 1.4) * CGFloat(phase))
+            }
+            .clipShape(Capsule())
         }
     }
 }
