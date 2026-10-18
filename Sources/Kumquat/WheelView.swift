@@ -59,6 +59,7 @@ struct WheelView: View {
             VisualEffect(material: .hudWindow)
                 .frame(width: diameter, height: diameter)
                 .clipShape(Circle())
+                .overlay(Circle().fill(Color(hex: 0x15131C).opacity(model.isPreview ? 0.82 : 0.28)))
                 .overlay(Circle().strokeBorder(Color.white.opacity(0.16), lineWidth: 0.75))
 
             ForEach(layout.segments, id: \.index) { segment in

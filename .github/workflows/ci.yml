@@ -24,10 +24,13 @@ jobs:
         run: swift test
       - name: Bundle app
         run: ./scripts/bundle.sh
+      - name: Render previews
+        run: .build/debug/Kumquat --render-previews build/previews
       - uses: actions/upload-artifact@v4
         with:
           name: Kumquat
           path: |
             build/Kumquat.zip
             build/icon-1024.png
+            build/previews
           retention-days: 14

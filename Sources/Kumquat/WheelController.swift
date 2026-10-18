@@ -9,6 +9,8 @@ final class WheelModel: ObservableObject {
     @Published var highlighted: Int?
     @Published var isKeyboardMode = false
     @Published var isShown = false
+    /// Offscreen rendering can't show live blur, so previews use a solid tint instead.
+    var isPreview = false
 
     var layout: WheelLayout { WheelLayout(count: operations.count) }
 
