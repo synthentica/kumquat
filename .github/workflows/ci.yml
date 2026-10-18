@@ -5,6 +5,9 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  # The corpus is heavy on macOS minutes, so it runs nightly and by hand rather than on every push.
+  schedule:
+    - cron: "0 3 * * *"
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -88,6 +91,7 @@ jobs:
   # Converts ~50 hard real-world files and checks every result with outside tools.
   corpus:
     needs: ffmpeg
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: macos-15
     timeout-minutes: 150
     steps:
@@ -135,7 +139,7 @@ jobs:
             .corpus/results.jsonl
           retention-days: 30
       - name: Publish the report
-        if: always() && steps.check.outputs.skip != '1' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: always() && steps.check.outputs.skip != '1' && github.ref == 'refs/heads/main'
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
