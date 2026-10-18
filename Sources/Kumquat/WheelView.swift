@@ -34,10 +34,12 @@ struct WheelView: View {
     @ObservedObject private var settings = Settings.shared
 
     var body: some View {
-        VStack(spacing: 10) {
+        ZStack(alignment: .top) {
             wheel
                 .frame(width: WheelLayout.canvas, height: WheelLayout.canvas)
+            // Sits just under the wheel's outer edge, however many rings there are.
             HintBar(active: model.wheel, keyboard: model.isKeyboardMode)
+                .position(x: WheelLayout.canvas / 2, y: WheelLayout.canvas / 2 + model.layout.outerRadius + 34)
         }
         .frame(width: WheelPanel.size.width, height: WheelPanel.size.height, alignment: .top)
         .scaleEffect(model.isShown ? 1 : 0.82)
@@ -60,7 +62,8 @@ struct WheelView: View {
                 .frame(width: diameter, height: diameter)
                 .clipShape(Circle())
                 .overlay(Circle().fill(Color(hex: 0x15131C).opacity(model.isPreview ? 0.82 : 0.28)))
-                .overlay(Circle().strokeBorder(Color.white.opacity(0.16), lineWidth: 0.75))
+                .overlay(Circle().strokeBorder(Color.white.opacity(0.14), lineWidth: 0.75))
+                .overlay(Circle().strokeBorder(model.wheel.gradient, lineWidth: 1.5).opacity(0.75).padding(3))
 
             ForEach(layout.segments, id: \.index) { segment in
                 let selected = model.highlighted == segment.index
@@ -155,8 +158,8 @@ private struct Hub: View {
                     .multilineTextAlignment(.center)
                     .frame(width: diameter - 22)
                 Text(subtitle)
-                    .font(.system(size: 9.5, weight: .medium, design: .rounded))
-                    .foregroundStyle(Color.white.opacity(0.6))
+                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                    .foregroundStyle(model.highlightedOperation == nil ? Color.white.opacity(0.6) : model.wheel.tint)
                     .lineLimit(1)
                     .frame(width: diameter - 18)
             }
@@ -171,7 +174,6 @@ private struct Hub: View {
     }
 
     private var title: String {
-        if let operation = model.highlightedOperation { return operation.title }
         if model.urls.count == 1 { return model.urls[0].lastPathComponent }
         if model.urls.isEmpty { return model.wheel.title }
         return "\(model.urls.count) items"
@@ -179,7 +181,7 @@ private struct Hub: View {
 
     private var subtitle: String {
         if let operation = model.highlightedOperation {
-            return model.wheel == .convert ? operation.verb.replacingOccurrences(of: "Converting to", with: "Convert to") : model.wheel.title
+            return model.wheel == .convert ? "→ \(operation.title)" : operation.title
         }
         if model.operations.isEmpty, !model.urls.isEmpty { return "Nothing here" }
         return model.wheel.title

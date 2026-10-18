@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/icon.png" width="128" height="128" alt="Kumquat icon">
+  <img src="https://github.com/synthentica/converter/raw/previews/icon-1024.png" width="128" height="128" alt="Kumquat icon">
 </p>
 
 <h1 align="center">Kumquat</h1>
@@ -13,7 +13,11 @@
   Free · Open source · Offline · Native Swift · No account, no uploads
 </p>
 
----
+<p align="center">
+  <img src="https://github.com/synthentica/converter/raw/previews/wheel-convert.png" width="32%" alt="Convert wheel">
+  <img src="https://github.com/synthentica/converter/raw/previews/wheel-tools.png" width="32%" alt="Tools wheel">
+  <img src="https://github.com/synthentica/converter/raw/previews/wheel-actions.png" width="32%" alt="Actions wheel">
+</p>
 
 ## How it works
 
