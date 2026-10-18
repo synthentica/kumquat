@@ -84,3 +84,68 @@ jobs:
           git add .
           git commit -qm "Previews for ${GITHUB_SHA::7}"
           git push -qf "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}" previews
+
+  # Converts ~50 hard real-world files and checks every result with outside tools.
+  corpus:
+    needs: ffmpeg
+    runs-on: macos-15
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for a manifest
+        id: check
+        run: '[ -f Tests/Corpus/manifest.json ] || { echo "::notice::No corpus manifest yet"; echo skip=1 >> "$GITHUB_OUTPUT"; }'
+      - name: Restore FFmpeg
+        if: steps.check.outputs.skip != '1'
+        uses: actions/cache/restore@v4
+        with:
+          path: .ffmpeg/bin
+          key: ffmpeg-${{ hashFiles('scripts/build-ffmpeg.sh') }}
+          fail-on-cache-miss: true
+      - name: Cache corpus files
+        if: steps.check.outputs.skip != '1'
+        uses: actions/cache@v4
+        with:
+          path: .corpus/files
+          key: corpus-${{ hashFiles('Tests/Corpus/manifest.json') }}
+      - name: Install the outside judges
+        if: steps.check.outputs.skip != '1'
+        run: |
+          brew install ffmpeg qpdf
+          brew install verapdf || echo "::warning::veraPDF isn't available from Homebrew; PDF/A checks are skipped"
+          brew install --cask libreoffice || echo "::warning::LibreOffice didn't install; office outputs are skipped"
+      - name: Build
+        if: steps.check.outputs.skip != '1'
+        run: swift build -c release
+      - name: Convert and check
+        if: steps.check.outputs.skip != '1'
+        env:
+          KUMQUAT_FFMPEG: ${{ github.workspace }}/.ffmpeg/bin/ffmpeg
+        run: scripts/corpus.sh .build/release/Kumquat
+      - name: Summary
+        if: always() && steps.check.outputs.skip != '1'
+        run: '[ -f .corpus/report.md ] && cat .corpus/report.md >> "$GITHUB_STEP_SUMMARY" || true'
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.check.outputs.skip != '1'
+        with:
+          name: corpus-report
+          path: |
+            .corpus/report.md
+            .corpus/report.json
+            .corpus/results.jsonl
+          retention-days: 30
+      - name: Publish the report
+        if: always() && steps.check.outputs.skip != '1' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          [ -f .corpus/report.md ] || exit 0
+          mkdir -p /tmp/corpus-report
+          cp .corpus/report.md .corpus/report.json .corpus/results.jsonl /tmp/corpus-report/
+          cd /tmp/corpus-report
+          git init -q -b corpus-report
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -qm "Corpus report for ${GITHUB_SHA::7}"
+          git push -qf "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}" corpus-report
