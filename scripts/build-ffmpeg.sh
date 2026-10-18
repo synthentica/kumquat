@@ -84,7 +84,7 @@ build_arch() {
       --cc="clang -arch $arch" --cxx="clang++ -arch $arch" \
       --extra-cflags="-mmacosx-version-min=$MIN_MACOS -I$prefix/include" \
       --extra-ldflags="-mmacosx-version-min=$MIN_MACOS -L$prefix/lib" \
-      --pkg-config-flags=--static \
+      --extra-libs="-liconv" --pkg-config-flags=--static \
       --disable-autodetect --disable-debug --disable-doc --disable-ffplay --disable-ffprobe \
       --disable-network --disable-indevs --disable-outdevs --disable-protocols --enable-protocol=file,pipe \
       --enable-videotoolbox --enable-audiotoolbox --enable-zlib --enable-bzlib --enable-iconv \
