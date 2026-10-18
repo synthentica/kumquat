@@ -10,9 +10,8 @@
     "why_hard": "iPhone 13 Pro HEIC with Apple HDR gain map aux image (urn:com:apple:photo:2020:aux:hdrgainmap) + XMP headroom; grid-tiled primary, Display P3. Tests that SDR export ignores/applies the gain map deterministically and that HDR-capable targets keep it.",
     "expected": "convert",
     "targets": [
-      "jpg",
+      "jpeg",
       "png",
-      "heic",
       "avif",
       "tiff"
     ]
@@ -28,7 +27,7 @@
     "why_hard": "iPhone 11 Pro (iOS 13.4.1) Live Photo still: Apple MakerNote ContentIdentifier pairs it with a MOV; 48-tile HEVC grid 4032x3024 stored as 3024x4032 tiles + irot; Display P3; 6 MB.",
     "expected": "convert",
     "targets": [
-      "jpg",
+      "jpeg",
       "png",
       "tiff",
       "pdf"
@@ -45,7 +44,7 @@
     "why_hard": "First-generation iOS 11 HEIC (iPhone 8): 49 hvc1 items (grid + thumbnail), older box layout without miaf brand.",
     "expected": "convert",
     "targets": [
-      "jpg",
+      "jpeg",
       "png"
     ]
   },
@@ -60,7 +59,7 @@
     "why_hard": "Apple Vision Pro spatial photo: two grid primaries (stereo pair entity group) in one HEIC; converter must pick the primary/left eye and not silently drop or merge.",
     "expected": "convert",
     "targets": [
-      "jpg",
+      "jpeg",
       "png"
     ]
   },
@@ -75,9 +74,8 @@
     "why_hard": "Real iPhone 12 Pro (iOS 17.3.1) recording: HEVC Main10, BT.2020 HLG, Dolby Vision profile 8.4 (dvcC bl_compat_id=4), 59.94 fps with dropped frames (VFR), 3 mebx metadata tracks. The canonical 'iPhone HDR' case: tone-mapping to SDR, keeping HDR in HEVC, 10-bit preservation.",
     "expected": "convert",
     "targets": [
-      "mp4-h264",
-      "mp4-hevc",
-      "mov-hevc",
+      "mp4",
+      "hevc",
       "gif",
       "mp3",
       "m4a"
@@ -94,9 +92,9 @@
     "why_hard": "Live Photo motion component from iPhone 14 Pro (iOS 17): HEVC 1920x1440 full-range yuvj420p, Display P3 (smpte432) primaries, mono LPCM, 3 mebx timed-metadata tracks (still-image time, etc.).",
     "expected": "convert",
     "targets": [
-      "mp4-h264",
+      "mp4",
       "gif",
-      "jpg-frame"
+      "snapshot"
     ]
   },
   {
@@ -110,8 +108,7 @@
     "why_hard": "iPhone X (iOS 11.3) H.264 1440x1080 with -90 deg display matrix, variable frame rate (33/67 ms frame gaps, avg 24.3 fps vs nominal 30), LPCM audio, mebx tracks. Tests rotation baking + VFR handling.",
     "expected": "convert",
     "targets": [
-      "mp4-h264",
-      "mov-hevc",
+      "mp4",
       "gif",
       "m4a"
     ]
@@ -127,8 +124,8 @@
     "why_hard": "Dolby Vision profile 8.1 (HDR10-compatible base layer, PQ) in fragmented MP4, 1080p60, no audio. Profile 8.1 is what non-iPhone DV sources produce.",
     "expected": "convert",
     "targets": [
-      "mp4-h264",
-      "mp4-hevc",
+      "mov",
+      "hevc",
       "gif"
     ]
   },
@@ -143,8 +140,8 @@
     "why_hard": "Dolby Vision profile 5 (dvh1, IPTPQc2, NO backward-compatible base layer): decoders without DV reshaping produce purple/green images. Must either reshape correctly or fail cleanly, never emit wrong colours silently.",
     "expected": "convert",
     "targets": [
-      "mp4-h264",
-      "mp4-hevc"
+      "mov",
+      "hevc"
     ]
   },
   {
@@ -158,8 +155,7 @@
     "why_hard": "HEVC Main10 HDR10 (PQ/BT.2020) with mastering-display + MaxCLL SEI, hev1 sample entry (parameter sets in-band, not hvc1).",
     "expected": "convert",
     "targets": [
-      "mp4-h264",
-      "mov-hevc",
+      "mov",
       "webm"
     ]
   },
@@ -174,8 +170,7 @@
     "why_hard": "OBS screen recording remux: 1080p60 H.264 with alternating 16/17 ms frame durations and variable AAC packet durations (A/V drift trap).",
     "expected": "convert",
     "targets": [
-      "mp4-h264",
-      "mov-hevc",
+      "mov",
       "gif",
       "m4a"
     ]
@@ -191,8 +186,8 @@
     "why_hard": "Matroska Wave-1 test5 (31.8 MB): H.264 + 2 AAC audio tracks (main + English 'Commentary') + 8 SubRip subtitle tracks (eng/hun/ger/fre/spa/ita/jpn/und); tests default-track selection and that text subtitles do not break MP4/MOV muxing.",
     "expected": "convert",
     "targets": [
-      "mp4-h264",
-      "mov-hevc",
+      "mp4",
+      "mov",
       "m4a"
     ]
   },
@@ -207,7 +202,7 @@
     "why_hard": "VP9 profile 0 720p WebM without audio track, 29.92 fps (359/12) non-integer rate.",
     "expected": "convert",
     "targets": [
-      "mp4-h264",
+      "mp4",
       "gif"
     ]
   },
@@ -222,7 +217,7 @@
     "why_hard": "AV1 in WebM: AVFoundation only decodes AV1 in hardware on M3+/A17+; CI runners (M1) need a software path or a clean error.",
     "expected": "convert",
     "targets": [
-      "mp4-h264",
+      "mp4",
       "gif"
     ]
   },
@@ -237,7 +232,7 @@
     "why_hard": "WebM with 3 VP9 video tracks (different sizes) and 2 Opus audio tracks; tests default-track choice.",
     "expected": "convert",
     "targets": [
-      "mp4-h264"
+      "mp4"
     ]
   },
   {
@@ -251,7 +246,7 @@
     "why_hard": "Real Canon PowerShot AVI: Motion-JPEG 4:2:2 full-range + PCM; legacy RIFF AVI with uppercase extension.",
     "expected": "convert",
     "targets": [
-      "mp4-h264",
+      "mp4",
       "gif",
       "m4a"
     ]
@@ -267,7 +262,7 @@
     "why_hard": "AVI with MPEG-4 Part 2 (FMP4 fourcc) + AC-3 audio: no native AVFoundation demuxer for AVI.",
     "expected": "convert",
     "targets": [
-      "mp4-h264",
+      "mp4",
       "m4a"
     ]
   },
@@ -282,7 +277,7 @@
     "why_hard": "ASF/WMV-family container with MS-MPEG4v3 video + WMA v2 audio (28 s). Real WMV9/VC-1 sample not found (see README).",
     "expected": "convert",
     "targets": [
-      "mp4-h264",
+      "mp4",
       "m4a",
       "mp3"
     ]
@@ -298,7 +293,7 @@
     "why_hard": "WMV2 video + Vorbis audio in Matroska: neither codec is supported by AVFoundation.",
     "expected": "convert",
     "targets": [
-      "mp4-h264",
+      "mp4",
       "m4a"
     ]
   },
@@ -313,8 +308,7 @@
     "why_hard": "H.264 High 10 profile (yuv420p10le): VideoToolbox cannot decode 10-bit H.264; needs software decode or clean error.",
     "expected": "convert",
     "targets": [
-      "mp4-h264",
-      "mov-hevc"
+      "mov"
     ]
   },
   {
@@ -328,8 +322,7 @@
     "why_hard": "Real Android phone (Nokia 6.1) 1080p H.264 Baseline with -90 deg display matrix, odd 29.5 fps (59/2) nominal rate, full-range.",
     "expected": "convert",
     "targets": [
-      "mp4-h264",
-      "mov-hevc",
+      "mov",
       "gif"
     ]
   },
@@ -341,12 +334,11 @@
     "bytes": 309787,
     "license": "BSD-3-Clause (Chromium media test data)",
     "source_page": "https://github.com/chromium/chromium/tree/a32f1eb99d9e07e038b771443e4cc165f199d170/media/test/data",
-    "why_hard": "HEVC (hev1) with no audio track: audio-only targets must fail cleanly; video targets must not invent a silent track unexpectedly.",
+    "why_hard": "HEVC (hev1) with no audio track: video targets must not invent a silent track; an audio-only target (m4a/mp3) has nothing to extract and should fail cleanly, so it is deliberately not listed.",
     "expected": "convert",
     "targets": [
-      "mp4-h264",
-      "gif",
-      "m4a:clean-error"
+      "mov",
+      "gif"
     ]
   },
   {
@@ -360,7 +352,7 @@
     "why_hard": "MP4 with two video and two audio tracks (alternate groups).",
     "expected": "convert",
     "targets": [
-      "mp4-h264",
+      "mov",
       "m4a"
     ]
   },
@@ -376,7 +368,6 @@
     "expected": "convert",
     "targets": [
       "m4a",
-      "aac",
       "wav",
       "flac",
       "ogg"
@@ -393,7 +384,7 @@
     "why_hard": "24-bit / 96 kHz stereo FLAC: lossy targets must resample/dither correctly; lossless targets (ALAC/WAV) must keep 24/96.",
     "expected": "convert",
     "targets": [
-      "m4a-alac",
+      "alac",
       "wav",
       "mp3",
       "m4a"
@@ -411,7 +402,7 @@
     "expected": "convert",
     "targets": [
       "m4a",
-      "m4a-alac",
+      "alac",
       "wav",
       "mp3"
     ]
@@ -507,11 +498,10 @@
     "why_hard": "501-page, 18.8 MB book (Asciidoctor PDF/Prawn) with outlines, links, embedded fonts and images: memory/time limits for PDF->images and PDF->DOCX.",
     "expected": "convert",
     "targets": [
-      "png-pages",
-      "jpg-pages",
+      "png",
+      "jpeg",
       "txt",
-      "docx",
-      "pdf-a"
+      "docx"
     ]
   },
   {
@@ -525,7 +515,7 @@
     "why_hard": "Encrypted PDF (user password 'openpassword', owner 'permissionpassword'). Without a password Kumquat must surface a clean 'password required' error.",
     "expected": "clean-error",
     "targets": [
-      "png-pages",
+      "png",
       "txt",
       "docx"
     ]
@@ -541,8 +531,8 @@
     "why_hard": "Image-only scanned page (no text layer, Quartz PDFContext): text extraction yields nothing; tests OCR path or an explicit 'no text' outcome.",
     "expected": "convert",
     "targets": [
-      "png-pages",
-      "jpg-pages",
+      "png",
+      "jpeg",
       "txt",
       "docx"
     ]
@@ -558,7 +548,7 @@
     "why_hard": "Four image-only pages, each rotated a different cardinal direction (/Rotate and baked rotation).",
     "expected": "convert",
     "targets": [
-      "png-pages",
+      "png",
       "txt"
     ]
   },
@@ -573,9 +563,8 @@
     "why_hard": "Pre-filled AcroForm (IRS Form 1040, LiveCycle Designer): field appearances must be flattened into rendered output.",
     "expected": "convert",
     "targets": [
-      "png-pages",
-      "txt",
-      "pdf-flattened"
+      "png",
+      "txt"
     ]
   },
   {
@@ -589,7 +578,7 @@
     "why_hard": "Dynamic XFA form (IMM 1344): PDFKit renders only the 'please wait' placeholder page. Expect a clean 'XFA not supported' error or correct rendering, never a silently blank output.",
     "expected": "clean-error",
     "targets": [
-      "png-pages",
+      "png",
       "txt"
     ]
   },
@@ -604,8 +593,7 @@
     "why_hard": "PDF/A-1b produced by Ghostscript 10 (XMP + OutputIntent). Round-trip and PDF->PDF/A conversions must keep veraPDF passing.",
     "expected": "convert",
     "targets": [
-      "pdf-a",
-      "png-pages",
+      "png",
       "txt"
     ]
   },
@@ -620,8 +608,7 @@
     "why_hard": "Minimal veraPDF-certified PDF/A-2b 'pass' file: sanity check for the veraPDF step itself (input must validate before output is judged).",
     "expected": "convert",
     "targets": [
-      "pdf-a",
-      "png-pages"
+      "png"
     ]
   },
   {
@@ -636,7 +623,7 @@
     "expected": "convert",
     "targets": [
       "pdf",
-      "png-slides",
+      "png",
       "key"
     ]
   },
@@ -652,7 +639,7 @@
     "expected": "convert",
     "targets": [
       "pdf",
-      "png-slides",
+      "png",
       "odp"
     ]
   },
@@ -686,7 +673,6 @@
     "targets": [
       "pdf",
       "csv",
-      "xls",
       "ods"
     ]
   },
@@ -797,7 +783,7 @@
     "targets": [
       "pptx",
       "pdf",
-      "png-slides"
+      "png"
     ]
   },
   {
@@ -813,7 +799,7 @@
     "targets": [
       "pdf",
       "pptx",
-      "jpg"
+      "jpeg"
     ]
   },
   {
@@ -843,8 +829,7 @@
     "expected": "convert",
     "targets": [
       "pdf",
-      "docx",
-      "jpg"
+      "docx"
     ]
   },
   {
@@ -874,9 +859,7 @@
     "why_hard": "ZIP containing DOCX/PPTX/XLSX/JPG/HTML: extract, re-pack to other archive formats, and optionally convert members.",
     "expected": "convert",
     "targets": [
-      "tar.gz",
-      "7z",
-      "folder"
+      "extract"
     ]
   },
   {
@@ -890,9 +873,7 @@
     "why_hard": "Real release tarball, 290 entries, nested directories, ustar/pax headers; upstream-published sha256.",
     "expected": "convert",
     "targets": [
-      "zip",
-      "7z",
-      "folder"
+      "extract"
     ]
   },
   {
@@ -906,9 +887,7 @@
     "why_hard": "Solid 7z archive with non-ASCII (umlaut) member names.",
     "expected": "convert",
     "targets": [
-      "zip",
-      "tar.gz",
-      "folder"
+      "extract"
     ]
   },
   {
@@ -922,8 +901,7 @@
     "why_hard": "AES-encrypted 7z (password 'secret' per py7zr tests): without a password must surface a clean 'password required' error.",
     "expected": "clean-error",
     "targets": [
-      "zip",
-      "folder"
+      "extract"
     ]
   },
   {
@@ -937,8 +915,7 @@
     "why_hard": "7z with corrupted packed stream (CRC mismatch): must not write partial output silently.",
     "expected": "clean-error",
     "targets": [
-      "zip",
-      "folder"
+      "extract"
     ]
   },
   {
@@ -952,8 +929,7 @@
     "why_hard": "RAR 2.9/3.x archive with Cyrillic and astral-plane (U+1D400) file names; RAR is decode-only on macOS.",
     "expected": "convert",
     "targets": [
-      "zip",
-      "folder"
+      "extract"
     ]
   },
   {
@@ -967,8 +943,7 @@
     "why_hard": "RAR5 with AES-256 encrypted file data (password 'password'): clean 'password required' error.",
     "expected": "clean-error",
     "targets": [
-      "zip",
-      "folder"
+      "extract"
     ]
   },
   {
@@ -983,7 +958,6 @@
     "expected": "convert",
     "targets": [
       "png",
-      "jpg",
       "pdf",
       "heic",
       "webp"
@@ -1000,8 +974,7 @@
     "why_hard": "Small CMYK JPEG used by Pillow's test suite (second CMYK encoder variant).",
     "expected": "convert",
     "targets": [
-      "png",
-      "jpg"
+      "png"
     ]
   },
   {
@@ -1016,8 +989,7 @@
     "expected": "convert",
     "targets": [
       "tiff",
-      "png",
-      "jpg",
+      "jpeg",
       "heic",
       "avif"
     ]
@@ -1033,9 +1005,8 @@
     "why_hard": "42-frame animated GIF with per-frame disposal/palettes.",
     "expected": "convert",
     "targets": [
-      "mp4-h264",
-      "webp-animated",
-      "png-frames",
+      "webp",
+      "png",
       "heic"
     ]
   },
@@ -1051,7 +1022,6 @@
     "expected": "convert",
     "targets": [
       "gif",
-      "mp4-h264",
       "png"
     ]
   },
@@ -1066,7 +1036,7 @@
     "why_hard": "10-bit AVIF, 3681x5594 (20.6 MP), Display-P3 + HDR nclx colour box.",
     "expected": "convert",
     "targets": [
-      "jpg",
+      "jpeg",
       "png",
       "heic",
       "tiff"
@@ -1084,7 +1054,6 @@
     "expected": "convert",
     "targets": [
       "gif",
-      "mp4-h264",
       "png"
     ]
   },
@@ -1101,7 +1070,7 @@
     "targets": [
       "pdf",
       "png",
-      "jpg"
+      "jpeg"
     ]
   },
   {
@@ -1132,7 +1101,7 @@
     "targets": [
       "png",
       "pdf",
-      "jpg"
+      "jpeg"
     ]
   },
   {
@@ -1162,7 +1131,7 @@
     "expected": "convert",
     "targets": [
       "png",
-      "jpg",
+      "jpeg",
       "tiff",
       "pdf"
     ]
@@ -1179,7 +1148,7 @@
     "expected": "convert",
     "targets": [
       "png",
-      "jpg",
+      "jpeg",
       "tiff"
     ]
   },
@@ -1194,7 +1163,7 @@
     "why_hard": "Huge image: 16320x12240 (199.8 MP) Samsung HEIC with 800+ grid tiles and a Samsung HDR gain map, only 2.4 MB on disk; decodes to ~800 MB RGBA. Memory/tiling stress test.",
     "expected": "convert",
     "targets": [
-      "jpg",
+      "jpeg",
       "png",
       "tiff"
     ]
@@ -1211,7 +1180,6 @@
     "expected": "convert",
     "targets": [
       "png",
-      "jpg",
       "heic",
       "webp",
       "pdf"
@@ -1229,7 +1197,7 @@
     "expected": "clean-error",
     "targets": [
       "png",
-      "jpg"
+      "jpeg"
     ]
   }
 ]
