@@ -50,7 +50,15 @@ public enum DocumentEngine {
                 try FileManager.default.copyItem(at: url, to: output)
                 return output
             }
+            // macOS's own ODT writer breaks on lists inside table cells and leaves out images
+            // (corpus: docx-images-in-tables), so Word and RTF files go through LibreOffice when it's installed.
+            if format == .odt, let source, [.docx, .doc, .rtf].contains(source), OfficeEngine.libreOffice != nil,
+               OfficeEngine.canConvert(source, to: .odt) {
+                try await OfficeEngine.convert(url, to: .odt, output: output)
+                return output
+            }
             try await write(try await read(url), to: output, as: format, title: url.baseName)
+            if format == .odt { try await checkODT(output) }
             return output
         } catch {
             try? FileManager.default.removeItem(at: output)
@@ -84,6 +92,16 @@ public enum DocumentEngine {
             try await OfficeEngine.convert(document, to: .pages, output: output)
         default:
             throw OperationError.unsupported(format.displayName)
+        }
+    }
+
+    /// Fails when the ODT's text isn't well-formed XML, which no office app will open.
+    static func checkODT(_ output: URL) async throws {
+        let content = output.deletingLastPathComponent().appendingPathComponent(".kumquat-\(UUID().uuidString.prefix(8)).xml")
+        defer { try? FileManager.default.removeItem(at: content) }
+        try await Shell.run("/usr/bin/unzip", ["-p", output.path, "content.xml"], standardOutput: content)
+        guard let parser = XMLParser(contentsOf: content), parser.parse() else {
+            throw OperationError.failed("macOS couldn't write this document as ODT. With LibreOffice installed, Kumquat uses it instead.")
         }
     }
 

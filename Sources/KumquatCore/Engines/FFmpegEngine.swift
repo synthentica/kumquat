@@ -216,6 +216,12 @@ public enum FFmpegEngine {
         // exception: asking for the media engine picks FFmpeg's own AV1 decoder, which then fails on Macs before M3
         // (corpus: webm-av1), while leaving it out picks libdav1d.
         let decode = hardwareDecode && input.fileCategory == .video ? ["-hwaccel", "videotoolbox"] : []
+        // Sound that starts after the picture (corpus: an ASF whose audio begins at 0.39 s) is padded with silence
+        // from zero, so it stays in sync and keeps its full length. Copied sound can't be filtered.
+        var arguments = arguments
+        if let codec = arguments.firstIndex(of: "-c:a").map({ arguments[$0 + 1] }), codec != "copy", !arguments.contains("-af") {
+            arguments += ["-af", "aresample=async=1:first_pts=0"]
+        }
         do {
             try await Shell.run(
                 ffmpeg.path,
