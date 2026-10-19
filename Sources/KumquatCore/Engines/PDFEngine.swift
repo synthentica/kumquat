@@ -140,7 +140,8 @@ public enum PDFEngine {
     /// down is first skimmed in every direction with the quick recognizer, and only the direction it reads best
     /// gets the slow, accurate pass.
     static func recognizeText(on page: PDFPage) -> String {
-        guard let image = try? render(page, dpi: 200) else { return "" }
+        // Blank pages are common in books and cost several recognizer passes each, so they're skipped up front.
+        guard !isBlank(page), let image = try? render(page, dpi: 200) else { return "" }
         func read(_ orientation: CGImagePropertyOrientation, accurate: Bool) -> (text: String, score: Float) {
             let request = VNRecognizeTextRequest()
             request.recognitionLevel = accurate ? .accurate : .fast
@@ -160,22 +161,41 @@ public enum PDFEngine {
         var direction = CGImagePropertyOrientation.up
         let upright = read(.up, accurate: false)
         let characters = Float(upright.text.count)
+        var best = upright.score
         if characters < 40 || upright.score < characters * 0.6 {
-            var best = upright.score
             for orientation in [CGImagePropertyOrientation.right, .left, .down] {
                 let score = read(orientation, accurate: false).score
                 if score > best { best = score; direction = orientation }
             }
         }
+        // Nothing in any direction: a picture without text.
+        guard best > 0 else { return "" }
         let result = read(direction, accurate: true)
         guard result.text.isEmpty else { return result.text }
         // The skim found nothing it could trust: read the other directions accurately and keep the best.
-        var best = result
+        var fallback = result
         for orientation in [CGImagePropertyOrientation.up, .right, .left, .down] where orientation != direction {
             let other = read(orientation, accurate: true)
-            if other.score > best.score { best = other }
+            if other.score > fallback.score { fallback = other }
         }
-        return best.text
+        return fallback.text
+    }
+
+    /// True when a small rendering of the page is all near-white.
+    static func isBlank(_ page: PDFPage) -> Bool {
+        guard let thumbnail = try? render(page, dpi: 18), let data = thumbnail.dataProvider?.data,
+              let bytes = CFDataGetBytePtr(data)
+        else { return false }
+        // Four bytes a pixel, the last one unused; rows may be padded.
+        let rowBytes = thumbnail.bytesPerRow
+        guard thumbnail.bitsPerPixel == 32, CFDataGetLength(data) >= rowBytes * thumbnail.height else { return false }
+        for row in 0..<thumbnail.height {
+            for column in 0..<thumbnail.width {
+                let pixel = row * rowBytes + column * 4
+                if bytes[pixel] < 235 || bytes[pixel + 1] < 235 || bytes[pixel + 2] < 235 { return false }
+            }
+        }
+        return true
     }
 
     /// Text laid out in rows, with columns split where the text has wide gaps or tabs.

@@ -638,6 +638,9 @@ final class EngineTests: XCTestCase {
         let url = dir.appendingPathComponent("scan.pdf")
         var box = CGRect(x: 0, y: 0, width: 595, height: 842)
         let pdf = CGContext(url as CFURL, mediaBox: &box, nil)!
+        // A blank page in between, which is skipped without reading.
+        pdf.beginPage(mediaBox: &box)
+        pdf.endPage()
         for (words, turned) in [("Kumquat reads scans", false), ("Sideways pages too", true)] {
             pdf.beginPage(mediaBox: &box)
             let image = scan(words, turned: turned)
@@ -650,6 +653,8 @@ final class EngineTests: XCTestCase {
         let text = try PDFEngine.attributedText(url).string
         XCTAssertTrue(text.contains("Kumquat reads scans"), text)
         XCTAssertTrue(text.contains("Sideways pages too"), text)
+        XCTAssertTrue(PDFEngine.isBlank(PDFDocument(url: url)!.page(at: 0)!))
+        XCTAssertFalse(PDFEngine.isBlank(PDFDocument(url: url)!.page(at: 1)!))
     }
 
     func testLaneCapsConcurrency() async throws {
