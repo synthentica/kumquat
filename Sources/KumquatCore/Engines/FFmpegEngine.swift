@@ -48,6 +48,62 @@ public enum FFmpegEngine {
         }
     }
 
+    /// The encoder a format needs that this FFmpeg wasn't built with, if any. Homebrew's FFmpeg, for one,
+    /// comes without libwebp and libvorbis, and offering WebP or OGG there only ends in "Encoder not found".
+    public static func missingEncoder(for format: FileFormat, ffmpeg: URL) -> String? {
+        let arguments = arguments(for: format)
+        let needed = arguments.indices.dropLast()
+            .filter { ["-c:v", "-c:a"].contains(arguments[$0]) && arguments[$0 + 1] != "copy" }
+            .map { arguments[$0 + 1] }
+        guard !needed.isEmpty else { return nil }
+        let available = encoders(ffmpeg)
+        // An FFmpeg that won't list its encoders still gets tried, as before.
+        guard !available.isEmpty else { return nil }
+        return needed.first { !available.contains($0) }
+    }
+
+    public static func canEncode(_ format: FileFormat, ffmpeg: URL) -> Bool {
+        missingEncoder(for: format, ffmpeg: ffmpeg) == nil
+    }
+
+    private static let encoderCache = EncoderCache()
+
+    /// Asked once per FFmpeg binary; `OperationCatalog.prewarm` does it off the main thread.
+    static func encoders(_ ffmpeg: URL) -> Set<String> {
+        encoderCache.value(for: ffmpeg.path) {
+            let process = Process()
+            process.executableURL = ffmpeg
+            process.arguments = ["-hide_banner", "-encoders"]
+            let pipe = Pipe()
+            process.standardOutput = pipe
+            process.standardError = FileHandle.nullDevice
+            guard (try? process.run()) != nil else { return [] }
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            process.waitUntilExit()
+            // " V....D libwebp              libwebp WebP image (codec webp)"
+            let names = String(decoding: data, as: UTF8.self).split(separator: "\n").compactMap { line -> String? in
+                let fields = line.split(separator: " ")
+                guard fields.count >= 2, fields[0].count == 6, fields[0] != "------" else { return nil }
+                return String(fields[1])
+            }
+            return Set(names)
+        }
+    }
+
+    private final class EncoderCache: @unchecked Sendable {
+        private let lock = NSLock()
+        private var known: [String: Set<String>] = [:]
+
+        func value(for key: String, _ make: () -> Set<String>) -> Set<String> {
+            lock.lock()
+            defer { lock.unlock() }
+            if let value = known[key] { return value }
+            let value = make()
+            known[key] = value
+            return value
+        }
+    }
+
     /// What FFmpeg says about a file: the first video stream's codec, like "h264", and the length in seconds.
     struct Probe {
         /// False when FFmpeg couldn't open the file at all.
@@ -111,7 +167,8 @@ public enum FFmpegEngine {
             var lastError: Error?
             for arguments in attempts(for: format, codec: info.codec) {
                 do {
-                    try await run(ffmpeg, input: url, output: output, arguments: arguments, duration: info.duration)
+                    try await run(ffmpeg, input: url, output: output, arguments: arguments, duration: info.duration,
+                                  hardwareDecode: info.codec != "av1")
                     return output
                 } catch {
                     lastError = error
@@ -139,7 +196,8 @@ public enum FFmpegEngine {
         return output
     }
 
-    static func run(_ ffmpeg: URL, input: URL, output: URL, arguments: [String], duration: Double? = nil) async throws {
+    static func run(_ ffmpeg: URL, input: URL, output: URL, arguments: [String], duration: Double? = nil,
+                    hardwareDecode: Bool = true) async throws {
         // With a known length, FFmpeg's machine-readable progress on stdout drives the progress bar.
         var progressArguments: [String] = []
         var onLine: (@Sendable (String) -> Void)?
@@ -154,8 +212,10 @@ public enum FFmpegEngine {
             }
         }
         // Decoding on the media engine: a 4K HEVC clip to GIF took 49 s in the corpus with software decoding.
-        // FFmpeg falls back to software by itself for codecs the Mac can't decode in hardware.
-        let decode = input.fileCategory == .video ? ["-hwaccel", "videotoolbox"] : []
+        // FFmpeg falls back to software by itself for most codecs the Mac can't decode in hardware. AV1 is the
+        // exception: asking for the media engine picks FFmpeg's own AV1 decoder, which then fails on Macs before M3
+        // (corpus: webm-av1), while leaving it out picks libdav1d.
+        let decode = hardwareDecode && input.fileCategory == .video ? ["-hwaccel", "videotoolbox"] : []
         do {
             try await Shell.run(
                 ffmpeg.path,

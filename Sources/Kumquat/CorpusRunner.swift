@@ -66,6 +66,16 @@ enum CorpusRunner {
                 }
                 guard let operation = offered.first(where: { $0.id == "convert.\(target)" || $0.id == "tools.\(target)" }) else {
                     line["status"] = "not-offered"
+                    // A target this machine's FFmpeg can't write says nothing about Kumquat: the bundled FFmpeg has it.
+                    // Nor does a Keynote, Pages or Numbers target on a Mac without that app.
+                    if let format = FileFormat(rawValue: target) {
+                        if let ffmpeg, let encoder = FFmpegEngine.missingEncoder(for: format, ffmpeg: ffmpeg) {
+                            line["unavailable"] = "this FFmpeg has no \(encoder) encoder"
+                        } else if [.key, .pages, .numbers].contains(format), let original = FileFormat.detect(source),
+                                  !OfficeEngine.canConvert(original, to: format) {
+                            line["unavailable"] = "no app on this Mac writes \(format.displayName)"
+                        }
+                    }
                     journal.write(line, key: key)
                     continue
                 }

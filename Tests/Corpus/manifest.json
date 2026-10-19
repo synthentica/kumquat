@@ -810,8 +810,8 @@
     "bytes": 54228,
     "license": "MIT (docling test data)",
     "source_page": "https://github.com/docling-project/docling/tree/0e54294231b69bc2cf7a39873235495788f76b57/tests/data/keynote/sources",
-    "why_hard": "Keynote document that is a ZIP containing a Presentation.key/ directory bundle (no preview at top level): an unusual packaging that breaks naive iWork detection.",
-    "expected": "clean-error",
+    "why_hard": "Keynote document that is a ZIP containing a Presentation.key/ directory bundle (no preview at top level): an unusual packaging that breaks naive iWork detection. Keynote opens it and exports it correctly, so a correct conversion is expected.",
+    "expected": "convert",
     "targets": [
       "pdf",
       "pptx"

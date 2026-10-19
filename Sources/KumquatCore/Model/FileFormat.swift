@@ -54,7 +54,7 @@ public enum FileFormat: String, Sendable, CaseIterable {
         case .gif: ["gif"]
         case .bmp: ["bmp"]
         case .webp: ["webp"]
-        case .avif: ["avif"]
+        case .avif: ["avif", "avifs"]
         case .svg: ["svg"]
         case .psd: ["psd"]
         case .mp4: ["mp4"]

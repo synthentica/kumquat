@@ -35,6 +35,10 @@ public enum OperationCatalog {
         guard let category = commonCategory(urls) else { return [] }
         let formats = Set(urls.compactMap(FileFormat.detect))
         let hasFFmpeg = context.ffmpeg != nil
+        /// FFmpeg is there and was built with what the format needs.
+        func ffmpegWrites(_ format: FileFormat) -> Bool {
+            context.ffmpeg.map { FFmpegEngine.canEncode(format, ffmpeg: $0) } ?? false
+        }
         /// Hide a target only when every input already has that format.
         func isNew(_ format: FileFormat) -> Bool { formats != [format] }
         var ops: [FileOperation] = []
@@ -44,7 +48,7 @@ public enum OperationCatalog {
             for target in [FileFormat.png, .jpeg, .heic, .webp, .avif, .tiff, .gif, .bmp] where isNew(target) {
                 if ImageEngine.canWrite(target) {
                     ops.append(convert(target) { try ImageEngine.convert($0, to: target, context: $1) })
-                } else if target == .webp, hasFFmpeg {
+                } else if target == .webp, ffmpegWrites(.webp) {
                     ops.append(convert(target) { try await FFmpegEngine.convert($0, to: target, context: $1) })
                 }
             }
@@ -57,21 +61,23 @@ public enum OperationCatalog {
                 }
                 ops.append(convert(.mp4, title: "HEVC", subtitle: "H.265", id: "convert.hevc") { try await VideoEngine.hevc($0, context: $1) })
                 if hasFFmpeg {
-                    ops.append(convert(.gif) { try await FFmpegEngine.convert($0, to: .gif, context: $1) })
-                    ops.append(convert(.webm) { try await FFmpegEngine.convert($0, to: .webm, context: $1) })
-                    for target in [FileFormat.mkv, .avi, .wmv] {
+                    for target in [FileFormat.gif, .webm, .mkv, .avi, .wmv] where ffmpegWrites(target) {
                         ops.append(convert(target) { try await FFmpegEngine.convert($0, to: target, context: $1) })
                     }
-                    ops.append(convert(.mp3, subtitle: "Audio") { try await FFmpegEngine.convert($0, to: .mp3, context: $1) })
+                    if ffmpegWrites(.mp3) {
+                        ops.append(convert(.mp3, subtitle: "Audio") { try await FFmpegEngine.convert($0, to: .mp3, context: $1) })
+                    }
                 } else {
                     ops.append(convert(.gif) { try await VideoEngine.convert($0, to: .gif, context: $1) })
                 }
                 ops.append(convert(.m4a, subtitle: "Audio") { try await VideoEngine.convert($0, to: .m4a, context: $1) })
             } else if hasFFmpeg {
-                for target in [FileFormat.mp4, .mov, .webm, .mkv, .avi, .wmv, .gif] where isNew(target) {
+                for target in [FileFormat.mp4, .mov, .webm, .mkv, .avi, .wmv, .gif] where isNew(target) && ffmpegWrites(target) {
                     ops.append(convert(target) { try await FFmpegEngine.convert($0, to: target, context: $1) })
                 }
-                ops.append(convert(.mp3, subtitle: "Audio") { try await FFmpegEngine.convert($0, to: .mp3, context: $1) })
+                if ffmpegWrites(.mp3) {
+                    ops.append(convert(.mp3, subtitle: "Audio") { try await FFmpegEngine.convert($0, to: .mp3, context: $1) })
+                }
                 ops.append(convert(.m4a, subtitle: "Audio") { try await FFmpegEngine.convert($0, to: .m4a, context: $1) })
             }
 
@@ -81,7 +87,7 @@ public enum OperationCatalog {
                 let subtitle: String? = target == .m4a ? "AAC" : nil
                 if native, [.m4a, .wav, .aiff, .flac].contains(target) {
                     ops.append(convert(target, subtitle: subtitle) { try await AudioEngine.convert($0, to: target, context: $1) })
-                } else if hasFFmpeg {
+                } else if ffmpegWrites(target) {
                     ops.append(convert(target, subtitle: subtitle) { try await FFmpegEngine.convert($0, to: target, context: $1) })
                 }
             }

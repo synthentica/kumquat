@@ -14,6 +14,7 @@ final class FormatTests: XCTestCase {
         XCTAssertEqual(URL(fileURLWithPath: "/a/deck.PPTX").fileCategory, .presentation)
         XCTAssertEqual(FileFormat.detect(URL(fileURLWithPath: "/a/Clip.textClipping")), .textClipping)
         XCTAssertEqual(URL(fileURLWithPath: "/a/budget.numbers").fileCategory, .spreadsheet)
+        XCTAssertEqual(FileFormat.detect(URL(fileURLWithPath: "/a/star.avifs")), .avif)
     }
 
     func testUniqueNames() throws {
@@ -611,6 +612,44 @@ final class EngineTests: XCTestCase {
         }
         let left = try FileManager.default.contentsOfDirectory(atPath: dir.path).filter { $0.contains("pages") }
         XCTAssertEqual(left, [], "half-rendered pages were left behind")
+    }
+
+    func testScannedPagesAreRead() throws {
+        // Two pages that are only pictures of text: one upright, one scanned sideways.
+        func scan(_ words: String, turned: Bool) -> CGImage {
+            let width = 1700, height = 400
+            let context = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: 0,
+                                    space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue)!
+            context.setFillColor(.white)
+            context.fill(CGRect(x: 0, y: 0, width: width, height: height))
+            // Core Text draws in black when no color is given.
+            let line = CTLineCreateWithAttributedString(NSAttributedString(string: words, attributes: [.font: NSFont.systemFont(ofSize: 96)]))
+            context.textPosition = CGPoint(x: 40, y: 160)
+            CTLineDraw(line, context)
+            let image = context.makeImage()!
+            guard turned else { return image }
+            let sideways = CGContext(data: nil, width: height, height: width, bitsPerComponent: 8, bytesPerRow: 0,
+                                     space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue)!
+            sideways.translateBy(x: CGFloat(height), y: 0)
+            sideways.rotate(by: .pi / 2)
+            sideways.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
+            return sideways.makeImage()!
+        }
+        let url = dir.appendingPathComponent("scan.pdf")
+        var box = CGRect(x: 0, y: 0, width: 595, height: 842)
+        let pdf = CGContext(url as CFURL, mediaBox: &box, nil)!
+        for (words, turned) in [("Kumquat reads scans", false), ("Sideways pages too", true)] {
+            pdf.beginPage(mediaBox: &box)
+            let image = scan(words, turned: turned)
+            let scale = min(500 / CGFloat(image.width), 700 / CGFloat(image.height))
+            pdf.draw(image, in: CGRect(x: 40, y: 80, width: CGFloat(image.width) * scale, height: CGFloat(image.height) * scale))
+            pdf.endPage()
+        }
+        pdf.closePDF()
+
+        let text = try PDFEngine.attributedText(url).string
+        XCTAssertTrue(text.contains("Kumquat reads scans"), text)
+        XCTAssertTrue(text.contains("Sideways pages too"), text)
     }
 
     func testLaneCapsConcurrency() async throws {

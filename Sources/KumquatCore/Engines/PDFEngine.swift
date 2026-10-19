@@ -1,13 +1,36 @@
 import AppKit
 import Foundation
 import PDFKit
+import Vision
 
 /// PDF rendering, text extraction and page tools through PDFKit.
 public enum PDFEngine {
     static func open(_ url: URL) throws -> PDFDocument {
         guard let document = PDFDocument(url: url) else { throw OperationError.unreadable(url.lastPathComponent) }
         if document.isLocked { throw OperationError.failed("\(url.lastPathComponent) is password protected.") }
+        if isDynamicForm(document) {
+            throw OperationError.failed("\(url.lastPathComponent) is an XFA form, which only Adobe Acrobat and Reader can show.")
+        }
         return document
+    }
+
+    /// A dynamic XFA form keeps its pages as XML that only Adobe's apps lay out. Everywhere else, PDFKit included,
+    /// it shows a "Please wait..." page, and converting that would quietly give the wrong result
+    /// (corpus: pdf-xfa-dynamic-form).
+    static func isDynamicForm(_ document: PDFDocument) -> Bool {
+        guard let catalog = document.documentRef?.catalog else { return false }
+        var form: CGPDFDictionaryRef?
+        var xfa: CGPDFObjectRef?
+        guard CGPDFDictionaryGetDictionary(catalog, "AcroForm", &form), let form,
+              CGPDFDictionaryGetObject(form, "XFA", &xfa)
+        else { return false }
+        var needsRendering: CGPDFBoolean = 0
+        if CGPDFDictionaryGetBoolean(catalog, "NeedsRendering", &needsRendering), needsRendering != 0 { return true }
+        // A static XFA form also carries ordinary fields and pages, and those convert fine.
+        var fields: CGPDFArrayRef?
+        if !CGPDFDictionaryGetArray(form, "Fields", &fields) || fields.map(CGPDFArrayGetCount) == 0 { return true }
+        let first = document.page(at: 0)?.string ?? ""
+        return first.contains("Please wait") && first.contains("may not be able to display")
     }
 
     /// Every page as an image at 300 DPI. One page gives one file; more pages give a folder.
@@ -97,11 +120,48 @@ public enum PDFEngine {
         let document = try open(url)
         let text = NSMutableAttributedString()
         for index in 0..<document.pageCount {
-            guard let page = document.page(at: index)?.attributedString else { continue }
+            try Task.checkCancellation()
+            guard let page = document.page(at: index) else { continue }
+            var pageText = page.attributedString
+            // A scanned page has no text layer, only a picture of the text (corpus: both scanned PDFs came out empty).
+            if (pageText?.string ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                let recognized = recognizeText(on: page)
+                pageText = recognized.isEmpty ? nil : NSAttributedString(string: recognized)
+            }
+            WorkProgress.report(index + 1, of: document.pageCount)
+            guard let pageText else { continue }
             if text.length > 0 { text.append(NSAttributedString(string: "\n\n")) }
-            text.append(page)
+            text.append(pageText)
         }
         return text
+    }
+
+    /// The text in a picture of a page, read with the Mac's own text recognition. A page scanned sideways or upside
+    /// down is read in every direction, keeping the reading Vision is surest of.
+    static func recognizeText(on page: PDFPage) -> String {
+        guard let image = try? render(page, dpi: 200) else { return "" }
+        func read(_ orientation: CGImagePropertyOrientation) -> (text: String, score: Float) {
+            let request = VNRecognizeTextRequest()
+            request.recognitionLevel = .accurate
+            request.usesLanguageCorrection = true
+            request.automaticallyDetectsLanguage = true
+            try? VNImageRequestHandler(cgImage: image, orientation: orientation).perform([request])
+            // Top to bottom, then left to right; Vision measures from the bottom left.
+            let lines = (request.results ?? [])
+                .sorted { abs($0.boundingBox.midY - $1.boundingBox.midY) > 0.01 ? $0.boundingBox.midY > $1.boundingBox.midY : $0.boundingBox.minX < $1.boundingBox.minX }
+                .compactMap { $0.topCandidates(1).first }
+            let score = lines.reduce(Float(0)) { $0 + $1.confidence * Float($1.string.count) }
+            return (lines.map(\.string).joined(separator: "\n"), score)
+        }
+        var best = read(.up)
+        let characters = Float(best.text.count)
+        if characters < 40 || best.score < characters * 0.6 {
+            for orientation in [CGImagePropertyOrientation.right, .left, .down] {
+                let other = read(orientation)
+                if other.score > best.score { best = other }
+            }
+        }
+        return best.text
     }
 
     /// Text laid out in rows, with columns split where the text has wide gaps or tabs.

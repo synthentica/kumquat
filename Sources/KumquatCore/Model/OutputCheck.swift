@@ -41,8 +41,10 @@ enum OutputCheck {
         guard let before = await MediaInfo.read(source, ffmpeg: ffmpeg) else { return }
         if before.hasAudio == true, result.hasAudio == false { try fail("The result lost its sound.") }
         if let length = before.duration, let made = result.duration, length > 1 {
-            // Containers round differently, so allow a little either way.
-            let tolerance = max(0.5, length * 0.02)
+            // Containers round differently, so allow a little either way. A video's length is that of its longest
+            // stream, and its sound often ends a little earlier (corpus: a 28.1 s ASF with 27.3 s of sound).
+            let soundOnly = original.category == .video && target.category == .audio
+            let tolerance = soundOnly ? max(1, length * 0.05) : max(0.5, length * 0.02)
             if abs(made - length) > tolerance {
                 try fail("The result is \(seconds(made)) long but the original is \(seconds(length)).")
             }

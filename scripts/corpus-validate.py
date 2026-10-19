@@ -238,6 +238,8 @@ def judge(line, scratch):
         if status == "ok":
             return "fail", "converted a file that should have been refused", notes
         return "fail", status, notes
+    if status == "not-offered" and line.get("unavailable"):
+        return "skipped", line["unavailable"], notes
     if status != "ok":
         return "fail", f"{status}: {line.get('error', '')}".strip(": "), notes
     outputs = []
@@ -299,7 +301,11 @@ def main():
 
     with open(report_path, "w") as report:
         report.write("# Kumquat corpus\n\n")
-        report.write(f"**{passed} of {len(judged)} conversions pass ({rate:.1f} %)**, judged by ffprobe, FFmpeg SSIM, sips, qpdf, veraPDF and LibreOffice.\n\n")
+        report.write(f"**{passed} of {len(judged)} conversions pass ({rate:.1f} %)**, judged by ffprobe, FFmpeg SSIM, sips, qpdf, veraPDF and LibreOffice.")
+        skipped = sum(v["verdict"] == "skipped" for v in verdicts)
+        if skipped:
+            report.write(f" {skipped} more were skipped and are listed below with the reason.")
+        report.write("\n\n")
         tools = ", ".join(f"{name} {'yes' if path else 'MISSING'}" for name, path in sorted(TOOLS.items()))
         report.write(f"Tools: {tools}\n\n")
         report.write("| Category | Pass | Total |\n| --- | ---: | ---: |\n")
