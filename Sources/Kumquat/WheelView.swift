@@ -63,11 +63,13 @@ struct WheelView: View {
         let center = CGPoint(x: WheelLayout.canvas / 2, y: WheelLayout.canvas / 2)
         let count = layout.segments.count
         return ZStack {
-            // Soft shadow under the glass.
+            // Soft shadow under the glass, as a gradient: a blur filter here had to be redrawn on every opening.
             Circle()
-                .fill(Color.black.opacity(0.3))
-                .frame(width: radius * 2 - 16, height: radius * 2 - 16)
-                .blur(radius: 22)
+                .fill(RadialGradient(
+                    colors: [Color.black.opacity(0.3), Color.black.opacity(0.22), Color.black.opacity(0)],
+                    center: .center, startRadius: radius - 50, endRadius: radius + 22
+                ))
+                .frame(width: radius * 2 + 44, height: radius * 2 + 44)
                 .offset(y: 12)
 
             Disc(radius: radius, isPreview: model.isPreview)
@@ -163,10 +165,14 @@ private struct SegmentView: View {
         )
         ZStack {
             shape.fill(wheel.radial(from: segment.inner - 20, to: segment.outer + 40)).opacity(0.24)
-            shape
-                .fill(wheel.radial(from: segment.inner, to: segment.outer + 4.5))
-                .shadow(color: wheel.tint.opacity(0.7), radius: 14)
-                .opacity(lift)
+            // Only the highlighted segment carries its glow, so an opening builds one shadow instead of one per segment.
+            if lift > 0 {
+                shape
+                    .fill(wheel.radial(from: segment.inner, to: segment.outer + 4.5))
+                    .shadow(color: wheel.tint.opacity(0.7), radius: 14)
+                    .opacity(lift)
+                    .transition(.opacity)
+            }
             shape.stroke(Palette.pith.opacity(0.12 + 0.4 * lift), lineWidth: 0.75)
             shape.fill(Color.white).opacity(pressed ? 0.55 : 0)
         }
