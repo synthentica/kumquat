@@ -131,11 +131,13 @@ public enum FFmpegEngine {
         return probe
     }
 
-    /// How much later a video's sound starts than its picture, in seconds, from the first packet of each.
+    /// How much later a video's sound starts than its picture, in seconds, from the first packet of each in the
+    /// first five seconds. Not limited by packet count: the muxer stops at the first limit reached, and in an ASF
+    /// the sound's first packet comes after many of the picture's.
     static func audioDelay(_ ffmpeg: URL, input: URL) async -> Double {
         guard let lines = try? await Shell.run(ffmpeg.path, [
             "-hide_banner", "-loglevel", "error", "-nostdin", "-i", input.path,
-            "-map", "0:v:0?", "-map", "0:a:0?", "-c", "copy", "-frames:v", "1", "-frames:a", "1", "-f", "framemd5", "pipe:2",
+            "-map", "0:v:0?", "-map", "0:a:0?", "-c", "copy", "-t", "5", "-f", "framemd5", "pipe:2",
         ]) else { return 0 }
         // "#tb 0: 1/1000" gives each stream's time base, then "0, 0, 0, 42, 1234, <md5>" is stream, dts, pts, ...
         var timeBase: [Substring: Double] = [:]
