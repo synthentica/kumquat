@@ -183,7 +183,7 @@ public enum PDFEngine {
 
     /// True when a small rendering of the page is all near-white.
     static func isBlank(_ page: PDFPage) -> Bool {
-        guard let thumbnail = try? render(page, dpi: 18), let data = thumbnail.dataProvider?.data,
+        guard let thumbnail = try? render(page, dpi: 36), let data = thumbnail.dataProvider?.data,
               let bytes = CFDataGetBytePtr(data)
         else { return false }
         // Four bytes a pixel, the last one unused; rows may be padded.
