@@ -146,7 +146,10 @@ public enum PDFEngine {
             request.recognitionLevel = accurate ? .accurate : .fast
             request.usesLanguageCorrection = accurate
             if accurate { request.automaticallyDetectsLanguage = true }
-            try? VNImageRequestHandler(cgImage: image, orientation: orientation).perform([request])
+            // Vision can fail a request when the Neural Engine is busy, so a failed read gets a second try.
+            if (try? VNImageRequestHandler(cgImage: image, orientation: orientation).perform([request])) == nil {
+                try? VNImageRequestHandler(cgImage: image, orientation: orientation).perform([request])
+            }
             // Top to bottom, then left to right; Vision measures from the bottom left.
             let lines = (request.results ?? [])
                 .sorted { abs($0.boundingBox.midY - $1.boundingBox.midY) > 0.01 ? $0.boundingBox.midY > $1.boundingBox.midY : $0.boundingBox.minX < $1.boundingBox.minX }
@@ -164,7 +167,15 @@ public enum PDFEngine {
                 if score > best { best = score; direction = orientation }
             }
         }
-        return read(direction, accurate: true).text
+        let result = read(direction, accurate: true)
+        guard result.text.isEmpty else { return result.text }
+        // The skim found nothing it could trust: read the other directions accurately and keep the best.
+        var best = result
+        for orientation in [CGImagePropertyOrientation.up, .right, .left, .down] where orientation != direction {
+            let other = read(orientation, accurate: true)
+            if other.score > best.score { best = other }
+        }
+        return best.text
     }
 
     /// Text laid out in rows, with columns split where the text has wide gaps or tabs.
