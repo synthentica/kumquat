@@ -4,11 +4,18 @@
 #
 #   scripts/release.sh
 #
-# Once per Mac, beforehand:
-#   1. Xcode → Settings → Accounts → your Apple ID → Manage Certificates → + → Developer ID Application.
-#   2. An app-specific password from account.apple.com (Sign-In and Security → App-Specific Passwords), then:
-#        xcrun notarytool store-credentials kumquat --apple-id YOU@EXAMPLE.COM --team-id TEAMID
-#      It asks for that password and keeps it in your keychain; nothing is written to the repo.
+# Once per Mac, beforehand (only the Account Holder can make the certificate):
+#   1. A Developer ID Application certificate, either way:
+#      - Xcode → Settings → Accounts → your Apple ID → Manage Certificates → + → Developer ID Application, or
+#      - developer.apple.com → Certificates → + → Developer ID Application, with a CSR from Keychain Access →
+#        Certificate Assistant → Request a Certificate From a Certificate Authority; open the download to install it.
+#   2. A notarytool profile in the keychain, either way:
+#      - an App Store Connect API key (Users and Access → Integrations gives the issuer ID):
+#          xcrun notarytool store-credentials kumquat --key AuthKey_KEYID.p8 --key-id KEYID --issuer ISSUER-ID
+#      - an app-specific password from account.apple.com (Sign-In and Security → App-Specific Passwords):
+#          xcrun notarytool store-credentials kumquat --apple-id YOU@EXAMPLE.COM --team-id TEAMID
+#      Either keeps the secret in your keychain; nothing is written to the repo.
+#   3. nasm, for the bundled FFmpeg: brew install nasm
 # NOTARY_PROFILE picks another keychain profile, SIGN_IDENTITY another certificate.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -18,6 +25,8 @@ IDENTITY="${SIGN_IDENTITY:-$(security find-identity -v -p codesigning | sed -n '
 [ -n "$IDENTITY" ] || { echo "No Developer ID Application certificate in the keychain (see step 1 above)." >&2; exit 1; }
 xcrun notarytool history --keychain-profile "$PROFILE" >/dev/null 2>&1 \
   || { echo "No notarytool profile \"$PROFILE\" in the keychain (see step 2 above)." >&2; exit 1; }
+[ -x .ffmpeg/bin/ffmpeg ] || command -v nasm >/dev/null \
+  || { echo "FFmpeg needs nasm to build (see step 3 above)." >&2; exit 1; }
 [ -x .ffmpeg/bin/ffmpeg ] || { echo "== Building FFmpeg first (about 10 minutes, once)"; scripts/build-ffmpeg.sh; }
 
 echo "== Building"
