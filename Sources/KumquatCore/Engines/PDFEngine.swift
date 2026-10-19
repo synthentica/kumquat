@@ -137,14 +137,15 @@ public enum PDFEngine {
     }
 
     /// The text in a picture of a page, read with the Mac's own text recognition. A page scanned sideways or upside
-    /// down is read in every direction, keeping the reading Vision is surest of.
+    /// down is first skimmed in every direction with the quick recognizer, and only the direction it reads best
+    /// gets the slow, accurate pass.
     static func recognizeText(on page: PDFPage) -> String {
         guard let image = try? render(page, dpi: 200) else { return "" }
-        func read(_ orientation: CGImagePropertyOrientation) -> (text: String, score: Float) {
+        func read(_ orientation: CGImagePropertyOrientation, accurate: Bool) -> (text: String, score: Float) {
             let request = VNRecognizeTextRequest()
-            request.recognitionLevel = .accurate
-            request.usesLanguageCorrection = true
-            request.automaticallyDetectsLanguage = true
+            request.recognitionLevel = accurate ? .accurate : .fast
+            request.usesLanguageCorrection = accurate
+            if accurate { request.automaticallyDetectsLanguage = true }
             try? VNImageRequestHandler(cgImage: image, orientation: orientation).perform([request])
             // Top to bottom, then left to right; Vision measures from the bottom left.
             let lines = (request.results ?? [])
@@ -153,15 +154,17 @@ public enum PDFEngine {
             let score = lines.reduce(Float(0)) { $0 + $1.confidence * Float($1.string.count) }
             return (lines.map(\.string).joined(separator: "\n"), score)
         }
-        var best = read(.up)
-        let characters = Float(best.text.count)
-        if characters < 40 || best.score < characters * 0.6 {
+        var direction = CGImagePropertyOrientation.up
+        let upright = read(.up, accurate: false)
+        let characters = Float(upright.text.count)
+        if characters < 40 || upright.score < characters * 0.6 {
+            var best = upright.score
             for orientation in [CGImagePropertyOrientation.right, .left, .down] {
-                let other = read(orientation)
-                if other.score > best.score { best = other }
+                let score = read(orientation, accurate: false).score
+                if score > best { best = score; direction = orientation }
             }
         }
-        return best.text
+        return read(direction, accurate: true).text
     }
 
     /// Text laid out in rows, with columns split where the text has wide gaps or tabs.
