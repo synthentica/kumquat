@@ -131,6 +131,32 @@ public enum FFmpegEngine {
         return probe
     }
 
+    /// How much later a video's sound starts than its picture, in seconds, from the first packet of each.
+    static func audioDelay(_ ffmpeg: URL, input: URL) async -> Double {
+        guard let lines = try? await Shell.run(ffmpeg.path, [
+            "-hide_banner", "-loglevel", "error", "-nostdin", "-i", input.path,
+            "-map", "0:v:0?", "-map", "0:a:0?", "-c", "copy", "-frames:v", "1", "-frames:a", "1", "-f", "framemd5", "pipe:2",
+        ]) else { return 0 }
+        // "#tb 0: 1/1000" gives each stream's time base, then "0, 0, 0, 42, 1234, <md5>" is stream, dts, pts, ...
+        var timeBase: [Substring: Double] = [:]
+        var start: [Substring: Double] = [:]
+        for line in lines.split(whereSeparator: \.isNewline) {
+            if line.hasPrefix("#tb ") {
+                let parts = line.dropFirst(4).split(separator: ":")
+                let ratio = parts.last.map { $0.split(separator: "/").compactMap { Double($0.trimmingCharacters(in: .whitespaces)) } } ?? []
+                if parts.count == 2, ratio.count == 2, ratio[1] != 0 { timeBase[parts[0]] = ratio[0] / ratio[1] }
+            } else if !line.hasPrefix("#") {
+                let fields = line.split(separator: ",")
+                guard fields.count >= 3, start[fields[0]] == nil, let base = timeBase[fields[0]],
+                      let pts = Double(fields[2].trimmingCharacters(in: .whitespaces))
+                else { continue }
+                start[fields[0]] = pts * base
+            }
+        }
+        guard let video = start["0"], let audio = start["1"] else { return 0 }
+        return audio - video
+    }
+
     static let videoTargets: Set<FileFormat> = [.mp4, .mov, .m4v, .webm, .mkv, .avi, .wmv, .gif]
 
     /// What to try, in order. H.264 and HEVC video is copied as is when only the container changes,
@@ -216,10 +242,12 @@ public enum FFmpegEngine {
         // exception: asking for the media engine picks FFmpeg's own AV1 decoder, which then fails on Macs before M3
         // (corpus: webm-av1), while leaving it out picks libdav1d.
         let decode = hardwareDecode && input.fileCategory == .video ? ["-hwaccel", "videotoolbox"] : []
-        // Sound that starts after the picture (corpus: an ASF whose audio begins at 0.39 s) is padded with silence
-        // from zero, so it stays in sync and keeps its full length. Copied sound can't be filtered.
+        // Sound that starts well after the picture (corpus: an ASF whose audio begins at 0.39 s) is padded with silence
+        // from zero, so it stays in sync and keeps its full length. Only then: padding a few milliseconds made FFmpeg
+        // skip a frame in an AVI. Copied sound can't be filtered.
         var arguments = arguments
-        if let codec = arguments.firstIndex(of: "-c:a").map({ arguments[$0 + 1] }), codec != "copy", !arguments.contains("-af") {
+        if input.fileCategory == .video, let codec = arguments.firstIndex(of: "-c:a").map({ arguments[$0 + 1] }),
+           codec != "copy", !arguments.contains("-af"), await audioDelay(ffmpeg, input: input) > 0.1 {
             arguments += ["-af", "aresample=async=1:first_pts=0"]
         }
         do {
