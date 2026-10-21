@@ -2,7 +2,8 @@
 # Builds Kumquat, signs it with your Developer ID, has Apple notarize it, and checks the result
 # the way Gatekeeper on another Mac will.
 #
-#   scripts/release.sh
+#   scripts/release.sh            the full release, with the bundled FFmpeg
+#   scripts/release.sh --quick    a dry run of signing and notarization without FFmpeg (no nasm, no 10-minute build)
 #
 # Once per Mac, beforehand (only the Account Holder can make the certificate):
 #   1. A Developer ID Application certificate, either way:
@@ -25,9 +26,10 @@ IDENTITY="${SIGN_IDENTITY:-$(security find-identity -v -p codesigning | sed -n '
 [ -n "$IDENTITY" ] || { echo "No Developer ID Application certificate in the keychain (see step 1 above)." >&2; exit 1; }
 xcrun notarytool history --keychain-profile "$PROFILE" >/dev/null 2>&1 \
   || { echo "No notarytool profile \"$PROFILE\" in the keychain (see step 2 above)." >&2; exit 1; }
-[ -x .ffmpeg/bin/ffmpeg ] || command -v nasm >/dev/null \
+QUICK=0; [ "${1:-}" = "--quick" ] && QUICK=1
+[ "$QUICK" = 1 ] || [ -x .ffmpeg/bin/ffmpeg ] || command -v nasm >/dev/null \
   || { echo "FFmpeg needs nasm to build (see step 3 above)." >&2; exit 1; }
-[ -x .ffmpeg/bin/ffmpeg ] || { echo "== Building FFmpeg first (about 10 minutes, once)"; scripts/build-ffmpeg.sh; }
+[ "$QUICK" = 1 ] || [ -x .ffmpeg/bin/ffmpeg ] || { echo "== Building FFmpeg first (about 10 minutes, once)"; scripts/build-ffmpeg.sh; }
 
 echo "== Building"
 scripts/bundle.sh
