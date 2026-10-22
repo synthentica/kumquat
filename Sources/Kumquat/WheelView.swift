@@ -100,19 +100,25 @@ struct WheelView: View {
                     .modifier(BloomEffect(progress: model.bloom, index: segment.index, count: count))
             }
 
-            ForEach(layout.segments, id: \.index) { segment in
-                if model.operations.indices.contains(segment.index) {
-                    let amount = lift(segment.index)
-                    SegmentLabel(
-                        operation: model.operations[segment.index],
-                        wheel: model.wheel,
-                        lift: amount,
-                        showsSymbol: model.wheel != .convert
-                    )
-                    .position(layout.labelPoint(segment, center: center, outward: 2.5 * CGFloat(amount)))
-                    .modifier(BloomEffect(progress: model.bloom, index: segment.index, count: count))
+            // Labels get their own canvas-sized layer: with two rings the shadow above is wider than the canvas,
+            // which grows this ZStack, and `.position` would then measure from the corner of the larger square
+            // (every label sat 16 points up and to the left of its segment).
+            ZStack {
+                ForEach(layout.segments, id: \.index) { segment in
+                    if model.operations.indices.contains(segment.index) {
+                        let amount = lift(segment.index)
+                        SegmentLabel(
+                            operation: model.operations[segment.index],
+                            wheel: model.wheel,
+                            lift: amount,
+                            showsSymbol: model.wheel != .convert
+                        )
+                        .position(layout.labelPoint(segment, center: center, outward: 2.5 * CGFloat(amount)))
+                        .modifier(BloomEffect(progress: model.bloom, index: segment.index, count: count))
+                    }
                 }
             }
+            .frame(width: WheelLayout.canvas, height: WheelLayout.canvas)
 
             Hub(model: model)
                 .modifier(PopEffect(progress: model.appear))

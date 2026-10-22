@@ -7,11 +7,15 @@ import UniformTypeIdentifiers
 /// Renders the wheel for the README: `Kumquat --render-previews <folder>` writes a PNG per wheel
 /// and an animated GIF of the wheel opening, following the pointer and switching wheels.
 enum PreviewRenderer {
-    private static let sample: URL = {
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent("Holiday photo.heic")
+    private static let sample = placeholder("Holiday photo.heic")
+    /// A PDF fills both rings of the Convert wheel, which the single-ring images above never show.
+    private static let twoRingSample = placeholder("Offer.pdf")
+
+    private static func placeholder(_ name: String) -> URL {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent(name)
         FileManager.default.createFile(atPath: url.path, contents: Data())
         return url
-    }()
+    }
 
     static func render(into folder: String) {
         let directory = URL(fileURLWithPath: folder)
@@ -23,14 +27,18 @@ enum PreviewRenderer {
             let stage = Stage(model: model, size: NSSize(width: 640, height: 560), scale: 2)
             stage.writePNG(to: directory.appendingPathComponent("wheel-\(wheel.title.lowercased()).png"))
         }
+        let twoRings = makeModel(.convert, for: twoRingSample)
+        select(2, in: twoRings)
+        Stage(model: twoRings, size: NSSize(width: 640, height: 600), scale: 2)
+            .writePNG(to: directory.appendingPathComponent("wheel-convert-two-rings.png"))
         renderAnimation(to: directory.appendingPathComponent("wheel.gif"))
     }
 
-    private static func makeModel(_ wheel: Wheel) -> WheelModel {
+    private static func makeModel(_ wheel: Wheel, for url: URL = sample) -> WheelModel {
         let model = WheelModel()
         model.isPreview = true
         model.isShown = true
-        model.urls = [sample]
+        model.urls = [url]
         load(wheel, into: model)
         return model
     }
