@@ -188,11 +188,12 @@ public enum Markdown {
     // MARK: Inline
 
     static func inline(_ text: String) -> String {
-        // Code spans are cut out first so nothing inside them is treated as formatting.
+        // Code spans are cut out first so nothing inside them is treated as formatting. The marks around their
+        // numbers are private-use characters, which XML allows, so escaping leaves them alone.
         var codes: [String] = []
         var working = replace(text, #"`([^`]+)`"#) { groups in
             codes.append(groups[1])
-            return "\u{1}\(codes.count - 1)\u{1}"
+            return "\u{E000}\(codes.count - 1)\u{E000}"
         }
         working = working.xmlEscaped
         working = replace(working, #"!\[([^\]]*)\]\(([^)\s]+)\)"#) { "<img alt=\"\($0[1])\" src=\"\($0[2])\"/>" }
@@ -203,7 +204,7 @@ public enum Markdown {
         working = replace(working, #"\*(.+?)\*"#) { "<em>\($0[1])</em>" }
         working = replace(working, #"(?<![\w])_(.+?)_(?![\w])"#) { "<em>\($0[1])</em>" }
         working = replace(working, #"~~(.+?)~~"#) { "<del>\($0[1])</del>" }
-        working = replace(working, "\u{1}(\\d+)\u{1}") { groups in
+        working = replace(working, "\u{E000}(\\d+)\u{E000}") { groups in
             let index = Int(groups[1]) ?? 0
             return "<code>\((codes.indices.contains(index) ? codes[index] : "").xmlEscaped)</code>"
         }

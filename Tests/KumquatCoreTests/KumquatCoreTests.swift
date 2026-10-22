@@ -61,6 +61,11 @@ final class FormatTests: XCTestCase {
 }
 
 final class TextFormatTests: XCTestCase {
+    func testXMLEscapingDropsCharactersXMLForbids() {
+        XCTAssertEqual("a\u{1}b\u{FFFE}c\u{FFFF}\t<&>\n".xmlEscaped, "abc\t&lt;&amp;&gt;\n")
+        XCTAssertEqual("Hyvä 😀".xmlEscaped, "Hyvä 😀")
+    }
+
     func testCSVRoundTrip() {
         let rows = [["name", "note"], ["Ada", "said \"hi\", then left"], ["Bo", "line\nbreak"]]
         let text = CSV.write(rows)
@@ -663,8 +668,9 @@ final class EngineTests: XCTestCase {
         let url = dir.appendingPathComponent("offer.pdf")
         var box = CGRect(x: 0, y: 0, width: 595, height: 842)
         let pdf = CGContext(url as CFURL, mediaBox: &box, nil)!
-        func text(_ string: String, x: CGFloat, top: CGFloat, size: CGFloat = 10, bold: Bool = false) {
-            let font = bold ? NSFont.boldSystemFont(ofSize: size) : NSFont.systemFont(ofSize: size)
+        func text(_ string: String, x: CGFloat, top: CGFloat, size: CGFloat = 10, bold: Bool = false, italic: Bool = false) {
+            var font = bold ? NSFont.boldSystemFont(ofSize: size) : NSFont.systemFont(ofSize: size)
+            if italic { font = NSFont(descriptor: font.fontDescriptor.withSymbolicTraits(.italic), size: size) ?? font }
             let line = CTLineCreateWithAttributedString(NSAttributedString(string: string, attributes: [.font: font]))
             pdf.textPosition = CGPoint(x: x, y: 842 - top - size)
             CTLineDraw(line, pdf)
@@ -707,6 +713,7 @@ final class EngineTests: XCTestCase {
                 text(cell, x: [40, 170, 300, 430][column], top: 80 + CGFloat(row) * 15)
             }
         }
+        text("Prices include VAT.", x: 40, top: 140, italic: true)
         pdf.endPage()
         pdf.closePDF()
 
@@ -725,7 +732,16 @@ final class EngineTests: XCTestCase {
         XCTAssertEqual(blocks.filter { if case .picture = $0.kind { true } else { false } }.count, 1, "one picture")
         XCTAssertEqual(blocks.filter { if case .pageBreak = $0.kind { true } else { false } }.count, 1, "one page break")
         XCTAssertTrue(blocks.contains { if case .rule = $0.kind { true } else { false } }, "the rule under the title")
+        // The system font is embedded in the PDF and PDFKit can't load it; its weight and slant come from the PDF.
+        let title = try XCTUnwrap(tables.first { PDFLayout.plainText($0.rows[0][0].blocks) == "Trade-in offer" })
+        if case .paragraph(let paragraph) = title.rows[0][0].blocks[0].kind {
+            XCTAssertTrue(paragraph.runs.allSatisfy(\.bold), "bold title")
+        }
+        let note = try XCTUnwrap(paragraphs.first { string(of: $0) == "Prices include VAT." })
+        XCTAssertTrue(note.runs.allSatisfy(\.italic), "italic note")
+        XCTAssertFalse(note.runs.contains(where: \.bold))
         let heading = try XCTUnwrap(paragraphs.first { string(of: $0) == "Vehicle" })
+        XCTAssertTrue(heading.runs.allSatisfy(\.bold), "bold heading")
         XCTAssertTrue(heading.runs.allSatisfy(\.underline), "underlined heading")
         let wrapped = try XCTUnwrap(paragraphs.first { string(of: $0).hasPrefix("Adaptive") })
         XCTAssertEqual(wrapped.lineCount, 3, "the three lines are one paragraph")

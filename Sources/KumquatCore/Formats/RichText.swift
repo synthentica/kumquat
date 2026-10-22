@@ -224,6 +224,9 @@ extension String {
             case ">": result += "&gt;"
             case "\"": result += "&quot;"
             case "'": result += "&#39;"
+            // Characters XML 1.0 doesn't allow (control codes from a PDF with a broken font map, say) would make
+            // Word refuse the whole file, so they're left out.
+            case _ where !character.isValidInXML: continue
             default: result.append(character)
             }
         }
@@ -237,5 +240,18 @@ extension String {
         let trailing = rest.reversed().prefix { $0.isWhitespace }
         let core = rest.dropLast(trailing.count)
         return (String(leading), String(core), String(trailing.reversed()))
+    }
+}
+
+extension Character {
+    /// Whether XML 1.0 allows this character: tab, line feed, carriage return, and everything from space up except
+    /// the surrogates and U+FFFE and U+FFFF.
+    var isValidInXML: Bool {
+        unicodeScalars.allSatisfy { scalar in
+            switch scalar.value {
+            case 0x9, 0xA, 0xD, 0x20...0xD7FF, 0xE000...0xFFFD, 0x10000...0x10FFFF: true
+            default: false
+            }
+        }
     }
 }

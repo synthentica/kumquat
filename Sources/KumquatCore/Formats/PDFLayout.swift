@@ -213,7 +213,13 @@ enum PDFLayout {
         let box = displayBox(page)
         // Pages turned with /Rotate and scans keep the plain text path.
         if page.rotation % 360 != 0 { return plainLines(page) }
-        var lines = textLines(page, box: box)
+        let graphics = GraphicsScan(page: page)
+        graphics.scan()
+        // Where each run of text starts and in which font, measured from the top left like everything else.
+        let fontHits = graphics.texts
+            .map { GraphicsScan.TextHit(point: CGPoint(x: $0.point.x - box.minX, y: box.maxY - $0.point.y), size: $0.size, font: $0.font) }
+            .sorted { $0.point.y < $1.point.y }
+        var lines = textLines(page, box: box, fonts: fontHits)
         if lines.isEmpty {
             // A scan: its text, read from the picture. A page of photos without text goes on to keep them.
             let recognized = PDFEngine.recognizeText(on: page)
@@ -230,8 +236,6 @@ enum PDFLayout {
             // Text too small to read is a hidden stamp ("Powered by …"), not content.
             return edge && isPageNumber(line.text) || line.size < 3
         }
-        let graphics = GraphicsScan(page: page)
-        graphics.scan()
         func flip(_ rect: CGRect) -> CGRect {
             CGRect(x: rect.minX - box.minX, y: box.maxY - rect.maxY, width: rect.width, height: rect.height).standardized
         }
@@ -337,7 +341,36 @@ enum PDFLayout {
 
     // MARK: Text
 
-    static func textLines(_ page: PDFPage, box: CGRect) -> [Line] {
+    /// The font the content stream used for a character: the last run of text that starts on its baseline at or
+    /// before it.
+    static func font(at rect: CGRect, size: CGFloat, in hits: [GraphicsScan.TextHit]) -> GraphicsScan.FontInfo? {
+        guard !hits.isEmpty else { return nil }
+        let baseline = rect.maxY
+        let tolerance = max(size, 1) * 0.45
+        var low = 0, high = hits.count
+        while low < high {
+            let middle = (low + high) / 2
+            if hits[middle].point.y < baseline - tolerance { low = middle + 1 } else { high = middle }
+        }
+        var best: GraphicsScan.TextHit?
+        var index = low
+        while index < hits.count, hits[index].point.y <= baseline + tolerance {
+            let hit = hits[index]
+            if hit.point.x <= rect.minX + 1, best.map({ hit.point.x >= $0.point.x }) ?? true { best = hit }
+            index += 1
+        }
+        return best?.font
+    }
+
+    static func family(of name: String) -> Family {
+        let lower = name.lowercased()
+        if ["courier", "mono", "consol", "menlo", "code"].contains(where: { lower.contains($0) }) { return .mono }
+        if !lower.contains("sans"), ["times", "serif", "georgia", "garamond", "minion", "cambria", "palatino", "baskerville", "book antiqua", "caslon", "roman"]
+            .contains(where: { lower.contains($0) }) { return .serif }
+        return .sans
+    }
+
+    static func textLines(_ page: PDFPage, box: CGRect, fonts: [GraphicsScan.TextHit] = []) -> [Line] {
         guard let attributed = page.attributedString, attributed.length > 0 else { return [] }
         let plain = (page.string ?? "") as NSString
         // The attributes come from the attributed string, positions from the page; both index the same text.
@@ -421,6 +454,20 @@ enum PDFLayout {
                 return value
             }()
             var run = Run(text: "", family: style.0, fontName: style.1, size: font.pointSize, bold: style.2, italic: style.3)
+            // PDFKit stands Times in for a font it can't load (Calibri, the system font) and drops its weight; the
+            // PDF's own font says what it was. Where PDFKit did load it, the PDF can still add bold or italic.
+            if let pdfFont = self.font(at: rect, size: font.pointSize, in: fonts) {
+                let standIn = (font.familyName ?? font.fontName).hasPrefix("Times") && !pdfFont.family.lowercased().contains("times")
+                if standIn {
+                    run.family = family(of: pdfFont.family)
+                    run.fontName = pdfFont.family
+                    run.bold = pdfFont.bold
+                    run.italic = pdfFont.italic
+                } else {
+                    run.bold = run.bold || pdfFont.bold
+                    run.italic = run.italic || pdfFont.italic
+                }
+            }
             if let color = (attributes[.foregroundColor] as? NSColor)?.usingColorSpace(.sRGB) {
                 run.color = Color(red: color.redComponent, green: color.greenComponent, blue: color.blueComponent)
             }

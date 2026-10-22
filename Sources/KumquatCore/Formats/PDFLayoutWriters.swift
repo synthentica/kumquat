@@ -303,10 +303,13 @@ enum LayoutHTML {
         func runs(_ runs: [PDFLayout.Run]) -> String {
             runs.map { run in
                 var style: [String] = []
+                // The PDF's own font first (Calibri stays Calibri), then what's on every Mac and PC.
+                let named = run.fontName.isEmpty || ["helvetica", "arial", "times", "courier"].contains { run.fontName.lowercased().hasPrefix($0) }
+                    ? "" : "'\(run.fontName.replacingOccurrences(of: "'", with: ""))', "
                 switch run.family {
-                case .serif: style.append("font-family: 'Times New Roman', Times, serif")
-                case .mono: style.append("font-family: Menlo, 'Courier New', monospace")
-                case .sans: break
+                case .serif: style.append("font-family: \(named)'Times New Roman', Times, serif")
+                case .mono: style.append("font-family: \(named)Menlo, 'Courier New', monospace")
+                case .sans: if !named.isEmpty { style.append("font-family: \(named)Helvetica, Arial, sans-serif") }
                 }
                 style.append("font-size: \(points(run.size))")
                 if run.bold { style.append("font-weight: bold") }
