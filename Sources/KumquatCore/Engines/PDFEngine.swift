@@ -200,6 +200,19 @@ public enum PDFEngine {
 
     /// Text laid out in rows, with columns split where the text has wide gaps or tabs.
     static func tableRows(_ url: URL) throws -> [[String]] {
+        // Tables found in the layout come first; without any, every line is a row split at wide gaps.
+        if let layout = try? PDFLayout.read(url, pictures: false) {
+            let tables = PDFLayout.tables(in: layout.blocks).filter { $0.count > 1 || ($0.first?.count ?? 0) > 1 }
+            if !tables.isEmpty {
+                var rows: [[String]] = []
+                for table in tables {
+                    if !rows.isEmpty { rows.append([]) }
+                    rows += table
+                }
+                let width = rows.map(\.count).max() ?? 0
+                return rows.map { $0 + Array(repeating: "", count: width - $0.count) }
+            }
+        }
         let document = try open(url)
         var rows: [[String]] = []
         for index in 0..<document.pageCount {

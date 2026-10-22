@@ -46,6 +46,11 @@ public enum DocumentEngine {
                 }
                 return output
             }
+            // PDFs keep their layout: pictures, tables, columns and headings (see PDFLayout).
+            if source == .pdf, [.docx, .html, .epub, .markdown, .txt, .rtf, .pages].contains(format) {
+                try await convertPDF(url, to: format, output: output, title: url.baseName)
+                return output
+            }
             if source == .txt, format == .markdown {
                 try FileManager.default.copyItem(at: url, to: output)
                 return output
@@ -89,6 +94,36 @@ public enum DocumentEngine {
             let document = output.deletingLastPathComponent().appendingPathComponent(".\(title)-kumquat-\(UUID().uuidString.prefix(8)).docx")
             defer { try? FileManager.default.removeItem(at: document) }
             try data(text, .officeOpenXML).write(to: document)
+            try await OfficeEngine.convert(document, to: .pages, output: output)
+        default:
+            throw OperationError.unsupported(format.displayName)
+        }
+    }
+
+    static func convertPDF(_ url: URL, to format: FileFormat, output: URL, title: String) async throws {
+        let pictures: Bool = [FileFormat.docx, .html, .epub, .pages].contains(format)
+        let layout = try PDFLayout.read(url, pictures: pictures)
+        guard layout.blocks.contains(where: { if case .pageBreak = $0.kind { false } else { true } }) else {
+            throw OperationError.failed("The PDF has no text or pictures to convert.")
+        }
+        switch format {
+        case .docx:
+            try await LayoutDOCX.write(layout, to: output)
+        case .html:
+            try LayoutHTML.document(layout, title: title).write(to: output, atomically: true, encoding: .utf8)
+        case .epub:
+            let chapter = LayoutHTML.xhtml(layout)
+            try await EPUB.write(title: title, bodyXHTML: chapter.body, css: chapter.css, resources: chapter.pictures, to: output)
+        case .markdown:
+            try LayoutText.markdown(layout).write(to: output, atomically: true, encoding: .utf8)
+        case .txt:
+            try LayoutText.text(layout).write(to: output, atomically: true, encoding: .utf8)
+        case .rtf:
+            try data(LayoutRichText.attributedString(layout), .rtf).write(to: output)
+        case .pages:
+            let document = output.deletingLastPathComponent().appendingPathComponent(".\(title)-kumquat-\(UUID().uuidString.prefix(8)).docx")
+            defer { try? FileManager.default.removeItem(at: document) }
+            try await LayoutDOCX.write(layout, to: document)
             try await OfficeEngine.convert(document, to: .pages, output: output)
         default:
             throw OperationError.unsupported(format.displayName)

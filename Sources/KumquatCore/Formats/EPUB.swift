@@ -62,7 +62,8 @@ public enum EPUB {
     }
 
     /// Writes a single-chapter EPUB 3 from an XHTML body fragment.
-    public static func write(title: String, bodyXHTML: String, language: String = "en", to output: URL) async throws {
+    public static func write(title: String, bodyXHTML: String, language: String = "en", css: String? = nil,
+                             resources: [(name: String, data: Data, mediaType: String)] = [], to output: URL) async throws {
         let work = try FileManager.default.makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: work) }
         let fm = FileManager.default
@@ -75,6 +76,14 @@ public enum EPUB {
         let modified = formatter.string(from: Date())
         let safeTitle = title.xmlEscaped
 
+        let manifestResources = resources.enumerated().map { index, resource in
+            #"<item id="resource\#(index + 1)" href="\#(resource.name.xmlEscaped)" media-type="\#(resource.mediaType)"/>"#
+        }.joined()
+        for resource in resources {
+            let file = work.appendingPathComponent("OEBPS").appendingPathComponent(resource.name)
+            try fm.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try resource.data.write(to: file)
+        }
         let files: [String: String] = [
             "mimetype": "application/epub+zip",
             "META-INF/container.xml": """
@@ -95,7 +104,7 @@ public enum EPUB {
               <manifest>
                 <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>
                 <item id="style" href="style.css" media-type="text/css"/>
-                <item id="chapter" href="chapter.xhtml" media-type="application/xhtml+xml"/>
+                <item id="chapter" href="chapter.xhtml" media-type="application/xhtml+xml"/>\(manifestResources)
               </manifest>
               <spine><itemref idref="chapter"/></spine>
             </package>
@@ -108,7 +117,7 @@ public enum EPUB {
             <body><nav epub:type="toc" id="toc"><ol><li><a href="chapter.xhtml">\(safeTitle)</a></li></ol></nav></body>
             </html>
             """,
-            "OEBPS/style.css": Markdown.stylesheet,
+            "OEBPS/style.css": css ?? Markdown.stylesheet,
             "OEBPS/chapter.xhtml": """
             <?xml version="1.0" encoding="UTF-8"?>
             <!DOCTYPE html>

@@ -657,6 +657,125 @@ final class EngineTests: XCTestCase {
         XCTAssertFalse(PDFEngine.isBlank(PDFDocument(url: url)!.page(at: 1)!))
     }
 
+    func testPDFKeepsItsLayout() async throws {
+        // A two-page offer like the ones car dealers send: title over a rule, an underlined heading, a picture
+        // beside label and value rows, a grey box with text in it, a wrapped paragraph, and a table of figures.
+        let url = dir.appendingPathComponent("offer.pdf")
+        var box = CGRect(x: 0, y: 0, width: 595, height: 842)
+        let pdf = CGContext(url as CFURL, mediaBox: &box, nil)!
+        func text(_ string: String, x: CGFloat, top: CGFloat, size: CGFloat = 10, bold: Bool = false) {
+            let font = bold ? NSFont.boldSystemFont(ofSize: size) : NSFont.systemFont(ofSize: size)
+            let line = CTLineCreateWithAttributedString(NSAttributedString(string: string, attributes: [.font: font]))
+            pdf.textPosition = CGPoint(x: x, y: 842 - top - size)
+            CTLineDraw(line, pdf)
+        }
+        let photo: CGImage = {
+            let context = CGContext(data: nil, width: 300, height: 200, bitsPerComponent: 8, bytesPerRow: 0,
+                                    space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue)!
+            context.setFillColor(CGColor(red: 0.7, green: 0.1, blue: 0.1, alpha: 1))
+            context.fill(CGRect(x: 0, y: 0, width: 300, height: 200))
+            return context.makeImage()!
+        }()
+
+        pdf.beginPage(mediaBox: &box)
+        text("Trade-in offer", x: 40, top: 30, size: 16, bold: true)
+        text("25.08.2026", x: 470, top: 30, size: 16, bold: true)
+        pdf.setFillColor(CGColor(gray: 0, alpha: 1))
+        pdf.fill(CGRect(x: 40, y: 842 - 54, width: 515, height: 0.5))
+        text("Vehicle", x: 40, top: 80, size: 13, bold: true)
+        pdf.fill(CGRect(x: 40, y: 842 - 96, width: 50, height: 0.8))
+        pdf.draw(photo, in: CGRect(x: 40, y: 842 - 260, width: 210, height: 140))
+        for (row, pair) in [("Make", "Volvo"), ("Year", "2023"), ("Colour", "Red")].enumerated() {
+            text(pair.0, x: 300, top: 130 + CGFloat(row) * 15)
+            text(pair.1, x: 420, top: 130 + CGFloat(row) * 15)
+        }
+        pdf.setFillColor(CGColor(gray: 0.9, alpha: 1))
+        pdf.fill(CGRect(x: 40, y: 842 - 400, width: 200, height: 100))
+        pdf.setFillColor(CGColor(gray: 0, alpha: 1))
+        text("No picture", x: 105, top: 345, size: 14, bold: true)
+        let words = "Adaptive cruise control, heated seats, panoramic roof, parking camera, keyless entry, head-up display,"
+        text(words + " lane assist,", x: 40, top: 430)
+        text(words + " tow bar,", x: 40, top: 443)
+        text("and a heated steering wheel.", x: 40, top: 456)
+        pdf.endPage()
+
+        pdf.beginPage(mediaBox: &box)
+        text("Prices", x: 40, top: 40, size: 13, bold: true)
+        let rows = [["Price", "42 800,00 €", "Trade-in", "21 500,00 €"], ["Fees", "349,00 €", "Debt", "23 500,00 €"], ["Total", "44 139,00 €"]]
+        for (row, cells) in rows.enumerated() {
+            for (column, cell) in cells.enumerated() {
+                text(cell, x: [40, 170, 300, 430][column], top: 80 + CGFloat(row) * 15)
+            }
+        }
+        pdf.endPage()
+        pdf.closePDF()
+
+        let layout = try PDFLayout.read(url, pictures: true)
+        func all(_ blocks: [PDFLayout.Block]) -> [PDFLayout.Block] {
+            blocks.flatMap { block -> [PDFLayout.Block] in
+                if case .table(let table) = block.kind { return [block] + table.rows.flatMap { $0.flatMap { all($0.blocks) } } }
+                return [block]
+            }
+        }
+        let blocks = all(layout.blocks)
+        let paragraphs = blocks.compactMap { block -> PDFLayout.Paragraph? in if case .paragraph(let p) = block.kind { p } else { nil } }
+        let tables = blocks.compactMap { block -> PDFLayout.Table? in if case .table(let t) = block.kind { t } else { nil } }
+        func string(of paragraph: PDFLayout.Paragraph) -> String { paragraph.runs.map(\.text).joined() }
+
+        XCTAssertEqual(blocks.filter { if case .picture = $0.kind { true } else { false } }.count, 1, "one picture")
+        XCTAssertEqual(blocks.filter { if case .pageBreak = $0.kind { true } else { false } }.count, 1, "one page break")
+        XCTAssertTrue(blocks.contains { if case .rule = $0.kind { true } else { false } }, "the rule under the title")
+        let heading = try XCTUnwrap(paragraphs.first { string(of: $0) == "Vehicle" })
+        XCTAssertTrue(heading.runs.allSatisfy(\.underline), "underlined heading")
+        let wrapped = try XCTUnwrap(paragraphs.first { string(of: $0).hasPrefix("Adaptive") })
+        XCTAssertEqual(wrapped.lineCount, 3, "the three lines are one paragraph")
+        XCTAssertTrue(string(of: wrapped).hasSuffix("heated steering wheel."))
+        let figures = try XCTUnwrap(tables.first { $0.isData && $0.columns.count == 4 }, "the price table")
+        XCTAssertEqual(figures.rows.count, 3)
+        XCTAssertTrue(figures.rows[2][2].blocks.isEmpty, "the total row has two empty cells")
+        let details = try XCTUnwrap(tables.first { $0.isData && PDFLayout.plainText($0.rows[0][0].blocks) == "Make" }, "labels and values")
+        XCTAssertEqual(details.rows.count, 3)
+        let grey = try XCTUnwrap(tables.first { $0.rows.first?.first?.shading != nil }, "the grey box")
+        XCTAssertEqual(grey.rows[0][0].shading?.hex, "E6E6E6", "the box keeps its grey")
+        let label = try XCTUnwrap(grey.rows[0][0].blocks.first)
+        if case .paragraph(let paragraph) = label.kind {
+            XCTAssertEqual(string(of: paragraph), "No picture")
+            XCTAssertEqual(paragraph.alignment, .center)
+        } else {
+            XCTFail("the box holds its text")
+        }
+
+        // Word and EPUB files are well-formed, with the picture inside.
+        let docx = try await DocumentEngine.convert(url, to: .docx, context: context)
+        let unpacked = dir.appendingPathComponent("docx")
+        try await Zip.extract(docx, to: unpacked)
+        let parts = try XCTUnwrap(FileManager.default.subpaths(atPath: unpacked.path))
+        XCTAssertTrue(parts.contains { $0.hasPrefix("word/media/image1.") })
+        for part in parts where part.hasSuffix(".xml") || part.hasSuffix(".rels") {
+            XCTAssertNoThrow(try XMLDocument(contentsOf: unpacked.appendingPathComponent(part), options: []), part)
+        }
+        let documentXML = try String(contentsOf: unpacked.appendingPathComponent("word/document.xml"), encoding: .utf8)
+        XCTAssertTrue(documentXML.contains("<w:drawing>"))
+        XCTAssertTrue(documentXML.contains("<w:pageBreakBefore/>"))
+        let epub = try await DocumentEngine.convert(url, to: .epub, context: context)
+        let book = dir.appendingPathComponent("epub")
+        try await Zip.extract(epub, to: book)
+        XCTAssertNoThrow(try XMLDocument(contentsOf: book.appendingPathComponent("OEBPS/chapter.xhtml"), options: []))
+        XCTAssertNoThrow(try XMLDocument(contentsOf: book.appendingPathComponent("OEBPS/content.opf"), options: []))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: book.appendingPathComponent("OEBPS/images/picture1.png").path)
+            || FileManager.default.fileExists(atPath: book.appendingPathComponent("OEBPS/images/picture1.jpg").path))
+        let html = try String(contentsOf: try await DocumentEngine.convert(url, to: .html, context: context), encoding: .utf8)
+        XCTAssertTrue(html.contains("data:image/"))
+        XCTAssertTrue(html.contains("<table class=\"data\""))
+        let markdown = try String(contentsOf: try await DocumentEngine.convert(url, to: .markdown, context: context), encoding: .utf8)
+        XCTAssertTrue(markdown.contains("| Price | 42 800,00 € | Trade-in | 21 500,00 € |"), markdown)
+        let plain = try String(contentsOf: try await DocumentEngine.convert(url, to: .txt, context: context), encoding: .utf8)
+        XCTAssertTrue(plain.contains("Make\tVolvo"), plain)
+        let rtf = try await DocumentEngine.convert(url, to: .rtf, context: context)
+        XCTAssertTrue(try Data(contentsOf: rtf).starts(with: Data("{\\rtf".utf8)))
+        XCTAssertTrue(try PDFEngine.tableRows(url).contains { Array($0.prefix(2)) == ["Make", "Volvo"] }, "the spreadsheet gets the tables")
+    }
+
     func testLaneCapsConcurrency() async throws {
         let lane = Lane(limit: 2)
         let counter = ConcurrencyCounter()

@@ -120,6 +120,40 @@ enum CorpusRunner {
         exit(0)
     }
 
+    /// `Kumquat --convert <file> <target,target…> <output folder>`: conversions of one file, for checking results by hand.
+    static func convert(arguments: [String]) -> Never {
+        guard arguments.count >= 3 else {
+            print("usage: Kumquat --convert <file> <target,target…> <output folder>")
+            exit(2)
+        }
+        let source = URL(fileURLWithPath: arguments[0])
+        let output = URL(fileURLWithPath: arguments[2], isDirectory: true)
+        try? FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
+        let ffmpeg = ProcessInfo.processInfo.environment["KUMQUAT_FFMPEG"].map(URL.init(fileURLWithPath:)) ?? FFmpegEngine.locate()
+        let context = OperationContext(outputDirectory: output, ffmpeg: ffmpeg)
+        let offered = OperationCatalog.operations(for: [source], wheel: .convert, context: context)
+        var failed = false
+        for target in arguments[1].split(separator: ",").map(String.init) {
+            guard let operation = offered.first(where: { $0.id == "convert.\(target)" }) else {
+                print("\(target)\tnot offered")
+                failed = true
+                continue
+            }
+            let started = Date()
+            let result = perform(operation, on: source, context: context)
+            let ms = Int(Date().timeIntervalSince(started) * 1000)
+            switch result {
+            case .success(let outcome):
+                print("\(target)\t\(ms) ms\t" + (outcome.outputs.map(\.path) + outcome.failures).joined(separator: "; "))
+                if outcome.outputs.isEmpty { failed = true }
+            case .failure(let error):
+                print("\(target)\t\(ms) ms\terror: \(error.localizedDescription)")
+                failed = true
+            }
+        }
+        exit(failed ? 1 : 0)
+    }
+
     private struct TimeoutError: LocalizedError {
         var errorDescription: String? { "Took longer than \(Int(CorpusRunner.timeout)) s." }
     }

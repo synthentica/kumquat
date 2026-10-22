@@ -17,6 +17,10 @@ if let flag = CommandLine.arguments.firstIndex(of: "--corpus") {
     CorpusRunner.run(arguments: Array(CommandLine.arguments.dropFirst(flag + 1)))
 }
 
+if let flag = CommandLine.arguments.firstIndex(of: "--convert") {
+    CorpusRunner.convert(arguments: Array(CommandLine.arguments.dropFirst(flag + 1)))
+}
+
 let delegate = AppDelegate()
 app.delegate = delegate
 app.setActivationPolicy(.accessory)
