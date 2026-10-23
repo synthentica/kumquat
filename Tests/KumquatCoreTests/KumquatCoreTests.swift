@@ -792,6 +792,50 @@ final class EngineTests: XCTestCase {
         XCTAssertTrue(try PDFEngine.tableRows(url).contains { Array($0.prefix(2)) == ["Make", "Volvo"] }, "the spreadsheet gets the tables")
     }
 
+    func testPDFTextStaysInPlaceAcrossManyLines() throws {
+        // A brochure page: a title and a subtitle on one line, a picture, a heading, label/value rows and a box of
+        // text beside them. PDFKit adds its own spaces and line breaks between separately drawn pieces, and its
+        // per-character positions drifted against them (values lost their last letter to the next row). Words are
+        // placed by their selections instead.
+        let url = dir.appendingPathComponent("brochure.pdf")
+        var box = CGRect(x: 0, y: 0, width: 595, height: 842)
+        let pdf = CGContext(url as CFURL, mediaBox: &box, nil)!
+        func text(_ string: String, x: CGFloat, top: CGFloat, size: CGFloat = 10.5, bold: Bool = false) {
+            let font = NSFont(name: bold ? "Helvetica-Bold" : "Helvetica", size: size)!
+            let line = CTLineCreateWithAttributedString(NSAttributedString(string: string, attributes: [.font: font]))
+            pdf.textPosition = CGPoint(x: x, y: 842 - top - size)
+            CTLineDraw(line, pdf)
+        }
+        pdf.beginPage(mediaBox: &box)
+        text("Lakeside Cabin", x: 48, top: 44, size: 24, bold: true)
+        text("Weekend rental · Summer 2026", x: 395, top: 52, size: 11)
+        pdf.fill(CGRect(x: 48, y: 842 - 81, width: 499, height: 0.6))
+        let picture = CGContext(data: nil, width: 64, height: 40, bitsPerComponent: 8, bytesPerRow: 0,
+                                space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue)!
+        picture.setFillColor(CGColor(red: 0.2, green: 0.4, blue: 0.3, alpha: 1))
+        picture.fill(CGRect(x: 0, y: 0, width: 64, height: 40))
+        pdf.draw(picture.makeImage()!, in: CGRect(x: 48, y: 842 - 330, width: 499, height: 240))
+        text("The cabin", x: 48, top: 356, size: 14, bold: true)
+        let rows = [("Sleeps", "6 guests"), ("Bedrooms", "3"), ("Sauna", "Wood-fired, lakeside"), ("Boat", "Rowing boat included"), ("Check-in", "Friday from 4 pm")]
+        for (index, row) in rows.enumerated() {
+            text(row.0, x: 48, top: 392 + CGFloat(index) * 17)
+            text(row.1, x: 170, top: 392 + CGFloat(index) * 17)
+        }
+        pdf.setFillColor(CGColor(gray: 0.93, alpha: 1))
+        pdf.fill(CGRect(x: 330, y: 842 - 480, width: 217, height: 92))
+        pdf.setFillColor(CGColor(gray: 0, alpha: 1))
+        text("Book by 31 May", x: 380, top: 412, size: 15, bold: true)
+        text("and the second night is half price", x: 351, top: 436)
+        pdf.endPage()
+        pdf.closePDF()
+
+        let markdown = LayoutText.markdown(try PDFLayout.read(url, pictures: false))
+        for row in rows { XCTAssertTrue(markdown.contains("| \(row.0) | \(row.1) |"), markdown) }
+        XCTAssertTrue(markdown.contains("Book by 31 May"), markdown)
+        XCTAssertTrue(markdown.contains("and the second night is half price"), markdown)
+        XCTAssertTrue(markdown.contains("| Lakeside Cabin | Weekend rental · Summer 2026 |"), markdown)
+    }
+
     func testLaneCapsConcurrency() async throws {
         let lane = Lane(limit: 2)
         let counter = ConcurrencyCounter()

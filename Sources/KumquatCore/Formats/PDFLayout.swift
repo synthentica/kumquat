@@ -396,12 +396,12 @@ enum PDFLayout {
                     line.runs[line.runs.count - 1] = last
                 }
                 line.runs.removeAll { $0.text.isEmpty }
-                // Glyph boxes vary (accents, descenders, dots), so the line gets a box from its baseline and size:
-                // most characters sit on the baseline, so the middle of their bottoms is it.
+                // Words of a smaller size or a superscript sit differently, so the line gets a box of its own size
+                // above the bottom most of its words share.
                 if !bottoms.isEmpty {
-                    let baseline = bottoms.sorted()[bottoms.count / 2]
+                    let bottom = bottoms.sorted()[bottoms.count / 2]
                     let size = line.size
-                    line.rect = CGRect(x: line.rect.minX, y: baseline - size * 0.78, width: line.rect.width, height: size)
+                    line.rect = CGRect(x: line.rect.minX, y: bottom - size, width: line.rect.width, height: size)
                 }
                 if !line.runs.isEmpty, !line.text.trimmingCharacters(in: .whitespaces).isEmpty { lines.append(line) }
             }
@@ -411,41 +411,33 @@ enum PDFLayout {
             bottoms.removeAll(keepingCapacity: true)
         }
 
-        // On some systems PDFKit leaves the line breaks it adds out of its list of character positions, so every
-        // position after one belongs to the next character. When the line breaks themselves come back with real
-        // positions, that's the case, and positions are looked up without counting the line breaks.
-        var breaks = 0, positioned = 0
-        for index in 0..<min(string.length, 20_000) {
-            let character = string.character(at: index)
-            guard character == 10 || character == 13 else { continue }
-            breaks += 1
-            if sameText, !page.characterBounds(at: index).isEmpty { positioned += 1 }
-        }
-        let skipsBreaks = breaks > 0 && positioned * 2 > breaks
-        var breaksSoFar = 0
-
+        // Positions come word by word from PDFKit's selections. Its per-character list (characterBounds) leaves out
+        // the line breaks and spaces it adds itself, so on many PDFs it drifts away from the text.
+        func isBreak(_ c: unichar) -> Bool { c == 10 || c == 13 || c == 0x2028 || c == 0x2029 }
+        func isSpace(_ c: unichar) -> Bool { c == 32 || c == 9 || c == 0xA0 }
         var index = 0
         while index < string.length {
             let character = string.character(at: index)
-            if character == 10 || character == 13 || character == 0x2028 || character == 0x2029 {
+            if isBreak(character) {
                 flush()
-                if character == 10 || character == 13 { breaksSoFar += 1 }
                 index += 1
                 continue
             }
-            if character == 32 || character == 9 || character == 0xA0 {
+            if isSpace(character) {
                 if current != nil { pendingSpace = true }
                 index += 1
                 continue
             }
-            // A surrogate pair is one character on the page.
-            let length = (0xD800...0xDBFF).contains(character) && index + 1 < string.length ? 2 : 1
-            let position = skipsBreaks ? index - breaksSoFar : index
-            var bounds = sameText ? page.characterBounds(at: position) : .zero
-            if bounds.isNull || bounds.isInfinite || !bounds.width.isFinite { bounds = .zero }
-            let rect = CGRect(x: bounds.minX - box.minX, y: box.maxY - bounds.maxY, width: bounds.width, height: bounds.height)
+            // A word: up to the next space or line break, or where the font changes.
             var range = NSRange()
             let attributes = attributed.attributes(at: index, effectiveRange: &range)
+            var end = index
+            let limit = min(string.length, range.location + range.length)
+            while end < limit, !isBreak(string.character(at: end)), !isSpace(string.character(at: end)) { end += 1 }
+            let wordRange = NSRange(location: index, length: max(1, end - index))
+            var bounds = sameText ? (page.selection(for: wordRange)?.bounds(for: page) ?? .zero) : .zero
+            if bounds.isNull || bounds.isInfinite || !bounds.width.isFinite || bounds.width <= 0 { bounds = .zero }
+            let rect = CGRect(x: bounds.minX - box.minX, y: box.maxY - bounds.maxY, width: bounds.width, height: bounds.height)
             let font = attributes[.font] as? NSFont ?? NSFont.systemFont(ofSize: 11)
             let style = styleCache[ObjectIdentifier(font)] ?? {
                 var value = describe(font)
@@ -471,17 +463,20 @@ enum PDFLayout {
             if let color = (attributes[.foregroundColor] as? NSColor)?.usingColorSpace(.sRGB) {
                 run.color = Color(red: color.redComponent, green: color.greenComponent, blue: color.blueComponent)
             }
-            let text = string.substring(with: NSRange(location: index, length: length))
-            index += length
+            let text = string.substring(with: wordRange)
+            index = wordRange.location + wordRange.length
 
             if bounds == .zero {
-                // No position (some synthetic characters): keep the text with what's around it.
-                if current != nil { current!.append(text, style: run) }
+                // No position: keep the text with what's around it.
+                if current != nil {
+                    if pendingSpace { current!.append(" ", style: run) }
+                    pendingSpace = false
+                    current!.append(text, style: run)
+                }
                 continue
             }
             if let last = previous, let line = current?.rect {
-                // A new line when the character no longer overlaps the line's height (dots and commas sit low,
-                // so they're measured against the whole line, not the letter before).
+                // A new line when the word no longer overlaps the line's height.
                 let overlap = min(rect.maxY, line.maxY) - max(rect.minY, line.minY)
                 let jumped = overlap < min(rect.height, line.height) * 0.3 - 0.01
                 let backwards = rect.minX < last.minX - 1
@@ -863,14 +858,19 @@ enum PDFLayout {
         var items: [(column: Int, line: Line)] = []
         for (column, lines) in columns.enumerated() { items += lines.map { (column, $0) } }
         items.sort { $0.line.rect.midY < $1.line.rect.midY }
+        // Lines share a row when they overlap by half the smaller one's height, so a small date beside a large
+        // title stays on the title's row.
         var rows: [[(column: Int, line: Line)]] = []
-        var rowMid: CGFloat = -.infinity
+        var rowSpan = CGRect.null
         for item in items {
-            if let last = rows.last, !last.isEmpty, abs(item.line.rect.midY - rowMid) < item.line.rect.height * 0.5 {
+            let rect = item.line.rect
+            let overlap = min(rect.maxY, rowSpan.maxY) - max(rect.minY, rowSpan.minY)
+            if !rows.isEmpty, overlap >= min(rect.height, rowSpan.height) * 0.5 {
                 rows[rows.count - 1].append(item)
+                rowSpan = rowSpan.union(rect)
             } else {
                 rows.append([item])
-                rowMid = item.line.rect.midY
+                rowSpan = rect
             }
         }
         let right = left + width
