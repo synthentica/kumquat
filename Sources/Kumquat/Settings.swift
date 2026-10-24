@@ -4,7 +4,7 @@ import ServiceManagement
 
 enum AppInfo {
     static let name = "Kumquat"
-    static let repository = URL(string: "https://github.com/synthentica/converter")!
+    static let repository = URL(string: "https://github.com/synthentica/kumquat")!
     static var version: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "dev"
     }
