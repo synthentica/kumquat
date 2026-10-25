@@ -87,7 +87,13 @@ Everything runs on your Mac, offline. Kumquat uses what's built into macOS (Imag
 
 Kumquat needs macOS 13 Ventura or later and runs natively on Apple silicon and Intel.
 
-Download `Kumquat.zip` from the [latest release](https://github.com/synthentica/kumquat/releases/latest), unzip it and move **Kumquat.app** to Applications.
+With [Homebrew](https://brew.sh):
+
+```sh
+brew install --cask synthentica/tap/kumquat
+```
+
+Or download `Kumquat.zip` from the [latest release](https://github.com/synthentica/kumquat/releases/latest), unzip it and move **Kumquat.app** to Applications.
 Releases are signed with a Developer ID and notarized by Apple, so the app opens without a warning.
 
 Kumquat lives in the menu bar. It doesn't need Accessibility access. The first time you use **⌃⌥C**, macOS asks whether Kumquat may read your Finder selection.
