@@ -252,13 +252,15 @@ public enum FFmpegEngine {
            codec != "copy", !arguments.contains("-af"), await audioDelay(ffmpeg, input: input) > 0.1 {
             arguments += ["-af", "aresample=async=1:first_pts=0"]
         }
+        // Built in steps: as one long sum of arrays, Xcode 16's compiler gave up type-checking it on the CI runner.
+        var command: [String] = ["-hide_banner", "-loglevel", "error", "-nostdin", "-y"]
+        command += progressArguments
+        command += decode
+        command += ["-i", input.path]
+        command += arguments
+        command.append(output.path)
         do {
-            try await Shell.run(
-                ffmpeg.path,
-                ["-hide_banner", "-loglevel", "error", "-nostdin", "-y"] + progressArguments + decode + ["-i", input.path]
-                    + arguments + [output.path],
-                onOutputLine: onLine
-            )
+            try await Shell.run(ffmpeg.path, command, onOutputLine: onLine)
         } catch {
             try? FileManager.default.removeItem(at: output)
             throw error
