@@ -1,0 +1,140 @@
+{
+  "date" : "2026-10-26T10:54:05Z",
+  "idle_threads" : [
+
+  ],
+  "machine" : {
+    "arch" : "arm64",
+    "cores" : 3,
+    "memory_gb" : 7,
+    "os" : "Version 15.7.9 (Build 24G830)"
+  },
+  "results" : [
+    {
+      "id" : "wheel_open_first_ms",
+      "limit" : 50,
+      "pass" : false,
+      "title" : "Wheel opens the first time",
+      "unit" : "ms",
+      "value" : 80.219999999999999
+    },
+    {
+      "id" : "wheel_open_median_ms",
+      "limit" : 16,
+      "pass" : false,
+      "title" : "Wheel opens (median)",
+      "unit" : "ms",
+      "value" : 22.030000000000001
+    },
+    {
+      "id" : "wheel_open_p95_ms",
+      "limit" : 50,
+      "pass" : false,
+      "title" : "Wheel opens (95th percentile)",
+      "unit" : "ms",
+      "value" : 61.060000000000002
+    },
+    {
+      "id" : "first_feedback_p95_ms",
+      "limit" : 100,
+      "pass" : true,
+      "title" : "Feedback after a drop (95th percentile)",
+      "unit" : "ms",
+      "value" : 9.8800000000000008
+    },
+    {
+      "id" : "idle_cpu_percent",
+      "limit" : 0.10000000000000001,
+      "pass" : true,
+      "title" : "Processor use while idle",
+      "unit" : "%",
+      "value" : 0.01
+    },
+    {
+      "id" : "idle_memory_mb",
+      "limit" : 40,
+      "pass" : true,
+      "title" : "Memory while idle",
+      "unit" : "MB",
+      "value" : 25.489999999999998
+    },
+    {
+      "id" : "photo_12mp_to_jpeg_ms",
+      "limit" : 250,
+      "pass" : true,
+      "title" : "12 MP photo to JPEG",
+      "unit" : "ms",
+      "value" : 231.31999999999999
+    },
+    {
+      "id" : "pdf_20_pages_to_png_ms",
+      "limit" : 3000,
+      "pass" : false,
+      "title" : "20 PDF pages to PNG at 300 DPI",
+      "unit" : "ms",
+      "value" : 3413.6199999999999
+    },
+    {
+      "id" : "audio_3min_to_flac_ms",
+      "limit" : 1500,
+      "pass" : true,
+      "title" : "3 minutes of audio to FLAC",
+      "unit" : "ms",
+      "value" : 952.47000000000003
+    },
+    {
+      "id" : "video_1080p_10s_to_mp4_ms",
+      "limit" : 500,
+      "pass" : true,
+      "title" : "10 s 1080p MOV to MP4",
+      "unit" : "ms",
+      "value" : 9.1300000000000008
+    }
+  ],
+  "wheel_open_steps" : [
+    [
+      {
+        "ms" : 0.29999999999999999,
+        "step" : "operations"
+      },
+      {
+        "ms" : 1.8,
+        "step" : "order front"
+      },
+      {
+        "ms" : 66.900000000000006,
+        "step" : "state"
+      },
+      {
+        "ms" : 0,
+        "step" : "draw"
+      },
+      {
+        "ms" : 11.300000000000001,
+        "step" : "flush"
+      }
+    ],
+    [
+      {
+        "ms" : 0.80000000000000004,
+        "step" : "operations"
+      },
+      {
+        "ms" : 0.80000000000000004,
+        "step" : "order front"
+      },
+      {
+        "ms" : 17.800000000000001,
+        "step" : "state"
+      },
+      {
+        "ms" : 0,
+        "step" : "draw"
+      },
+      {
+        "ms" : 14.4,
+        "step" : "flush"
+      }
+    ]
+  ]
+}
