@@ -122,12 +122,10 @@ public enum ImageEngine {
     public static func compress(_ url: URL, context: OperationContext) throws -> URL {
         let loaded = try load(url)
         let source = FileFormat.detect(url) ?? .jpeg
-        let target: FileFormat
-        switch source {
-        case .jpeg, .heic, .avif: target = source
-        case .webp where canWrite(.webp): target = .webp
-        default: target = loaded.image.hasAlpha && canWrite(.heic) ? .heic : .jpeg
-        }
+        // An AVIF stays AVIF only where this Mac can encode it; otherwise Compress failed with "Writing AVIF".
+        let target: FileFormat = [.jpeg, .heic, .avif, .webp].contains(source) && canWrite(source)
+            ? source
+            : loaded.image.hasAlpha && canWrite(.heic) ? .heic : .jpeg
         var image = loaded.image
         let longSide = max(image.width, image.height)
         if longSide > 4096 {
@@ -212,6 +210,12 @@ public enum ImageEngine {
         guard let pdf = CGContext(output as CFURL, mediaBox: nil, nil) else {
             throw OperationError.failed("Couldn't create the PDF.")
         }
+        // One unreadable image used to leave a half-made PDF behind.
+        var finished = false
+        defer {
+            pdf.closePDF()
+            if !finished { try? FileManager.default.removeItem(at: output) }
+        }
         for url in urls {
             let loaded = try load(url)
             let dpi = (loaded.properties[kCGImagePropertyDPIWidth] as? NSNumber)?.doubleValue ?? 72
@@ -228,7 +232,7 @@ public enum ImageEngine {
             pdf.draw(loaded.image, in: box)
             pdf.endPage()
         }
-        pdf.closePDF()
+        finished = true
     }
 
     public static func toPDF(_ url: URL, context: OperationContext) throws -> URL {

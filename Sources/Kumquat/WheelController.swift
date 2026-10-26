@@ -41,6 +41,9 @@ final class WheelController {
     private var hideWork: DispatchWorkItem?
     /// The invisible practice opening after launch, cut short if a real one comes first.
     private var rehearsal: DispatchWorkItem?
+    /// The wheel showing before Shift switched to its own, when Shift is a wheel key. Pressing Shift for
+    /// Shift-Tab switches wheels before the Tab arrives, so Tab steps back from here instead.
+    private var wheelBeforeShift: Wheel?
 
     var isVisible: Bool { panel.isVisible && model.isShown }
 
@@ -294,7 +297,16 @@ final class WheelController {
         case 53: // escape
             cancel()
         case 48: // tab
-            cycleWheel(forward: !event.modifierFlags.contains(.shift))
+            let backward = event.modifierFlags.contains(.shift)
+            if backward, let previous = wheelBeforeShift {
+                // Back from the wheel Shift-Tab started on, not from Shift's own.
+                let all = Wheel.allCases
+                let index = all.firstIndex(of: previous) ?? 0
+                switchTo(all[(index + all.count - 1) % all.count])
+            } else {
+                cycleWheel(forward: !backward)
+            }
+            wheelBeforeShift = nil
         case 124, 125: // right, down
             moveHighlight(by: 1)
         case 123, 126: // left, up
@@ -306,7 +318,16 @@ final class WheelController {
     }
 
     func handleFlags(_ flags: NSEvent.ModifierFlags) {
-        if let wheel = Settings.shared.wheel(for: flags) { switchTo(wheel) }
+        guard let wheel = Settings.shared.wheel(for: flags) else {
+            wheelBeforeShift = nil
+            return
+        }
+        if flags.contains(.shift), Settings.shared.key(for: wheel) == .shift {
+            if wheel != model.wheel { wheelBeforeShift = model.wheel }
+        } else {
+            wheelBeforeShift = nil
+        }
+        switchTo(wheel)
     }
 }
 

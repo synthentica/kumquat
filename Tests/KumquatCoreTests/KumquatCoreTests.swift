@@ -233,6 +233,104 @@ final class TextFormatTests: XCTestCase {
         let json = Spreadsheet.json([["a", "b"], ["1", "x\"y"]])
         XCTAssertTrue(json.contains("\"a\": 1"))
         XCTAssertTrue(json.contains("\"b\": \"x\\\"y\""))
+        // JSON has no ".5" or "5.", so those stay strings and the file still parses.
+        let loose = Spreadsheet.json([["a", "b", "c"], [".5", "5.", "-0.25"]])
+        XCTAssertTrue(loose.contains("\"a\": \".5\""))
+        XCTAssertTrue(loose.contains("\"b\": \"5.\""))
+        XCTAssertTrue(loose.contains("\"c\": -0.25"))
+        XCTAssertNoThrow(try JSONSerialization.jsonObject(with: Data(loose.utf8)))
+    }
+
+    func testXLSWithADamagedHeaderFailsWithoutCrashing() throws {
+        let dir = try FileManager.default.makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let url = dir.appendingPathComponent("damaged.xls")
+        var data = makeXLS()
+        // A sector shift of 1 made the DIFAT loop build the range 0..<-1, which traps.
+        data[0x1E] = 1
+        data[0x1F] = 0
+        data.replaceSubrange(0x44..<0x48, with: [0, 0, 0, 0])
+        try data.write(to: url)
+        XCTAssertThrowsError(try XLS.read(url))
+        // A string that claims four billion bytes of extras ends at the data instead of spinning through them.
+        var reader = XLS.StringReader(segments: [Data([2, 0, 0x04, 0xFF, 0xFF, 0xFF, 0xFF]) + Data("ab".utf8)])
+        XCTAssertEqual(reader.readString(lengthBytes: 2), "ab")
+        XCTAssertTrue(reader.isAtEnd)
+    }
+
+    func testXLSXDates() {
+        typealias Styles = XLSX.DateStyles
+        XCTAssertEqual(Styles.kind(of: "dd.mm.yyyy"), .date)
+        XCTAssertEqual(Styles.kind(of: "[$-409]mmmm d, yyyy;@"), .date)
+        XCTAssertEqual(Styles.kind(of: "h:mm AM/PM"), .time)
+        XCTAssertEqual(Styles.kind(of: "yyyy-mm-dd hh:mm"), .dateTime)
+        XCTAssertEqual(Styles.kind(of: "mmmm"), .date)
+        XCTAssertNil(Styles.kind(of: "[h]:mm:ss"))
+        XCTAssertNil(Styles.kind(of: "#,##0.00 \"days\""))
+        XCTAssertNil(Styles.kind(of: "[Red]0.00;[Blue]-0.00"))
+        XCTAssertNil(Styles.kind(of: "General"))
+
+        let styles = Styles(kinds: [nil, .date, .time, .dateTime, Styles.builtIn[14]])
+        XCTAssertNil(styles.text(for: "45123", style: "0"))
+        XCTAssertNil(styles.text(for: "45123", style: nil))
+        XCTAssertEqual(styles.text(for: "45123", style: "1"), "2023-07-16")
+        XCTAssertEqual(styles.text(for: "0.75", style: "2"), "18:00:00")
+        XCTAssertEqual(styles.text(for: "45123.75", style: "3"), "2023-07-16 18:00:00")
+        XCTAssertEqual(styles.text(for: "1", style: "4"), "1900-01-01")
+        XCTAssertEqual(Styles(kinds: [.date], uses1904: true).text(for: "0", style: "0"), "1904-01-01")
+    }
+
+    func testXLSXDatesComeOutAsDates() async throws {
+        let dir = try FileManager.default.makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let url = dir.appendingPathComponent("dates.xlsx")
+        try await XLSX.write([["When", "Count"], ["45123", "45123"]], to: url)
+        // Give the first column of the second row a date style, the way Excel saves one.
+        let work = dir.appendingPathComponent("unpacked", isDirectory: true)
+        try FileManager.default.createDirectory(at: work, withIntermediateDirectories: true)
+        try await Zip.extract(url, to: work)
+        let sheet = work.appendingPathComponent("xl/worksheets/sheet1.xml")
+        let xml = try String(contentsOf: sheet).replacingOccurrences(of: #"<c r="A2">"#, with: #"<c r="A2" s="2">"#)
+        try xml.write(to: sheet, atomically: true, encoding: .utf8)
+        let stylesURL = work.appendingPathComponent("xl/styles.xml")
+        let styles = try String(contentsOf: stylesURL)
+            .replacingOccurrences(of: #"<cellXfs count="2">"#, with: #"<cellXfs count="3">"#)
+            .replacingOccurrences(of: "</cellXfs>", with: #"<xf numFmtId="14" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs>"#)
+        try styles.write(to: stylesURL, atomically: true, encoding: .utf8)
+        try FileManager.default.removeItem(at: url)
+        try await Zip.create(url, from: work, entries: ["[Content_Types].xml", "_rels", "xl"])
+        let rows = try await XLSX.read(url)
+        XCTAssertEqual(rows, [["When", "Count"], ["2023-07-16", "45123"]])
+    }
+
+    func testSubtitlesSeparatedByLinesOfSpaces() {
+        let srt = "1\n00:00:01,000 --> 00:00:02,000\nOne\n \n2\n00:00:03,000 --> 00:00:04,000\nTwo\n\t\n3\n00:00:05,000 --> 00:00:06,000\nThree\n"
+        XCTAssertEqual(Subtitles.parse(srt).map(\.text), ["One", "Two", "Three"])
+        // No blank line at all: the next cue's number isn't part of this cue's text.
+        let tight = "1\n00:00:01,000 --> 00:00:02,000\nOne\n2\n00:00:03,000 --> 00:00:04,000\nTwo\n"
+        XCTAssertEqual(Subtitles.parse(tight).map(\.text), ["One", "Two"])
+        XCTAssertNil(Subtitles.time("nan:00"))
+        XCTAssertNil(Subtitles.time("99999999999999:00:00,000"))
+    }
+
+    func testMarkdownLinksKeepTheirAddresses() throws {
+        let html = Markdown.xhtml(from: "See [init](https://docs.python.org/3/reference/datamodel.html#object.__init__), "
+            + "![a *b*](https://example.com/a*b*c.png) and <https://example.com/_x_/> with *emphasis*.")
+        XCTAssertTrue(html.contains(#"<a href="https://docs.python.org/3/reference/datamodel.html#object.__init__">init</a>"#), html)
+        XCTAssertTrue(html.contains(#"<img alt="a *b*" src="https://example.com/a*b*c.png"/>"#), html)
+        XCTAssertTrue(html.contains(#"<a href="https://example.com/_x_/">https://example.com/_x_/</a>"#), html)
+        XCTAssertTrue(html.contains("<em>emphasis</em>"))
+        XCTAssertNoThrow(try XMLDocument(xmlString: "<body>\(html)</body>", options: []))
+    }
+
+    func testEPUBChaptersInTheirOwnFolderKeepTheirPictures() {
+        let chapter = URL(fileURLWithPath: "/book/OEBPS/Text/chapter1.xhtml")
+        let body = #"<p><img src="../Images/cover.jpg"/><img src='same.png'/><img src="http://example.com/x.png"/><img src="data:image/png;base64,AA=="/></p>"#
+        let fixed = EPUB.pointingAtFiles(body, from: chapter)
+        XCTAssertTrue(fixed.contains(#"src="file:///book/OEBPS/Images/cover.jpg""#), fixed)
+        XCTAssertTrue(fixed.contains(#"src='file:///book/OEBPS/Text/same.png'"#), fixed)
+        XCTAssertTrue(fixed.contains(#"src="http://example.com/x.png""#))
+        XCTAssertTrue(fixed.contains(#"src="data:image/png;base64,AA==""#))
     }
 }
 
@@ -852,6 +950,24 @@ final class EngineTests: XCTestCase {
             try await group.waitForAll()
         }
         XCTAssertEqual(counter.peak, 2)
+    }
+
+    func testStoppedJobWaitingForALaneNeverStarts() async throws {
+        let lane = Lane(limit: 1)
+        let counter = ConcurrencyCounter()
+        let busy = Task { try await lane.run { try await Task.sleep(nanoseconds: 300_000_000) } }
+        try await Task.sleep(nanoseconds: 50_000_000)
+        let waiting = Task { try await lane.run { counter.enter() } }
+        try await Task.sleep(nanoseconds: 50_000_000)
+        waiting.cancel()
+        do {
+            try await waiting.value
+            XCTFail("a stopped job ran once the lane was free")
+        } catch {
+            XCTAssertTrue(error is CancellationError, "\(error)")
+        }
+        try await busy.value
+        XCTAssertEqual(counter.peak, 0)
     }
 }
 

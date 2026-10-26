@@ -190,8 +190,17 @@ public enum XLS {
 
         mutating func uint32() -> UInt32 { UInt32(uint16()) | UInt32(uint16()) << 16 }
 
+        /// Moves past `count` bytes, stopping at the end: a damaged length of four billion would otherwise
+        /// spin through that many empty reads.
         mutating func skip(_ count: Int) {
-            for _ in 0..<count { _ = byte() }
+            var remaining = count
+            while remaining > 0 {
+                normalize()
+                guard segment < segments.count else { return }
+                let step = min(remaining, segments[segment].count - offset)
+                offset += step
+                remaining -= step
+            }
         }
 
         mutating func readString(lengthBytes: Int) -> String {
@@ -235,10 +244,17 @@ struct CompoundFile {
         guard data.count >= 512, data.prefix(8) == Data([0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1]) else {
             throw OperationError.failed("This isn't an Excel 97–2003 file.")
         }
+        // Sectors are 512 or 4,096 bytes and mini sectors 64. A damaged header with a tiny sector size made the
+        // DIFAT loop below build a negative range, which crashed the whole app.
+        let sectorShift = Int(data.uint16(at: 0x1E))
+        let miniShift = Int(data.uint16(at: 0x20))
+        guard (7...16).contains(sectorShift), (2...sectorShift).contains(miniShift) else {
+            throw OperationError.failed("This Excel 97–2003 file is damaged.")
+        }
         // Locals rather than properties, so the helpers below can use them before `self` is complete.
-        let sectorSize = 1 << Int(data.uint16(at: 0x1E))
+        let sectorSize = 1 << sectorShift
         self.sectorSize = sectorSize
-        miniSectorSize = 1 << Int(data.uint16(at: 0x20))
+        miniSectorSize = 1 << miniShift
         miniCutoff = Int(data.uint32(at: 0x38))
 
         // The sectors that hold the FAT are listed in the header, then in a chain of DIFAT sectors.

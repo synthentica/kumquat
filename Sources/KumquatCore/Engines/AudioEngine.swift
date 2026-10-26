@@ -149,11 +149,17 @@ public enum AudioEngine {
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         let count = Int((Double(source.length) / Double(partLength)).rounded(.up))
         let digits = String(count).count
-        for index in 0..<count {
-            let start = AVAudioFramePosition(index) * partLength
-            let end = min(source.length, start + partLength)
-            let name = "\(url.baseName) \(String(index + 1).leftPadded(to: digits)).\(target.fileExtension)"
-            try copyFrames(of: url, range: start..<end, to: folder.appendingPathComponent(name), settings: target.settings)
+        do {
+            for index in 0..<count {
+                let start = AVAudioFramePosition(index) * partLength
+                let end = min(source.length, start + partLength)
+                let name = "\(url.baseName) \(String(index + 1).leftPadded(to: digits)).\(target.fileExtension)"
+                try copyFrames(of: url, range: start..<end, to: folder.appendingPathComponent(name), settings: target.settings)
+            }
+        } catch {
+            // Stopped or failed partway: no folder of some of the parts.
+            try? FileManager.default.removeItem(at: folder)
+            throw error
         }
         return folder
     }
