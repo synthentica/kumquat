@@ -50,12 +50,18 @@ enum FileActions {
                 panel.prompt = "Move Here"
                 panel.message = urls.count == 1 ? "Move \(urls[0].lastPathComponent) to…" : "Move \(urls.count) items to…"
                 guard panel.runModal() == .OK, let folder = panel.url else { return OperationOutcome(silent: true) }
+                // Every name is checked before anything moves, so a clash halfway through doesn't leave the items
+                // split between two folders.
+                var names = Set<String>()
+                for url in urls {
+                    let name = url.lastPathComponent
+                    guard names.insert(name).inserted,
+                          !FileManager.default.fileExists(atPath: folder.appendingPathComponent(name).path)
+                    else { throw OperationError.failed("\(name) already exists there.") }
+                }
                 var moved: [URL] = []
                 for url in urls {
                     let target = folder.appendingPathComponent(url.lastPathComponent)
-                    guard !FileManager.default.fileExists(atPath: target.path) else {
-                        throw OperationError.failed("\(url.lastPathComponent) already exists there.")
-                    }
                     try FileManager.default.moveItem(at: url, to: target)
                     moved.append(target)
                 }

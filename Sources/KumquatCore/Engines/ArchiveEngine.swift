@@ -47,27 +47,28 @@ public enum ArchiveEngine {
     /// Unpacks next to the archive. A single top-level item is placed directly, like Archive Utility does.
     public static func extract(_ url: URL, context: OperationContext) async throws -> URL {
         let fm = FileManager.default
-        let folder = context.folderDestination(for: url)
-        try fm.createDirectory(at: folder, withIntermediateDirectories: true)
-        do {
-            switch FileFormat.detect(url) {
-            case .zip:
-                try await Shell.run("/usr/bin/ditto", ["-x", "-k", url.path, folder.path])
-            case .gz:
-                try await Shell.run("/usr/bin/gzip", ["-dc", url.path], standardOutput: folder.appendingPathComponent(url.baseName))
-            default:
-                try await Shell.run("/usr/bin/tar", ["-xf", url.path, "-C", folder.path])
-            }
-        } catch {
-            try? fm.removeItem(at: folder)
-            throw error
+        // Unpacked first into a hidden folder, so the result's name is chosen once its contents are known. Unpacking
+        // straight into "photos" made the "photos" folder inside a photos.zip come out as "photos 2".
+        let staging = context.directory(for: url).appendingPathComponent(".kumquat-\(UUID().uuidString)")
+        try fm.createDirectory(at: staging, withIntermediateDirectories: true)
+        defer { try? fm.removeItem(at: staging) }
+        switch FileFormat.detect(url) {
+        case .zip:
+            try await Shell.run("/usr/bin/ditto", ["-x", "-k", url.path, staging.path])
+        case .gz:
+            try await Shell.run("/usr/bin/gzip", ["-dc", url.path], standardOutput: staging.appendingPathComponent(url.baseName))
+        default:
+            try await Shell.run("/usr/bin/tar", ["-xf", url.path, "-C", staging.path])
         }
-        let items = (try? fm.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil))?
+        let items = (try? fm.contentsOfDirectory(at: staging, includingPropertiesForKeys: nil))?
             .filter { $0.lastPathComponent != "__MACOSX" && $0.lastPathComponent != ".DS_Store" } ?? []
-        guard items.count == 1, let only = items.first else { return folder }
-        let target = context.destination(for: url, name: only.deletingPathExtension().lastPathComponent, extension: only.pathExtension)
-        try fm.moveItem(at: only, to: target)
-        try? fm.removeItem(at: folder)
-        return target
+        if items.count == 1, let only = items.first {
+            let target = context.destination(for: url, name: only.deletingPathExtension().lastPathComponent, extension: only.pathExtension)
+            try fm.moveItem(at: only, to: target)
+            return target
+        }
+        let folder = context.folderDestination(for: url)
+        try fm.moveItem(at: staging, to: folder)
+        return folder
     }
 }

@@ -32,9 +32,9 @@ struct SettingsView: View {
             }
 
             Section("Wheels") {
-                keyPicker("Convert", wheel: .convert, selection: $settings.convertKey)
-                keyPicker("Tools", wheel: .tools, selection: $settings.toolsKey)
-                keyPicker("Actions", wheel: .actions, selection: $settings.actionsKey)
+                keyPicker("Convert", wheel: .convert)
+                keyPicker("Tools", wheel: .tools)
+                keyPicker("Actions", wheel: .actions)
                 Toggle("Open the wheel while dragging files", isOn: $settings.dragWheelEnabled)
                 LabeledContent("Convert Finder selection") {
                     Text("⌃⌥C").font(.system(.body, design: .rounded).weight(.semibold)).foregroundStyle(.secondary)
@@ -90,8 +90,8 @@ struct SettingsView: View {
         .padding(.vertical, 4)
     }
 
-    private func keyPicker(_ title: String, wheel: Wheel, selection: Binding<ModifierKey>) -> some View {
-        Picker(selection: selection) {
+    private func keyPicker(_ title: String, wheel: Wheel) -> some View {
+        Picker(selection: Binding(get: { settings.key(for: wheel) }, set: { settings.setKey($0, for: wheel) })) {
             ForEach(ModifierKey.allCases) { key in
                 Text("\(key.glyph)  \(key.name)").tag(key)
             }

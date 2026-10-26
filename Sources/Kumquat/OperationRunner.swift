@@ -63,6 +63,7 @@ final class OperationRunner {
                 if !isAction {
                     self.running -= 1
                     self.tasks[job] = nil
+                    self.toast.finished(job)
                 }
                 switch result {
                 case .success(let outcome) where stopped:

@@ -362,7 +362,21 @@ public enum Spreadsheet {
 
     static func json(_ rows: [[String]]) -> String {
         guard let header = rows.first else { return "[]\n" }
-        let keys = header.enumerated().map { $1.isEmpty ? "column\($0 + 1)" : $1 }
+        // Every column gets its own key: a row longer than the header used to lose its extra cells, and two
+        // columns with the same title made duplicate keys, of which a JSON reader keeps only the last.
+        let width = rows.map(\.count).max() ?? 0
+        var used = Set<String>()
+        let keys = (0..<width).map { index -> String in
+            let title = index < header.count ? header[index] : ""
+            let base = title.isEmpty ? "column\(index + 1)" : title
+            var key = base
+            var number = 2
+            while !used.insert(key).inserted {
+                key = "\(base) \(number)"
+                number += 1
+            }
+            return key
+        }
         let objects = rows.dropFirst().map { row -> String in
             let pairs = keys.enumerated().map { index, key -> String in
                 let value = index < row.count ? row[index] : ""
@@ -398,13 +412,15 @@ public enum Spreadsheet {
 
     static func markdownTable(_ rows: [[String]]) -> String {
         guard let header = rows.first else { return "" }
+        // As wide as the widest row, since Markdown drops cells past the header's.
+        let width = rows.map(\.count).max() ?? 0
         func line(_ cells: [String]) -> String {
-            let padded = cells + Array(repeating: "", count: max(0, header.count - cells.count))
+            let padded = cells + Array(repeating: "", count: max(0, width - cells.count))
             return "| " + padded.map {
                 $0.replacingOccurrences(of: "|", with: "\\|").replacingOccurrences(of: "\n", with: " ")
             }.joined(separator: " | ") + " |"
         }
-        var lines = [line(header), "|" + header.map { _ in " --- |" }.joined()]
+        var lines = [line(header), "|" + String(repeating: " --- |", count: width)]
         lines += rows.dropFirst().map(line)
         return lines.joined(separator: "\n") + "\n"
     }

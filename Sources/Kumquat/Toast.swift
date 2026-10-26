@@ -28,6 +28,17 @@ final class ToastController {
     /// Called with the job's ticket when its stop button is pressed.
     var onStop: ((Int) -> Void)?
     private var hideWork: DispatchWorkItem?
+    /// What a running job shows, kept while another job's result covers it.
+    private struct Work {
+        var title: String
+        var detail: String
+        var progress: Double?
+    }
+    /// Jobs still running, by ticket. When one finishes while another runs, its result shows for a moment and then
+    /// the toast goes back to the one still running, which used to be left without a toast until it finished.
+    private var working: [Int: Work] = [:]
+    private var lastTicket = 0
+    /// The job whose progress is on screen, and the one the stop button stops.
     private var job = 0
     private static let size = NSSize(width: 420, height: 76)
 
@@ -46,8 +57,9 @@ final class ToastController {
         panel.isReleasedWhenClosed = false
         panel.hidesOnDeactivate = false
         let view = ToastView(model: model, onClick: { [weak self] in
-            self?.onClick?()
-            self?.hide()
+            guard let self else { return }
+            self.onClick?()
+            if self.model.state == .working { self.hide() } else { self.dismissResult() }
         }, onStop: { [weak self] in
             guard let self else { return }
             self.onStop?(self.job)
@@ -65,19 +77,33 @@ final class ToastController {
     @discardableResult
     func showProgress(_ title: String, detail: String) -> Int {
         let signpost = Trace.signposter.beginInterval("First feedback", id: Trace.signposter.makeSignpostID())
-        job += 1
-        model.progress = nil
-        show(.working, title, detail, onClick: nil, autoHide: nil)
+        lastTicket += 1
+        working[lastTicket] = Work(title: title, detail: detail)
+        showWorking(lastTicket)
         // The first sign that the drop worked: get it on screen before the work starts.
         panel.displayIfNeeded()
         CATransaction.flush()
         Trace.signposter.endInterval("First feedback", signpost)
-        return job
+        return lastTicket
     }
 
-    /// Moves the progress line for the job shown last. Updates from an older job, or ones arriving
-    /// after the result is already up, are dropped.
+    /// Forgets a job that has ended, before its result is shown.
+    func finished(_ job: Int) {
+        working[job] = nil
+    }
+
+    private func showWorking(_ job: Int) {
+        guard let work = working[job] else { return }
+        self.job = job
+        model.progress = work.progress
+        show(.working, work.title, work.detail, onClick: nil, autoHide: nil)
+    }
+
+    /// Moves the progress line for the job on screen. Updates from a job that isn't shown, or ones arriving after
+    /// the result is already up, are only kept for when that job is shown again.
     func setProgress(_ fraction: Double, job: Int) {
+        guard working[job] != nil else { return }
+        working[job]?.progress = fraction
         guard job == self.job, model.state == .working, model.isShown else { return }
         // A change too small to see isn't worth a redraw.
         if let current = model.progress, abs(current - fraction) < 0.004 { return }
@@ -114,9 +140,18 @@ final class ToastController {
             withAnimation(.linear(duration: 0.45)) { model.shakes += 1 }
         }
         if let autoHide {
-            let work = DispatchWorkItem { [weak self] in self?.hide() }
+            let work = DispatchWorkItem { [weak self] in self?.dismissResult() }
             hideWork = work
             DispatchQueue.main.asyncAfter(deadline: .now() + autoHide, execute: work)
+        }
+    }
+
+    /// Takes a result away, going back to the newest job still running, if any.
+    private func dismissResult() {
+        if let newest = working.keys.max() {
+            showWorking(newest)
+        } else {
+            hide()
         }
     }
 

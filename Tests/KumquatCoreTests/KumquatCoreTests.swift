@@ -147,13 +147,18 @@ final class TextFormatTests: XCTestCase {
     }
 
     /// Builds a tiny Excel 97 file: a Compound File with one Workbook stream of BIFF8 records.
-    func makeXLS() -> Data {
+    /// With `dates`, also writes number formats, cell styles and a row of dates in them.
+    func makeXLS(dates: Bool = false) -> Data {
         func le16(_ value: UInt16) -> [UInt8] { [UInt8(value & 0xFF), UInt8(value >> 8)] }
         func le32(_ value: UInt32) -> [UInt8] { le16(UInt16(value & 0xFFFF)) + le16(UInt16(value >> 16)) }
         func record(_ type: UInt16, _ body: [UInt8]) -> [UInt8] {
             le16(type) + le16(UInt16(body.count)) + body
         }
-        func cell(_ row: UInt16, _ column: UInt16) -> [UInt8] { le16(row) + le16(column) + le16(0) }
+        func cell(_ row: UInt16, _ column: UInt16, style: UInt16 = 0) -> [UInt8] { le16(row) + le16(column) + le16(style) }
+        func double(_ value: Double) -> [UInt8] {
+            var bits = value.bitPattern
+            return (0..<8).map { _ -> UInt8 in defer { bits >>= 8 }; return UInt8(bits & 0xFF) }
+        }
 
         // "Helsinki" is split across the SST and a CONTINUE record, which repeats the flags byte.
         var strings: [UInt8] = le32(3) + le32(3)
@@ -174,6 +179,14 @@ final class TextFormatTests: XCTestCase {
         let sheetRecordIndex = globals.count
         let sheetName: [UInt8] = [0, 0, 5, 0] + Array("Sheet".utf8)
         globals += record(0x0085, le32(0) + sheetName)
+        if dates {
+            // Style 0 is plain, 1 a custom "dd.mm.yyyy", 2 Excel's built-in date and time.
+            let code = "dd.mm.yyyy"
+            globals += record(0x041E, le16(164) + le16(UInt16(code.utf8.count)) + [0] + Array(code.utf8))
+            for format: UInt16 in [0, 164, 22] {
+                globals += record(0x00E0, le16(0) + le16(format) + [UInt8](repeating: 0, count: 16))
+            }
+        }
         globals += sst + continuation + eof
         let sheetOffset = UInt32(globals.count)
         globals.replaceSubrange(sheetRecordIndex + 4..<sheetRecordIndex + 8, with: le32(sheetOffset))
@@ -185,6 +198,14 @@ final class TextFormatTests: XCTestCase {
         sheet += record(0x00FD, cell(2, 0) + le32(1))
         sheet += record(0x027E, cell(1, 1) + le32(UInt32(674_500) << 2 | 0x02))
         sheet += record(0x0203, cell(2, 1) + numberBytes)
+        if dates {
+            sheet += record(0x027E, cell(3, 0, style: 1) + le32(UInt32(45_000) << 2 | 0x02))
+            sheet += record(0x0203, cell(3, 1, style: 2) + double(45_000.5))
+            // Two cells in one MULRK: a date, then a plain number.
+            sheet += record(0x00BD, le16(3) + le16(2) + le16(1) + le32(UInt32(45_001) << 2 | 0x02)
+                + le16(0) + le32(UInt32(45_001) << 2 | 0x02) + le16(3))
+            sheet += record(0x0006, cell(3, 4, style: 1) + double(45_002) + [UInt8](repeating: 0, count: 6))
+        }
         sheet += eof
         var stream = globals + sheet
         stream += [UInt8](repeating: 0, count: max(0, 4_096 - stream.count))
@@ -229,6 +250,17 @@ final class TextFormatTests: XCTestCase {
         XCTAssertEqual(XLS.rk(UInt32(bitPattern: Int32(-12) << 2) | 0x03), -0.12, accuracy: 0.0001)
     }
 
+    func testXLSDatesComeOutAsDates() throws {
+        let dir = try FileManager.default.makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let url = dir.appendingPathComponent("dates.xls")
+        try makeXLS(dates: true).write(to: url)
+        let rows = try XLS.read(url)
+        XCTAssertEqual(rows.count, 4)
+        XCTAssertEqual(rows.last, ["2023-03-15", "2023-03-15 12:00:00", "2023-03-16", "45001", "2023-03-17"])
+        XCTAssertEqual(rows[1], ["Helsinki", "674500", "", "", ""])
+    }
+
     func testJSON() {
         let json = Spreadsheet.json([["a", "b"], ["1", "x\"y"]])
         XCTAssertTrue(json.contains("\"a\": 1"))
@@ -239,6 +271,11 @@ final class TextFormatTests: XCTestCase {
         XCTAssertTrue(loose.contains("\"b\": \"5.\""))
         XCTAssertTrue(loose.contains("\"c\": -0.25"))
         XCTAssertNoThrow(try JSONSerialization.jsonObject(with: Data(loose.utf8)))
+        // Repeated titles and cells past the header each keep a key of their own.
+        let wide = Spreadsheet.json([["Name", "Name"], ["Ann", "Lee", "extra"]])
+        let object = try? JSONSerialization.jsonObject(with: Data(wide.utf8)) as? [[String: String]]
+        XCTAssertEqual(object?.first, ["Name": "Ann", "Name 2": "Lee", "column3": "extra"])
+        XCTAssertTrue(Spreadsheet.markdownTable([["a"], ["1", "2"]]).hasPrefix("| a |  |\n| --- | --- |\n| 1 | 2 |"))
     }
 
     func testXLSWithADamagedHeaderFailsWithoutCrashing() throws {
@@ -567,6 +604,22 @@ final class EngineTests: XCTestCase {
         XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: images.path).count, 3)
     }
 
+    func testHiddenSlidesStayOutOfThePDF() async throws {
+        let png = try makePNG()
+        let pdfURL = dir.appendingPathComponent("hidden.pdf")
+        try ImageEngine.makePDF(from: [png, png, png], to: pdfURL)
+        let deck = try await PPTX.fromPDF(pdfURL, context: context)
+        let unpacked = dir.appendingPathComponent("hidden-deck")
+        try await Zip.extract(deck, to: unpacked)
+        let slide = unpacked.appendingPathComponent("ppt/slides/slide2.xml")
+        let xml = try String(contentsOf: slide).replacingOccurrences(of: "<p:sld ", with: #"<p:sld show="0" "#)
+        try xml.write(to: slide, atomically: true, encoding: .utf8)
+        let edited = dir.appendingPathComponent("edited.pptx")
+        try await Zip.create(edited, from: unpacked, entries: ["[Content_Types].xml", "_rels", "ppt"])
+        let rendered = try await PPTXRenderer.toPDF(edited, context: context)
+        XCTAssertEqual(PDFDocument(url: rendered)?.pageCount, 2)
+    }
+
     func testTextClipping() async throws {
         let url = dir.appendingPathComponent("Snippet.textClipping")
         let plist: [String: Any] = ["UTI-Data": ["public.utf8-plain-text": "Hello from a clipping"]]
@@ -621,6 +674,24 @@ final class EngineTests: XCTestCase {
         XCTAssertEqual(gzip.lastPathComponent, "a.txt.gz")
         let unzipped = try await ArchiveEngine.extract(gzip, context: context)
         XCTAssertEqual(try String(contentsOf: unzipped), "hi")
+    }
+
+    func testUnpackedFolderKeepsItsOwnName() async throws {
+        // The originals live elsewhere, so nothing named "Photos" or "notes.txt" sits next to the archives.
+        let source = dir.appendingPathComponent("source")
+        let photos = source.appendingPathComponent("Photos")
+        try FileManager.default.createDirectory(at: photos, withIntermediateDirectories: true)
+        try "hi".write(to: photos.appendingPathComponent("a.txt"), atomically: true, encoding: .utf8)
+        let notes = source.appendingPathComponent("notes.txt")
+        try "hello".write(to: notes, atomically: true, encoding: .utf8)
+        let zip = try await ArchiveEngine.compress([photos], as: .zip, context: context)
+        let unpacked = try await ArchiveEngine.extract(zip, context: context)
+        XCTAssertEqual(unpacked.lastPathComponent, "Photos")
+        let gzip = try await ArchiveEngine.compress([notes], as: .gzip, context: context)
+        let unzipped = try await ArchiveEngine.extract(gzip, context: context)
+        XCTAssertEqual(unzipped.lastPathComponent, "notes.txt")
+        let leftovers = try FileManager.default.contentsOfDirectory(atPath: dir.path).filter { $0.hasPrefix(".kumquat") }
+        XCTAssertEqual(leftovers, [])
     }
 
     func testProgressAndParallelPages() async throws {
