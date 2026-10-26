@@ -42,13 +42,24 @@ public enum PPTXRenderer {
         let height = CGFloat(Double(size?.attributeValue("cy") ?? "") ?? 6_858_000) / emuPerPoint
         let relationships = package.relationships(of: "ppt/presentation.xml")
         // Each slide is listed by its relationship id, the `r:id` attribute (not the plain `id`).
-        let slides = presentation.elements(named: "sldId").compactMap { slide in
+        let listed = presentation.elements(named: "sldId").compactMap { slide in
             slide.attributes?.first { $0.localName == "id" && $0.name != "id" }?.stringValue.flatMap { relationships[$0] }
         }
-        guard !slides.isEmpty else { throw OperationError.failed("The presentation has no slides.") }
+        guard !listed.isEmpty else { throw OperationError.failed("The presentation has no slides.") }
+        // Hidden slides stay out, as when PowerPoint or Keynote saves a PDF, unless every slide is hidden.
+        let shown = listed.filter { path in
+            let show = (try? package.xml(path))?.rootElement()?.attributeValue("show")
+            return show != "0" && show != "false"
+        }
+        let slides = shown.isEmpty ? listed : shown
 
         guard let pdf = CGContext(output as CFURL, mediaBox: nil, nil) else { throw OperationError.failed("Couldn't create the PDF.") }
         for (number, slidePath) in slides.enumerated() {
+            // A long deck takes a while, so Stop is checked slide by slide.
+            if Task.isCancelled {
+                pdf.closePDF()
+                throw CancellationError()
+            }
             WorkProgress.report(number, of: slides.count)
             var box = CGRect(x: 0, y: 0, width: width, height: height)
             pdf.beginPage(mediaBox: &box)

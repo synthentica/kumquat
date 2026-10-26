@@ -8,9 +8,12 @@ public enum PPTX {
         guard document.pageCount > 0 else { throw OperationError.failed("The PDF has no pages.") }
         var pictures: [(jpeg: Data, size: CGSize)] = []
         for index in 0..<document.pageCount {
+            // A long PDF takes a while at 200 DPI, so Stop is checked and progress shown page by page.
+            try Task.checkCancellation()
             guard let page = document.page(at: index) else { continue }
             let image = try PDFEngine.render(page, dpi: 200)
             pictures.append((jpeg: try jpeg(image, quality: context.imageQuality), size: CGSize(width: image.width, height: image.height)))
+            WorkProgress.report(index + 1, of: document.pageCount)
         }
         guard let first = pictures.first else { throw OperationError.failed("The PDF has no pages.") }
         // The deck takes the first page's shape, 13.33 inches wide.

@@ -109,6 +109,25 @@ final class Settings: ObservableObject {
         }
     }
 
+    /// Gives `wheel` a new modifier. A wheel that had it before takes the old one, since two wheels on one key
+    /// left the second unreachable with nothing in Settings saying why.
+    func setKey(_ key: ModifierKey, for wheel: Wheel) {
+        let previous = self.key(for: wheel)
+        guard key != previous else { return }
+        if let other = Wheel.allCases.first(where: { $0 != wheel && self.key(for: $0) == key }) {
+            assign(previous, to: other)
+        }
+        assign(key, to: wheel)
+    }
+
+    private func assign(_ key: ModifierKey, to wheel: Wheel) {
+        switch wheel {
+        case .convert: convertKey = key
+        case .tools: toolsKey = key
+        case .actions: actionsKey = key
+        }
+    }
+
     /// The wheel whose modifier is held, checking Convert first.
     func wheel(for flags: NSEvent.ModifierFlags) -> Wheel? {
         Wheel.allCases.first { flags.contains(key(for: $0).flag) }

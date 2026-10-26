@@ -11,6 +11,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var hotKey: HotKey?
     private var spinTimer: Timer?
     private var stopItem: NSMenuItem?
+    private var hintItem: NSMenuItem?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
@@ -120,9 +121,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         item.button?.toolTip = AppInfo.name
 
         let menu = NSMenu()
-        let hint = NSMenuItem(title: "Drag a file and hold \(Settings.shared.convertKey.glyph)", action: nil, keyEquivalent: "")
+        let hint = NSMenuItem(title: "", action: nil, keyEquivalent: "")
         hint.isEnabled = false
         menu.addItem(hint)
+        hintItem = hint
+        menu.delegate = self
         menu.addItem(.separator())
 
         let convert = NSMenuItem(title: "Convert Finder Selection", action: #selector(convertFinderSelection), keyEquivalent: "c")
@@ -148,5 +151,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(NSMenuItem(title: "Quit \(AppInfo.name)", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         item.menu = menu
         statusItem = item
+    }
+}
+
+extension AppDelegate: NSMenuDelegate {
+    /// Names the Convert key as it is now, since it can change in Settings after launch.
+    func menuWillOpen(_ menu: NSMenu) {
+        hintItem?.title = "Drag a file and hold \(Settings.shared.convertKey.glyph)"
     }
 }

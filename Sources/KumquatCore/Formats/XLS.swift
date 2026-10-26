@@ -36,6 +36,10 @@ public enum XLS {
         let globals = records(in: stream)
         var sheetOffset: Int?
         var strings: [String] = []
+        // Number formats and cell styles, so day counts in date cells can come out as dates.
+        var formats: [Int: String] = [:]
+        var styleFormats: [Int] = []
+        var uses1904 = false
         var index = 0
         while index < globals.count {
             let record = globals[index]
@@ -50,6 +54,13 @@ public enum XLS {
                     segments.append(globals[index].data)
                 }
                 strings = sharedStrings(segments)
+            case 0x041E where record.data.count >= 5: // FORMAT
+                var reader = StringReader(segments: [record.data.subdata(in: record.data.startIndex + 2..<record.data.endIndex)])
+                formats[Int(record.data.uint16(at: 0))] = reader.readString(lengthBytes: 2)
+            case 0x00E0 where record.data.count >= 4: // XF
+                styleFormats.append(Int(record.data.uint16(at: 2)))
+            case 0x0022 where record.data.count >= 2: // DATEMODE
+                uses1904 = record.data.uint16(at: 0) == 1
             case 0x000A:
                 index = globals.count
                 continue
@@ -59,6 +70,14 @@ public enum XLS {
             index += 1
         }
         guard let sheetOffset else { throw OperationError.failed("The workbook has no worksheet.") }
+        let dates = XLSX.DateStyles(kinds: styleFormats.map { id -> XLSX.DateStyles.Kind? in
+            if let code = formats[id] { return XLSX.DateStyles.kind(of: code) }
+            return XLSX.DateStyles.builtIn[id]
+        }, uses1904: uses1904)
+        // A number as text, or as a date when the cell's style (its XF index) shows one.
+        func number(_ value: Double, style: UInt16) -> String {
+            dates.text(for: String(value), style: String(style)) ?? format(value)
+        }
 
         var cells: [Int: [Int: String]] = [:]
         func set(_ row: Int, _ column: Int, _ value: String) {
@@ -74,15 +93,15 @@ public enum XLS {
                 let string = Int(data.uint32(at: 6))
                 set(Int(data.uint16(at: 0)), Int(data.uint16(at: 2)), strings.indices.contains(string) ? strings[string] : "")
             case 0x0203 where data.count >= 14: // NUMBER
-                set(Int(data.uint16(at: 0)), Int(data.uint16(at: 2)), format(data.double(at: 6)))
+                set(Int(data.uint16(at: 0)), Int(data.uint16(at: 2)), number(data.double(at: 6), style: data.uint16(at: 4)))
             case 0x027E where data.count >= 10: // RK
-                set(Int(data.uint16(at: 0)), Int(data.uint16(at: 2)), format(rk(data.uint32(at: 6))))
+                set(Int(data.uint16(at: 0)), Int(data.uint16(at: 2)), number(rk(data.uint32(at: 6)), style: data.uint16(at: 4)))
             case 0x00BD where data.count >= 6: // MULRK
                 let row = Int(data.uint16(at: 0))
                 var column = Int(data.uint16(at: 2))
                 var offset = 4
                 while offset + 6 <= data.count - 2 {
-                    set(row, column, format(rk(data.uint32(at: offset + 2))))
+                    set(row, column, number(rk(data.uint32(at: offset + 2)), style: data.uint16(at: offset)))
                     offset += 6
                     column += 1
                 }
@@ -104,7 +123,7 @@ public enum XLS {
                     default: break
                     }
                 } else {
-                    set(row, column, format(data.double(at: 6)))
+                    set(row, column, number(data.double(at: 6), style: data.uint16(at: 4)))
                 }
             case 0x0207: // STRING
                 if let cell = pendingFormula {
