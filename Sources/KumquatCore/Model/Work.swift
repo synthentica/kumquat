@@ -69,6 +69,9 @@ public final class Lane: @unchecked Sendable {
     public func run<T>(_ body: () async throws -> T) async throws -> T {
         await acquire()
         defer { release() }
+        // A job stopped while it waited for its turn doesn't start. A queued AVFoundation export would otherwise get
+        // its cancel before it began, which isn't documented to stop it, and could run to the end after Stop.
+        try Task.checkCancellation()
         return try await body()
     }
 

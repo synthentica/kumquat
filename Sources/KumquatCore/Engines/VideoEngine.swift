@@ -163,13 +163,19 @@ public enum VideoEngine {
         let format = sameContainer(url)
         let count = Int((duration.seconds / seconds).rounded(.up))
         let digits = String(count).count
-        for index in 0..<count {
-            try Task.checkCancellation()
-            let start = CMTime(seconds: Double(index) * seconds, preferredTimescale: 600)
-            let end = CMTimeMinimum(CMTime(seconds: Double(index + 1) * seconds, preferredTimescale: 600), duration)
-            let part = try await composition(of: asset, range: CMTimeRange(start: start, end: end))
-            let name = "\(url.baseName) \(String(index + 1).leftPadded(to: digits)).\(format.primaryExtension)"
-            try await exportFast(part, as: fileType(for: format), to: folder.appendingPathComponent(name))
+        do {
+            for index in 0..<count {
+                try Task.checkCancellation()
+                let start = CMTime(seconds: Double(index) * seconds, preferredTimescale: 600)
+                let end = CMTimeMinimum(CMTime(seconds: Double(index + 1) * seconds, preferredTimescale: 600), duration)
+                let part = try await composition(of: asset, range: CMTimeRange(start: start, end: end))
+                let name = "\(url.baseName) \(String(index + 1).leftPadded(to: digits)).\(format.primaryExtension)"
+                try await exportFast(part, as: fileType(for: format), to: folder.appendingPathComponent(name))
+            }
+        } catch {
+            // Stopped or failed partway: no folder of some of the parts.
+            try? FileManager.default.removeItem(at: folder)
+            throw error
         }
         return folder
     }
@@ -241,12 +247,17 @@ public enum VideoEngine {
         let loop = [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFLoopCount: 0]]
         CGImageDestinationSetProperties(destination, loop as CFDictionary)
         let frame = [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFDelayTime: 1 / fps]]
-        for index in 0..<count {
-            try Task.checkCancellation()
-            let time = CMTime(seconds: Double(index) / fps, preferredTimescale: 600)
-            let (image, _) = try await generator.image(at: time)
-            CGImageDestinationAddImage(destination, image, frame as CFDictionary)
-            WorkProgress.report(index + 1, of: count)
+        do {
+            for index in 0..<count {
+                try Task.checkCancellation()
+                let time = CMTime(seconds: Double(index) / fps, preferredTimescale: 600)
+                let (image, _) = try await generator.image(at: time)
+                CGImageDestinationAddImage(destination, image, frame as CFDictionary)
+                WorkProgress.report(index + 1, of: count)
+            }
+        } catch {
+            try? FileManager.default.removeItem(at: output)
+            throw error
         }
         guard CGImageDestinationFinalize(destination) else {
             try? FileManager.default.removeItem(at: output)

@@ -196,9 +196,17 @@ public enum Markdown {
             return "\u{E000}\(codes.count - 1)\u{E000}"
         }
         working = working.xmlEscaped
-        working = replace(working, #"!\[([^\]]*)\]\(([^)\s]+)\)"#) { "<img alt=\"\($0[1])\" src=\"\($0[2])\"/>" }
-        working = replace(working, #"\[([^\]]+)\]\(([^)\s]+)\)"#) { "<a href=\"\($0[2])\">\($0[1])</a>" }
-        working = replace(working, #"&lt;(https?://[^\s&]+)&gt;"#) { "<a href=\"\($0[1])\">\($0[1])</a>" }
+        // Addresses are set aside the same way, so the emphasis rules below can't put tags inside them: the
+        // underscores in "#object.__init__" used to become <strong> in the middle of an href, which breaks the
+        // link and makes an EPUB chapter invalid XML.
+        var addresses: [String] = []
+        func keep(_ address: String) -> String {
+            addresses.append(address)
+            return "\u{E001}\(addresses.count - 1)\u{E001}"
+        }
+        working = replace(working, #"!\[([^\]]*)\]\(([^)\s]+)\)"#) { "<img alt=\"\(keep($0[1]))\" src=\"\(keep($0[2]))\"/>" }
+        working = replace(working, #"\[([^\]]+)\]\(([^)\s]+)\)"#) { "<a href=\"\(keep($0[2]))\">\($0[1])</a>" }
+        working = replace(working, #"&lt;(https?://[^\s&]+)&gt;"#) { "<a href=\"\(keep($0[1]))\">\(keep($0[1]))</a>" }
         working = replace(working, #"\*\*(.+?)\*\*"#) { "<strong>\($0[1])</strong>" }
         working = replace(working, #"__(.+?)__"#) { "<strong>\($0[1])</strong>" }
         working = replace(working, #"\*(.+?)\*"#) { "<em>\($0[1])</em>" }
@@ -207,6 +215,10 @@ public enum Markdown {
         working = replace(working, "\u{E000}(\\d+)\u{E000}") { groups in
             let index = Int(groups[1]) ?? 0
             return "<code>\((codes.indices.contains(index) ? codes[index] : "").xmlEscaped)</code>"
+        }
+        working = replace(working, "\u{E001}(\\d+)\u{E001}") { groups in
+            let index = Int(groups[1]) ?? 0
+            return addresses.indices.contains(index) ? addresses[index] : ""
         }
         return working
     }

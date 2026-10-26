@@ -140,6 +140,7 @@ public enum XLSX {
             }
         }
 
+        let dates = DateStyles(xl: xl)
         let sheetURL = firstSheet(in: xl) ?? xl.appendingPathComponent("worksheets/sheet1.xml")
         let sheet = try XMLDocument(contentsOf: sheetURL, options: [])
         var rows: [[String]] = []
@@ -155,6 +156,7 @@ public enum XLSX {
                 case "s": value = Int(raw).flatMap { shared.indices.contains($0) ? shared[$0] : nil } ?? ""
                 case "inlineStr": value = cell.elements(named: "t").compactMap(\.stringValue).joined()
                 case "b": value = raw == "1" ? "TRUE" : "FALSE"
+                case nil, "n": value = dates.text(for: raw, style: cell.attributeValue("s")) ?? raw
                 default: value = raw
                 }
                 while values.count < column { values.append("") }
@@ -164,6 +166,96 @@ public enum XLSX {
         }
         let width = rows.map(\.count).max() ?? 0
         return rows.map { $0 + Array(repeating: "", count: width - $0.count) }
+    }
+
+    /// The cell styles that show a number as a date or a time. Excel keeps dates as day counts, so without these
+    /// a birthday came out as "45123" in the CSV.
+    struct DateStyles {
+        enum Kind: Equatable { case date, time, dateTime }
+
+        /// By cell style, the `s` attribute: nil where the style shows a plain number.
+        var kinds: [Kind?] = []
+        var uses1904 = false
+
+        init(kinds: [Kind?], uses1904: Bool = false) {
+            self.kinds = kinds
+            self.uses1904 = uses1904
+        }
+
+        init(xl: URL) {
+            if let workbook = try? XMLDocument(contentsOf: xl.appendingPathComponent("workbook.xml"), options: []),
+               let flag = workbook.firstElement(named: "workbookPr")?.attributeValue("date1904") {
+                uses1904 = flag == "1" || flag == "true"
+            }
+            guard let styles = try? XMLDocument(contentsOf: xl.appendingPathComponent("styles.xml"), options: []) else { return }
+            var custom: [Int: String] = [:]
+            for format in styles.elements(named: "numFmt") {
+                if let id = format.attributeValue("numFmtId").flatMap({ Int($0) }), let code = format.attributeValue("formatCode") {
+                    custom[id] = code
+                }
+            }
+            let formats = styles.firstElement(named: "cellXfs")?.children(named: "xf") ?? []
+            kinds = formats.map { format -> Kind? in
+                guard let id = format.attributeValue("numFmtId").flatMap({ Int($0) }) else { return nil }
+                if let code = custom[id] { return Self.kind(of: code) }
+                return Self.builtIn[id]
+            }
+        }
+
+        /// Excel's own number formats that show dates and times. 46, "[h]:mm:ss", counts hours past a day and stays a number.
+        static let builtIn: [Int: Kind] = [
+            14: .date, 15: .date, 16: .date, 17: .date,
+            18: .time, 19: .time, 20: .time, 21: .time, 45: .time, 47: .time,
+            22: .dateTime,
+        ]
+
+        /// What a custom format code like "dd.mm.yyyy" or "h:mm AM/PM" shows.
+        static func kind(of code: String) -> Kind? {
+            var code = code.lowercased()
+            // Elapsed time, like "[h]:mm", is a duration rather than a time of day.
+            if code.range(of: #"\[(h+|m+|s+)\]"#, options: .regularExpression) != nil { return nil }
+            // Quoted text, escaped characters, padding ("_)" and "* "), and [colors] or [conditions] aren't part of the date.
+            for pattern in [#""[^"]*""#, #"\\."#, #"_."#, #"\*."#, #"\[[^\]]*\]"#] {
+                code = code.replacingOccurrences(of: pattern, with: "", options: .regularExpression)
+            }
+            // Only the first section counts: "0;-0" style formats keep numbers in the others.
+            code = String(code.prefix { $0 != ";" })
+            let date = code.contains("y") || code.contains("d")
+            let time = code.contains("h") || code.contains("s")
+            switch (date, time) {
+            case (true, true): return .dateTime
+            case (true, false): return .date
+            case (false, true): return .time
+            // A month on its own, like "mmmm".
+            case (false, false): return code.contains("m") ? .date : nil
+            }
+        }
+
+        /// The cell's value as an ISO 8601 date or time, when its style shows one.
+        func text(for raw: String, style: String?) -> String? {
+            guard let style, let index = Int(style), kinds.indices.contains(index), let kind = kinds[index],
+                  let serial = Double(raw), serial.isFinite, serial >= 0, serial < 2_958_466
+            else { return nil }
+            // Day zero is 30 December 1899, or 1 January 1904. Before March 1900 Excel counts a 29 February that
+            // never was, so those days are one off.
+            let days = uses1904 || serial >= 60 ? serial : serial + 1
+            let epoch: TimeInterval = uses1904 ? -2_082_844_800 : -2_209_161_600
+            let date = Date(timeIntervalSince1970: epoch + (days * 86_400).rounded())
+            let formatter = Self.formatters[kind]
+            return formatter?.string(from: date)
+        }
+
+        private static let formatters: [Kind: DateFormatter] = {
+            func make(_ format: String) -> DateFormatter {
+                let formatter = DateFormatter()
+                formatter.locale = Locale(identifier: "en_US_POSIX")
+                formatter.calendar = Calendar(identifier: .gregorian)
+                formatter.timeZone = TimeZone(identifier: "UTC")
+                formatter.dateFormat = format
+                return formatter
+            }
+            return [.date: make("yyyy-MM-dd"), .time: make("HH:mm:ss"), .dateTime: make("yyyy-MM-dd HH:mm:ss")]
+        }()
     }
 
     private static func firstSheet(in xl: URL) -> URL? {
@@ -234,21 +326,27 @@ public enum Spreadsheet {
     public static func convert(_ url: URL, to format: FileFormat, context: OperationContext) async throws -> URL {
         let rows = try await read(url)
         let output = context.destination(for: url, extension: format.primaryExtension)
-        switch format {
-        case .xlsx: try await XLSX.write(rows, to: output)
-        case .ods: try await ODS.write(rows, to: output)
-        case .numbers:
-            let workbook = output.deletingLastPathComponent().appendingPathComponent(".\(url.baseName)-kumquat-\(UUID().uuidString.prefix(8)).xlsx")
-            defer { try? FileManager.default.removeItem(at: workbook) }
-            try await XLSX.write(rows, to: workbook)
-            try await OfficeEngine.convert(workbook, to: .numbers, output: output)
-        case .csv: try CSV.write(rows).write(to: output, atomically: true, encoding: .utf8)
-        case .tsv: try CSV.write(rows, delimiter: "\t").write(to: output, atomically: true, encoding: .utf8)
-        case .json: try json(rows).write(to: output, atomically: true, encoding: .utf8)
-        case .markdown: try markdownTable(rows).write(to: output, atomically: true, encoding: .utf8)
-        case .html: try htmlDocument(rows, title: url.baseName).write(to: output, atomically: true, encoding: .utf8)
-        case .pdf: try TablePDF.write(rows, to: output)
-        default: throw OperationError.unsupported(format.displayName)
+        do {
+            switch format {
+            case .xlsx: try await XLSX.write(rows, to: output)
+            case .ods: try await ODS.write(rows, to: output)
+            case .numbers:
+                let workbook = output.deletingLastPathComponent().appendingPathComponent(".\(url.baseName)-kumquat-\(UUID().uuidString.prefix(8)).xlsx")
+                defer { try? FileManager.default.removeItem(at: workbook) }
+                try await XLSX.write(rows, to: workbook)
+                try await OfficeEngine.convert(workbook, to: .numbers, output: output)
+            case .csv: try CSV.write(rows).write(to: output, atomically: true, encoding: .utf8)
+            case .tsv: try CSV.write(rows, delimiter: "\t").write(to: output, atomically: true, encoding: .utf8)
+            case .json: try json(rows).write(to: output, atomically: true, encoding: .utf8)
+            case .markdown: try markdownTable(rows).write(to: output, atomically: true, encoding: .utf8)
+            case .html: try htmlDocument(rows, title: url.baseName).write(to: output, atomically: true, encoding: .utf8)
+            case .pdf: try TablePDF.write(rows, to: output)
+            default: throw OperationError.unsupported(format.displayName)
+            }
+        } catch {
+            // A zip stopped halfway left an .xlsx or .ods that no app opens.
+            try? FileManager.default.removeItem(at: output)
+            throw error
         }
         return output
     }
@@ -268,12 +366,18 @@ public enum Spreadsheet {
         let objects = rows.dropFirst().map { row -> String in
             let pairs = keys.enumerated().map { index, key -> String in
                 let value = index < row.count ? row[index] : ""
-                let encoded = XLSX.isNumber(value) ? value : jsonString(value)
+                let encoded = isJSONNumber(value) ? value : jsonString(value)
                 return "    \(jsonString(key)): \(encoded)"
             }
             return "  {\n" + pairs.joined(separator: ",\n") + "\n  }"
         }
         return "[\n" + objects.joined(separator: ",\n") + "\n]\n"
+    }
+
+    /// A number JSON accepts as is. Spreadsheets allow ".5" and "5.", which JSON doesn't, so those stay strings
+    /// rather than making the whole file unreadable.
+    static func isJSONNumber(_ value: String) -> Bool {
+        XLSX.isNumber(value) && value.range(of: #"^-?(0|[1-9][0-9]*)(\.[0-9]+)?$"#, options: .regularExpression) != nil
     }
 
     static func jsonString(_ value: String) -> String {

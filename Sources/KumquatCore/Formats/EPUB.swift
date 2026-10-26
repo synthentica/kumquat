@@ -36,8 +36,9 @@ public enum EPUB {
             var bodies: [String] = []
             for reference in opf.elements(named: "itemref") {
                 guard let id = reference.attributeValue("idref"), let href = manifest[id] else { continue }
-                guard let chapter = try? String(contentsOf: base.appendingPathComponent(href), encoding: .utf8) else { continue }
-                bodies.append(bodyContent(of: chapter))
+                let chapterURL = base.appendingPathComponent(href)
+                guard let chapter = try? String(contentsOf: chapterURL, encoding: .utf8) else { continue }
+                bodies.append(pointingAtFiles(bodyContent(of: chapter), from: chapterURL))
             }
             let title = opf.firstElement(named: "title")?.stringValue ?? url.baseName
             let html = """
@@ -59,6 +60,30 @@ public enum EPUB {
               open.upperBound <= close.lowerBound
         else { return chapter }
         return String(chapter[open.upperBound..<close.lowerBound])
+    }
+
+    /// Turns each relative `src` in a chapter into the file it names. Chapters often sit in a folder of their own
+    /// ("Text/") with pictures beside it ("../Images/"), but the joined book resolves paths from the package
+    /// folder, so those pictures went missing from the PDF or Word file.
+    static func pointingAtFiles(_ body: String, from chapter: URL) -> String {
+        guard let regex = try? NSRegularExpression(pattern: #"(\bsrc\s*=\s*)(["'])([^"']*)\2"#, options: [.caseInsensitive]) else { return body }
+        let text = body as NSString
+        var result = ""
+        var last = 0
+        for match in regex.matches(in: body, range: NSRange(location: 0, length: text.length)) {
+            let reference = text.substring(with: match.range(at: 3))
+            var target = reference
+            // Addresses with a scheme (http:, data:), from the root, or within the page stay as they are.
+            if !reference.isEmpty, !reference.hasPrefix("#"), !reference.hasPrefix("/"), !reference.contains(":"),
+               let resolved = URL(string: reference, relativeTo: chapter) {
+                target = resolved.absoluteString
+            }
+            let quote = text.substring(with: match.range(at: 2))
+            result += text.substring(with: NSRange(location: last, length: match.range.location - last))
+            result += text.substring(with: match.range(at: 1)) + quote + target + quote
+            last = match.range.location + match.range.length
+        }
+        return result + text.substring(from: last)
     }
 
     /// Writes a single-chapter EPUB 3 from an XHTML body fragment.

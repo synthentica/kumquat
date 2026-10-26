@@ -248,12 +248,21 @@ public enum PDFEngine {
         let folder = context.folderDestination(for: url, suffix: "pages")
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         let digits = String(document.pageCount).count
-        for index in 0..<document.pageCount {
-            guard let page = document.page(at: index)?.copy() as? PDFPage else { continue }
-            let single = PDFDocument()
-            single.insert(page, at: 0)
-            let number = String(index + 1).leftPadded(to: digits)
-            single.write(to: folder.appendingPathComponent("\(url.baseName) \(number).pdf"))
+        do {
+            for index in 0..<document.pageCount {
+                try Task.checkCancellation()
+                guard let page = document.page(at: index)?.copy() as? PDFPage else { continue }
+                let single = PDFDocument()
+                single.insert(page, at: 0)
+                let number = String(index + 1).leftPadded(to: digits)
+                // A page that couldn't be written (a full disk, say) used to go missing without a word.
+                guard single.write(to: folder.appendingPathComponent("\(url.baseName) \(number).pdf")) else {
+                    throw OperationError.failed("Couldn't write page \(index + 1).")
+                }
+            }
+        } catch {
+            try? FileManager.default.removeItem(at: folder)
+            throw error
         }
         return folder
     }
