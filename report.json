@@ -1,0 +1,4231 @@
+{
+ "passed": 231,
+ "judged": 238,
+ "rate": 97.05882352941177,
+ "verdicts": [
+  {
+   "category": "heic",
+   "expected": "convert",
+   "id": "heic-iphone13pro-hdr-gainmap",
+   "key": "heic-iphone13pro-hdr-gainmap \u2192 jpeg",
+   "ms": 216,
+   "operation": "convert.jpeg",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/heic-iphone13pro-hdr-gainmap/heic-iphone13pro-hdr-gainmap.jpg"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/heic-iphone13pro-hdr-gainmap.heic",
+   "status": "ok",
+   "target": "jpeg",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.998"
+   ]
+  },
+  {
+   "category": "heic",
+   "expected": "convert",
+   "id": "heic-iphone13pro-hdr-gainmap",
+   "key": "heic-iphone13pro-hdr-gainmap \u2192 png",
+   "ms": 604,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/heic-iphone13pro-hdr-gainmap/heic-iphone13pro-hdr-gainmap.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/heic-iphone13pro-hdr-gainmap.heic",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "heic",
+   "expected": "convert",
+   "id": "heic-iphone13pro-hdr-gainmap",
+   "key": "heic-iphone13pro-hdr-gainmap \u2192 avif",
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/heic-iphone13pro-hdr-gainmap.heic",
+   "status": "not-offered",
+   "target": "avif",
+   "verdict": "fail",
+   "reason": "not-offered",
+   "notes": []
+  },
+  {
+   "category": "heic",
+   "expected": "convert",
+   "id": "heic-iphone13pro-hdr-gainmap",
+   "key": "heic-iphone13pro-hdr-gainmap \u2192 tiff",
+   "ms": 175,
+   "operation": "convert.tiff",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/heic-iphone13pro-hdr-gainmap/heic-iphone13pro-hdr-gainmap.tiff"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/heic-iphone13pro-hdr-gainmap.heic",
+   "status": "ok",
+   "target": "tiff",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "heic",
+   "expected": "convert",
+   "id": "heic-iphone11pro-livephoto-still",
+   "key": "heic-iphone11pro-livephoto-still \u2192 jpeg",
+   "ms": 211,
+   "operation": "convert.jpeg",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/heic-iphone11pro-livephoto-still/heic-iphone11pro-livephoto-still.jpg"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/heic-iphone11pro-livephoto-still.heic",
+   "status": "ok",
+   "target": "jpeg",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.999"
+   ]
+  },
+  {
+   "category": "heic",
+   "expected": "convert",
+   "id": "heic-iphone11pro-livephoto-still",
+   "key": "heic-iphone11pro-livephoto-still \u2192 png",
+   "ms": 1858,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/heic-iphone11pro-livephoto-still/heic-iphone11pro-livephoto-still.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/heic-iphone11pro-livephoto-still.heic",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "heic",
+   "expected": "convert",
+   "id": "heic-iphone11pro-livephoto-still",
+   "key": "heic-iphone11pro-livephoto-still \u2192 tiff",
+   "ms": 1210,
+   "operation": "convert.tiff",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/heic-iphone11pro-livephoto-still/heic-iphone11pro-livephoto-still.tiff"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/heic-iphone11pro-livephoto-still.heic",
+   "status": "ok",
+   "target": "tiff",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "heic",
+   "expected": "convert",
+   "id": "heic-iphone11pro-livephoto-still",
+   "key": "heic-iphone11pro-livephoto-still \u2192 pdf",
+   "ms": 2565,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/heic-iphone11pro-livephoto-still/heic-iphone11pro-livephoto-still.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/heic-iphone11pro-livephoto-still.heic",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "heic",
+   "expected": "convert",
+   "id": "heic-iphone8-ios11",
+   "key": "heic-iphone8-ios11 \u2192 jpeg",
+   "ms": 59,
+   "operation": "convert.jpeg",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/heic-iphone8-ios11/heic-iphone8-ios11.jpg"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/heic-iphone8-ios11.heic",
+   "status": "ok",
+   "target": "jpeg",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.999"
+   ]
+  },
+  {
+   "category": "heic",
+   "expected": "convert",
+   "id": "heic-iphone8-ios11",
+   "key": "heic-iphone8-ios11 \u2192 png",
+   "ms": 1555,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/heic-iphone8-ios11/heic-iphone8-ios11.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/heic-iphone8-ios11.heic",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "heic",
+   "expected": "convert",
+   "id": "heic-visionpro-spatial-stereo",
+   "key": "heic-visionpro-spatial-stereo \u2192 jpeg",
+   "ms": 169,
+   "operation": "convert.jpeg",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/heic-visionpro-spatial-stereo/heic-visionpro-spatial-stereo.jpg"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/heic-visionpro-spatial-stereo.heic",
+   "status": "ok",
+   "target": "jpeg",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.999"
+   ]
+  },
+  {
+   "category": "heic",
+   "expected": "convert",
+   "id": "heic-visionpro-spatial-stereo",
+   "key": "heic-visionpro-spatial-stereo \u2192 png",
+   "ms": 688,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/heic-visionpro-spatial-stereo/heic-visionpro-spatial-stereo.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/heic-visionpro-spatial-stereo.heic",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "iphone-video",
+   "expected": "convert",
+   "id": "mov-iphone12pro-hevc-hlg-dolbyvision-8.4",
+   "key": "mov-iphone12pro-hevc-hlg-dolbyvision-8.4 \u2192 mp4",
+   "ms": 319,
+   "operation": "convert.mp4",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mov-iphone12pro-hevc-hlg-dolbyvision-8.4/mov-iphone12pro-hevc-hlg-dolbyvision-8.4.mp4"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mov-iphone12pro-hevc-hlg-dolbyvision-8.4.mov",
+   "status": "ok",
+   "target": "mp4",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "iphone-video",
+   "expected": "convert",
+   "id": "mov-iphone12pro-hevc-hlg-dolbyvision-8.4",
+   "key": "mov-iphone12pro-hevc-hlg-dolbyvision-8.4 \u2192 hevc",
+   "ms": 6920,
+   "operation": "convert.hevc",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mov-iphone12pro-hevc-hlg-dolbyvision-8.4/mov-iphone12pro-hevc-hlg-dolbyvision-8.4 (HEVC).mp4"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mov-iphone12pro-hevc-hlg-dolbyvision-8.4.mov",
+   "status": "ok",
+   "target": "hevc",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.995"
+   ]
+  },
+  {
+   "category": "iphone-video",
+   "expected": "convert",
+   "id": "mov-iphone12pro-hevc-hlg-dolbyvision-8.4",
+   "key": "mov-iphone12pro-hevc-hlg-dolbyvision-8.4 \u2192 gif",
+   "ms": 28720,
+   "operation": "convert.gif",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mov-iphone12pro-hevc-hlg-dolbyvision-8.4/mov-iphone12pro-hevc-hlg-dolbyvision-8.4.gif"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mov-iphone12pro-hevc-hlg-dolbyvision-8.4.mov",
+   "status": "ok",
+   "target": "gif",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "iphone-video",
+   "expected": "convert",
+   "id": "mov-iphone12pro-hevc-hlg-dolbyvision-8.4",
+   "key": "mov-iphone12pro-hevc-hlg-dolbyvision-8.4 \u2192 mp3",
+   "ms": 280,
+   "operation": "convert.mp3",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mov-iphone12pro-hevc-hlg-dolbyvision-8.4/mov-iphone12pro-hevc-hlg-dolbyvision-8.4.mp3"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mov-iphone12pro-hevc-hlg-dolbyvision-8.4.mov",
+   "status": "ok",
+   "target": "mp3",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "iphone-video",
+   "expected": "convert",
+   "id": "mov-iphone12pro-hevc-hlg-dolbyvision-8.4",
+   "key": "mov-iphone12pro-hevc-hlg-dolbyvision-8.4 \u2192 m4a",
+   "ms": 152,
+   "operation": "convert.m4a",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mov-iphone12pro-hevc-hlg-dolbyvision-8.4/mov-iphone12pro-hevc-hlg-dolbyvision-8.4.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mov-iphone12pro-hevc-hlg-dolbyvision-8.4.mov",
+   "status": "ok",
+   "target": "m4a",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "iphone-video",
+   "expected": "convert",
+   "id": "mov-iphone14pro-livephoto-video",
+   "key": "mov-iphone14pro-livephoto-video \u2192 mp4",
+   "ms": 179,
+   "operation": "convert.mp4",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mov-iphone14pro-livephoto-video/mov-iphone14pro-livephoto-video.mp4"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mov-iphone14pro-livephoto-video.mov",
+   "status": "ok",
+   "target": "mp4",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "iphone-video",
+   "expected": "convert",
+   "id": "mov-iphone14pro-livephoto-video",
+   "key": "mov-iphone14pro-livephoto-video \u2192 gif",
+   "ms": 1922,
+   "operation": "convert.gif",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mov-iphone14pro-livephoto-video/mov-iphone14pro-livephoto-video.gif"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mov-iphone14pro-livephoto-video.mov",
+   "status": "ok",
+   "target": "gif",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "iphone-video",
+   "expected": "convert",
+   "id": "mov-iphone14pro-livephoto-video",
+   "key": "mov-iphone14pro-livephoto-video \u2192 snapshot",
+   "ms": 212,
+   "operation": "tools.snapshot",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mov-iphone14pro-livephoto-video/mov-iphone14pro-livephoto-video.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mov-iphone14pro-livephoto-video.mov",
+   "status": "ok",
+   "target": "snapshot",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "iphone-video",
+   "expected": "convert",
+   "id": "mov-iphoneX-h264-rotated-vfr",
+   "key": "mov-iphoneX-h264-rotated-vfr \u2192 mp4",
+   "ms": 32,
+   "operation": "convert.mp4",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mov-iphoneX-h264-rotated-vfr/mov-iphoneX-h264-rotated-vfr.mp4"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mov-iphoneX-h264-rotated-vfr.mov",
+   "status": "ok",
+   "target": "mp4",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "iphone-video",
+   "expected": "convert",
+   "id": "mov-iphoneX-h264-rotated-vfr",
+   "key": "mov-iphoneX-h264-rotated-vfr \u2192 gif",
+   "ms": 3204,
+   "operation": "convert.gif",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mov-iphoneX-h264-rotated-vfr/mov-iphoneX-h264-rotated-vfr.gif"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mov-iphoneX-h264-rotated-vfr.mov",
+   "status": "ok",
+   "target": "gif",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "iphone-video",
+   "expected": "convert",
+   "id": "mov-iphoneX-h264-rotated-vfr",
+   "key": "mov-iphoneX-h264-rotated-vfr \u2192 m4a",
+   "ms": 174,
+   "operation": "convert.m4a",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mov-iphoneX-h264-rotated-vfr/mov-iphoneX-h264-rotated-vfr.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mov-iphoneX-h264-rotated-vfr.mov",
+   "status": "ok",
+   "target": "m4a",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "iphone-video",
+   "expected": "convert",
+   "id": "mp4-dolbyvision-profile8.1",
+   "key": "mp4-dolbyvision-profile8.1 \u2192 mov",
+   "ms": 29,
+   "operation": "convert.mov",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp4-dolbyvision-profile8.1/mp4-dolbyvision-profile8.1.mov"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp4-dolbyvision-profile8.1.mp4",
+   "status": "ok",
+   "target": "mov",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "iphone-video",
+   "expected": "convert",
+   "id": "mp4-dolbyvision-profile8.1",
+   "key": "mp4-dolbyvision-profile8.1 \u2192 hevc",
+   "ms": 145,
+   "operation": "convert.hevc",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp4-dolbyvision-profile8.1/mp4-dolbyvision-profile8.1 (HEVC).mp4"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp4-dolbyvision-profile8.1.mp4",
+   "status": "ok",
+   "target": "hevc",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "iphone-video",
+   "expected": "convert",
+   "id": "mp4-dolbyvision-profile8.1",
+   "key": "mp4-dolbyvision-profile8.1 \u2192 gif",
+   "ms": 1326,
+   "operation": "convert.gif",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp4-dolbyvision-profile8.1/mp4-dolbyvision-profile8.1.gif"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp4-dolbyvision-profile8.1.mp4",
+   "status": "ok",
+   "target": "gif",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "iphone-video",
+   "expected": "convert",
+   "id": "mp4-dolbyvision-profile5",
+   "key": "mp4-dolbyvision-profile5 \u2192 mov",
+   "ms": 104,
+   "operation": "convert.mov",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp4-dolbyvision-profile5/mp4-dolbyvision-profile5.mov"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp4-dolbyvision-profile5.mp4",
+   "status": "ok",
+   "target": "mov",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "iphone-video",
+   "expected": "convert",
+   "id": "mp4-dolbyvision-profile5",
+   "key": "mp4-dolbyvision-profile5 \u2192 hevc",
+   "ms": 851,
+   "operation": "convert.hevc",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp4-dolbyvision-profile5/mp4-dolbyvision-profile5 (HEVC).mp4"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp4-dolbyvision-profile5.mp4",
+   "status": "ok",
+   "target": "hevc",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.992"
+   ]
+  },
+  {
+   "category": "iphone-video",
+   "expected": "convert",
+   "id": "mp4-hevc-hdr10-pq",
+   "key": "mp4-hevc-hdr10-pq \u2192 mov",
+   "ms": 34,
+   "operation": "convert.mov",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp4-hevc-hdr10-pq/mp4-hevc-hdr10-pq.mov"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp4-hevc-hdr10-pq.mp4",
+   "status": "ok",
+   "target": "mov",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "iphone-video",
+   "expected": "convert",
+   "id": "mp4-hevc-hdr10-pq",
+   "key": "mp4-hevc-hdr10-pq \u2192 webm",
+   "ms": 2869,
+   "operation": "convert.webm",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp4-hevc-hdr10-pq/mp4-hevc-hdr10-pq.webm"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp4-hevc-hdr10-pq.mp4",
+   "status": "ok",
+   "target": "webm",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.951"
+   ]
+  },
+  {
+   "category": "vfr",
+   "expected": "convert",
+   "id": "mp4-obs-screen-recording-vfr",
+   "key": "mp4-obs-screen-recording-vfr \u2192 mov",
+   "ms": 63,
+   "operation": "convert.mov",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp4-obs-screen-recording-vfr/mp4-obs-screen-recording-vfr.mov"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp4-obs-screen-recording-vfr.mp4",
+   "status": "ok",
+   "target": "mov",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "vfr",
+   "expected": "convert",
+   "id": "mp4-obs-screen-recording-vfr",
+   "key": "mp4-obs-screen-recording-vfr \u2192 gif",
+   "ms": 2922,
+   "operation": "convert.gif",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp4-obs-screen-recording-vfr/mp4-obs-screen-recording-vfr.gif"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp4-obs-screen-recording-vfr.mp4",
+   "status": "ok",
+   "target": "gif",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "vfr",
+   "expected": "convert",
+   "id": "mp4-obs-screen-recording-vfr",
+   "key": "mp4-obs-screen-recording-vfr \u2192 m4a",
+   "ms": 131,
+   "operation": "convert.m4a",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp4-obs-screen-recording-vfr/mp4-obs-screen-recording-vfr.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp4-obs-screen-recording-vfr.mp4",
+   "status": "ok",
+   "target": "m4a",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "mkv-multi-audio-8-subtitles",
+   "key": "mkv-multi-audio-8-subtitles \u2192 mp4",
+   "ms": 1129,
+   "operation": "convert.mp4",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mkv-multi-audio-8-subtitles/mkv-multi-audio-8-subtitles.mp4"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mkv-multi-audio-8-subtitles.mkv",
+   "status": "ok",
+   "target": "mp4",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "mkv-multi-audio-8-subtitles",
+   "key": "mkv-multi-audio-8-subtitles \u2192 mov",
+   "ms": 1005,
+   "operation": "convert.mov",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mkv-multi-audio-8-subtitles/mkv-multi-audio-8-subtitles.mov"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mkv-multi-audio-8-subtitles.mkv",
+   "status": "ok",
+   "target": "mov",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "mkv-multi-audio-8-subtitles",
+   "key": "mkv-multi-audio-8-subtitles \u2192 m4a",
+   "ms": 1080,
+   "operation": "convert.m4a",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mkv-multi-audio-8-subtitles/mkv-multi-audio-8-subtitles.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mkv-multi-audio-8-subtitles.mkv",
+   "status": "ok",
+   "target": "m4a",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "webm-vp9-720p",
+   "key": "webm-vp9-720p \u2192 mp4",
+   "ms": 2663,
+   "operation": "convert.mp4",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/webm-vp9-720p/webm-vp9-720p.mp4"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/webm-vp9-720p.webm",
+   "status": "ok",
+   "target": "mp4",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.951"
+   ]
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "webm-vp9-720p",
+   "key": "webm-vp9-720p \u2192 gif",
+   "ms": 2374,
+   "operation": "convert.gif",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/webm-vp9-720p/webm-vp9-720p.gif"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/webm-vp9-720p.webm",
+   "status": "ok",
+   "target": "gif",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "video",
+   "error": "webm-av1.webm: ffmpeg: IOServiceMatchingfailed for: AppleM2ScalerParavirtDriver",
+   "expected": "convert",
+   "id": "webm-av1",
+   "key": "webm-av1 \u2192 mp4",
+   "ms": 735,
+   "operation": "convert.mp4",
+   "outputs": [],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/webm-av1.webm",
+   "status": "error",
+   "target": "mp4",
+   "verdict": "fail",
+   "reason": "error: webm-av1.webm: ffmpeg: IOServiceMatchingfailed for: AppleM2ScalerParavirtDriver",
+   "notes": []
+  },
+  {
+   "category": "video",
+   "error": "webm-av1.webm: ffmpeg: [out#0/gif @ 0x60000222c540] Error writing trailer: Invalid argument",
+   "expected": "convert",
+   "id": "webm-av1",
+   "key": "webm-av1 \u2192 gif",
+   "ms": 99,
+   "operation": "convert.gif",
+   "outputs": [],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/webm-av1.webm",
+   "status": "error",
+   "target": "gif",
+   "verdict": "fail",
+   "reason": "error: webm-av1.webm: ffmpeg: [out#0/gif @ 0x60000222c540] Error writing trailer: Invalid argument",
+   "notes": []
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "webm-multitrack-3video-2audio",
+   "key": "webm-multitrack-3video-2audio \u2192 mp4",
+   "ms": 2997,
+   "operation": "convert.mp4",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/webm-multitrack-3video-2audio/webm-multitrack-3video-2audio.mp4"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/webm-multitrack-3video-2audio.webm",
+   "status": "ok",
+   "target": "mp4",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "avi-canon-mjpeg-pcm",
+   "key": "avi-canon-mjpeg-pcm \u2192 mp4",
+   "ms": 400,
+   "operation": "convert.mp4",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/avi-canon-mjpeg-pcm/avi-canon-mjpeg-pcm.mp4"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/avi-canon-mjpeg-pcm.avi",
+   "status": "ok",
+   "target": "mp4",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.980"
+   ]
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "avi-canon-mjpeg-pcm",
+   "key": "avi-canon-mjpeg-pcm \u2192 gif",
+   "ms": 1377,
+   "operation": "convert.gif",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/avi-canon-mjpeg-pcm/avi-canon-mjpeg-pcm.gif"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/avi-canon-mjpeg-pcm.avi",
+   "status": "ok",
+   "target": "gif",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "avi-canon-mjpeg-pcm",
+   "key": "avi-canon-mjpeg-pcm \u2192 m4a",
+   "ms": 456,
+   "operation": "convert.m4a",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/avi-canon-mjpeg-pcm/avi-canon-mjpeg-pcm.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/avi-canon-mjpeg-pcm.avi",
+   "status": "ok",
+   "target": "m4a",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "avi-mpeg4-asp-ac3",
+   "key": "avi-mpeg4-asp-ac3 \u2192 mp4",
+   "ms": 238,
+   "operation": "convert.mp4",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/avi-mpeg4-asp-ac3/avi-mpeg4-asp-ac3.mp4"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/avi-mpeg4-asp-ac3.avi",
+   "status": "ok",
+   "target": "mp4",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.980"
+   ]
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "avi-mpeg4-asp-ac3",
+   "key": "avi-mpeg4-asp-ac3 \u2192 m4a",
+   "ms": 234,
+   "operation": "convert.m4a",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/avi-mpeg4-asp-ac3/avi-mpeg4-asp-ac3.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/avi-mpeg4-asp-ac3.avi",
+   "status": "ok",
+   "target": "m4a",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "asf-wmv-msmpeg4-wma",
+   "key": "asf-wmv-msmpeg4-wma \u2192 mp4",
+   "ms": 617,
+   "operation": "convert.mp4",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/asf-wmv-msmpeg4-wma/asf-wmv-msmpeg4-wma.mp4"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/asf-wmv-msmpeg4-wma.asf",
+   "status": "ok",
+   "target": "mp4",
+   "verdict": "fail",
+   "reason": "asf-wmv-msmpeg4-wma.mp4: SSIM 0.847 < 0.90",
+   "notes": [
+    "SSIM 0.847"
+   ]
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "asf-wmv-msmpeg4-wma",
+   "key": "asf-wmv-msmpeg4-wma \u2192 m4a",
+   "ms": 323,
+   "operation": "convert.m4a",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/asf-wmv-msmpeg4-wma/asf-wmv-msmpeg4-wma.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/asf-wmv-msmpeg4-wma.asf",
+   "status": "ok",
+   "target": "m4a",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "asf-wmv-msmpeg4-wma",
+   "key": "asf-wmv-msmpeg4-wma \u2192 mp3",
+   "ms": 202,
+   "operation": "convert.mp3",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/asf-wmv-msmpeg4-wma/asf-wmv-msmpeg4-wma.mp3"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/asf-wmv-msmpeg4-wma.asf",
+   "status": "ok",
+   "target": "mp3",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "mkv-wmv2-vorbis",
+   "key": "mkv-wmv2-vorbis \u2192 mp4",
+   "ms": 237,
+   "operation": "convert.mp4",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mkv-wmv2-vorbis/mkv-wmv2-vorbis.mp4"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mkv-wmv2-vorbis.mkv",
+   "status": "ok",
+   "target": "mp4",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.954"
+   ]
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "mkv-wmv2-vorbis",
+   "key": "mkv-wmv2-vorbis \u2192 m4a",
+   "ms": 285,
+   "operation": "convert.m4a",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mkv-wmv2-vorbis/mkv-wmv2-vorbis.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mkv-wmv2-vorbis.mkv",
+   "status": "ok",
+   "target": "m4a",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "mp4-h264-high10",
+   "key": "mp4-h264-high10 \u2192 mov",
+   "ms": 32,
+   "operation": "convert.mov",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp4-h264-high10/mp4-h264-high10.mov"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp4-h264-high10.mp4",
+   "status": "ok",
+   "target": "mov",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "mp4-android-rotated-90",
+   "key": "mp4-android-rotated-90 \u2192 mov",
+   "ms": 25,
+   "operation": "convert.mov",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp4-android-rotated-90/mp4-android-rotated-90.mov"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp4-android-rotated-90.mp4",
+   "status": "ok",
+   "target": "mov",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "mp4-android-rotated-90",
+   "key": "mp4-android-rotated-90 \u2192 gif",
+   "ms": 2122,
+   "operation": "convert.gif",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp4-android-rotated-90/mp4-android-rotated-90.gif"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp4-android-rotated-90.mp4",
+   "status": "ok",
+   "target": "gif",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "mp4-hevc-no-audio",
+   "key": "mp4-hevc-no-audio \u2192 mov",
+   "ms": 39,
+   "operation": "convert.mov",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp4-hevc-no-audio/mp4-hevc-no-audio.mov"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp4-hevc-no-audio.mp4",
+   "status": "ok",
+   "target": "mov",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "mp4-hevc-no-audio",
+   "key": "mp4-hevc-no-audio \u2192 gif",
+   "ms": 1567,
+   "operation": "convert.gif",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp4-hevc-no-audio/mp4-hevc-no-audio.gif"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp4-hevc-no-audio.mp4",
+   "status": "ok",
+   "target": "gif",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "mp4-2video-2audio",
+   "key": "mp4-2video-2audio \u2192 mov",
+   "ms": 123,
+   "operation": "convert.mov",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp4-2video-2audio/mp4-2video-2audio.mov"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp4-2video-2audio.mp4",
+   "status": "ok",
+   "target": "mov",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "mp4-2video-2audio",
+   "key": "mp4-2video-2audio \u2192 m4a",
+   "ms": 180,
+   "operation": "convert.m4a",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp4-2video-2audio/mp4-2video-2audio.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp4-2video-2audio.mp4",
+   "status": "ok",
+   "target": "m4a",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "mp3-id3-png-cover",
+   "key": "mp3-id3-png-cover \u2192 m4a",
+   "ms": 25,
+   "operation": "convert.m4a",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp3-id3-png-cover/mp3-id3-png-cover.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp3-id3-png-cover.mp3",
+   "status": "ok",
+   "target": "m4a",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "mp3-id3-png-cover",
+   "key": "mp3-id3-png-cover \u2192 wav",
+   "ms": 155,
+   "operation": "convert.wav",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp3-id3-png-cover/mp3-id3-png-cover.wav"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp3-id3-png-cover.mp3",
+   "status": "ok",
+   "target": "wav",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "mp3-id3-png-cover",
+   "key": "mp3-id3-png-cover \u2192 flac",
+   "ms": 102,
+   "operation": "convert.flac",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp3-id3-png-cover/mp3-id3-png-cover.flac"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp3-id3-png-cover.mp3",
+   "status": "ok",
+   "target": "flac",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "mp3-id3-png-cover",
+   "key": "mp3-id3-png-cover \u2192 ogg",
+   "ms": 111,
+   "operation": "convert.ogg",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/mp3-id3-png-cover/mp3-id3-png-cover.ogg"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/mp3-id3-png-cover.mp3",
+   "status": "ok",
+   "target": "ogg",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "flac-24bit-96khz",
+   "key": "flac-24bit-96khz \u2192 alac",
+   "ms": 122,
+   "operation": "convert.alac",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/flac-24bit-96khz/flac-24bit-96khz.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/flac-24bit-96khz.flac",
+   "status": "ok",
+   "target": "alac",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "flac-24bit-96khz",
+   "key": "flac-24bit-96khz \u2192 wav",
+   "ms": 46,
+   "operation": "convert.wav",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/flac-24bit-96khz/flac-24bit-96khz.wav"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/flac-24bit-96khz.flac",
+   "status": "ok",
+   "target": "wav",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "flac-24bit-96khz",
+   "key": "flac-24bit-96khz \u2192 mp3",
+   "ms": 95,
+   "operation": "convert.mp3",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/flac-24bit-96khz/flac-24bit-96khz.mp3"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/flac-24bit-96khz.flac",
+   "status": "ok",
+   "target": "mp3",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "flac-24bit-96khz",
+   "key": "flac-24bit-96khz \u2192 m4a",
+   "ms": 78,
+   "operation": "convert.m4a",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/flac-24bit-96khz/flac-24bit-96khz 2.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/flac-24bit-96khz.flac",
+   "status": "ok",
+   "target": "m4a",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "flac-6ch-5.1",
+   "key": "flac-6ch-5.1 \u2192 m4a",
+   "ms": 53,
+   "operation": "convert.m4a",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/flac-6ch-5.1/flac-6ch-5.1.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/flac-6ch-5.1.flac",
+   "status": "ok",
+   "target": "m4a",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "flac-6ch-5.1",
+   "key": "flac-6ch-5.1 \u2192 alac",
+   "ms": 46,
+   "operation": "convert.alac",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/flac-6ch-5.1/flac-6ch-5.1 2.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/flac-6ch-5.1.flac",
+   "status": "ok",
+   "target": "alac",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "flac-6ch-5.1",
+   "key": "flac-6ch-5.1 \u2192 wav",
+   "ms": 33,
+   "operation": "convert.wav",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/flac-6ch-5.1/flac-6ch-5.1.wav"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/flac-6ch-5.1.flac",
+   "status": "ok",
+   "target": "wav",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "flac-6ch-5.1",
+   "key": "flac-6ch-5.1 \u2192 mp3",
+   "ms": 202,
+   "operation": "convert.mp3",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/flac-6ch-5.1/flac-6ch-5.1.mp3"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/flac-6ch-5.1.flac",
+   "status": "ok",
+   "target": "mp3",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "flac-8ch-7.1",
+   "key": "flac-8ch-7.1 \u2192 m4a",
+   "ms": 140,
+   "operation": "convert.m4a",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/flac-8ch-7.1/flac-8ch-7.1.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/flac-8ch-7.1.flac",
+   "status": "ok",
+   "target": "m4a",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "flac-8ch-7.1",
+   "key": "flac-8ch-7.1 \u2192 wav",
+   "ms": 111,
+   "operation": "convert.wav",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/flac-8ch-7.1/flac-8ch-7.1.wav"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/flac-8ch-7.1.flac",
+   "status": "ok",
+   "target": "wav",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "ogg-vorbis-mono",
+   "key": "ogg-vorbis-mono \u2192 mp3",
+   "ms": 110,
+   "operation": "convert.mp3",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/ogg-vorbis-mono/ogg-vorbis-mono.mp3"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/ogg-vorbis-mono.ogg",
+   "status": "ok",
+   "target": "mp3",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "ogg-vorbis-mono",
+   "key": "ogg-vorbis-mono \u2192 m4a",
+   "ms": 102,
+   "operation": "convert.m4a",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/ogg-vorbis-mono/ogg-vorbis-mono.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/ogg-vorbis-mono.ogg",
+   "status": "ok",
+   "target": "m4a",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "ogg-vorbis-mono",
+   "key": "ogg-vorbis-mono \u2192 wav",
+   "ms": 105,
+   "operation": "convert.wav",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/ogg-vorbis-mono/ogg-vorbis-mono.wav"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/ogg-vorbis-mono.ogg",
+   "status": "ok",
+   "target": "wav",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "opus-stereo",
+   "key": "opus-stereo \u2192 mp3",
+   "ms": 103,
+   "operation": "convert.mp3",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/opus-stereo/opus-stereo.mp3"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/opus-stereo.opus",
+   "status": "ok",
+   "target": "mp3",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "opus-stereo",
+   "key": "opus-stereo \u2192 m4a",
+   "ms": 108,
+   "operation": "convert.m4a",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/opus-stereo/opus-stereo.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/opus-stereo.opus",
+   "status": "ok",
+   "target": "m4a",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "opus-stereo",
+   "key": "opus-stereo \u2192 wav",
+   "ms": 109,
+   "operation": "convert.wav",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/opus-stereo/opus-stereo.wav"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/opus-stereo.opus",
+   "status": "ok",
+   "target": "wav",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "wma-v2",
+   "key": "wma-v2 \u2192 mp3",
+   "ms": 203,
+   "operation": "convert.mp3",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/wma-v2/wma-v2.mp3"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/wma-v2.wma",
+   "status": "ok",
+   "target": "mp3",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "wma-v2",
+   "key": "wma-v2 \u2192 m4a",
+   "ms": 107,
+   "operation": "convert.m4a",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/wma-v2/wma-v2.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/wma-v2.wma",
+   "status": "ok",
+   "target": "m4a",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "wma-v2",
+   "key": "wma-v2 \u2192 wav",
+   "ms": 53,
+   "operation": "convert.wav",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/wma-v2/wma-v2.wav"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/wma-v2.wma",
+   "status": "ok",
+   "target": "wav",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "caf-alac",
+   "key": "caf-alac \u2192 m4a",
+   "ms": 26,
+   "operation": "convert.m4a",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/caf-alac/caf-alac.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/caf-alac.caf",
+   "status": "ok",
+   "target": "m4a",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "caf-alac",
+   "key": "caf-alac \u2192 flac",
+   "ms": 174,
+   "operation": "convert.flac",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/caf-alac/caf-alac.flac"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/caf-alac.caf",
+   "status": "ok",
+   "target": "flac",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "caf-alac",
+   "key": "caf-alac \u2192 wav",
+   "ms": 72,
+   "operation": "convert.wav",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/caf-alac/caf-alac.wav"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/caf-alac.caf",
+   "status": "ok",
+   "target": "wav",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "caf-alac",
+   "key": "caf-alac \u2192 mp3",
+   "ms": 169,
+   "operation": "convert.mp3",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/caf-alac/caf-alac.mp3"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/caf-alac.caf",
+   "status": "ok",
+   "target": "mp3",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "pdf-progit-501-pages",
+   "key": "pdf-progit-501-pages \u2192 png",
+   "ms": 68521,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pdf-progit-501-pages/pdf-progit-501-pages (pages)"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pdf-progit-501-pages.pdf",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "pdf-progit-501-pages",
+   "key": "pdf-progit-501-pages \u2192 jpeg",
+   "ms": 12854,
+   "operation": "convert.jpeg",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pdf-progit-501-pages/pdf-progit-501-pages (pages) 2"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pdf-progit-501-pages.pdf",
+   "status": "ok",
+   "target": "jpeg",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "pdf-progit-501-pages",
+   "key": "pdf-progit-501-pages \u2192 txt",
+   "ms": 8084,
+   "operation": "convert.txt",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pdf-progit-501-pages/pdf-progit-501-pages.txt"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pdf-progit-501-pages.pdf",
+   "status": "ok",
+   "target": "txt",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "pdf-progit-501-pages",
+   "key": "pdf-progit-501-pages \u2192 docx",
+   "ms": 16079,
+   "operation": "convert.docx",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pdf-progit-501-pages/pdf-progit-501-pages.docx"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pdf-progit-501-pages.pdf",
+   "status": "ok",
+   "target": "docx",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "error": "pdf-password-libreoffice.pdf: pdf-password-libreoffice.pdf is password protected.",
+   "expected": "clean-error",
+   "id": "pdf-password-libreoffice",
+   "key": "pdf-password-libreoffice \u2192 png",
+   "ms": 82,
+   "operation": "convert.png",
+   "outputs": [],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pdf-password-libreoffice.pdf",
+   "status": "error",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "declined: pdf-password-libreoffice.pdf: pdf-password-libreoffice.pdf is password protected.",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "error": "pdf-password-libreoffice.pdf: pdf-password-libreoffice.pdf is password protected.",
+   "expected": "clean-error",
+   "id": "pdf-password-libreoffice",
+   "key": "pdf-password-libreoffice \u2192 txt",
+   "ms": 108,
+   "operation": "convert.txt",
+   "outputs": [],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pdf-password-libreoffice.pdf",
+   "status": "error",
+   "target": "txt",
+   "verdict": "pass",
+   "reason": "declined: pdf-password-libreoffice.pdf: pdf-password-libreoffice.pdf is password protected.",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "error": "pdf-password-libreoffice.pdf: pdf-password-libreoffice.pdf is password protected.",
+   "expected": "clean-error",
+   "id": "pdf-password-libreoffice",
+   "key": "pdf-password-libreoffice \u2192 docx",
+   "ms": 165,
+   "operation": "convert.docx",
+   "outputs": [],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pdf-password-libreoffice.pdf",
+   "status": "error",
+   "target": "docx",
+   "verdict": "pass",
+   "reason": "declined: pdf-password-libreoffice.pdf: pdf-password-libreoffice.pdf is password protected.",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "pdf-scanned-gutenberg-page",
+   "key": "pdf-scanned-gutenberg-page \u2192 png",
+   "ms": 239,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pdf-scanned-gutenberg-page/pdf-scanned-gutenberg-page.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pdf-scanned-gutenberg-page.pdf",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "pdf-scanned-gutenberg-page",
+   "key": "pdf-scanned-gutenberg-page \u2192 jpeg",
+   "ms": 67,
+   "operation": "convert.jpeg",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pdf-scanned-gutenberg-page/pdf-scanned-gutenberg-page.jpg"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pdf-scanned-gutenberg-page.pdf",
+   "status": "ok",
+   "target": "jpeg",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "pdf-scanned-gutenberg-page",
+   "key": "pdf-scanned-gutenberg-page \u2192 txt",
+   "ms": 3326,
+   "operation": "convert.txt",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pdf-scanned-gutenberg-page/pdf-scanned-gutenberg-page.txt"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pdf-scanned-gutenberg-page.pdf",
+   "status": "ok",
+   "target": "txt",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "pdf-scanned-gutenberg-page",
+   "key": "pdf-scanned-gutenberg-page \u2192 docx",
+   "ms": 3468,
+   "operation": "convert.docx",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pdf-scanned-gutenberg-page/pdf-scanned-gutenberg-page.docx"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pdf-scanned-gutenberg-page.pdf",
+   "status": "ok",
+   "target": "docx",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "pdf-scanned-rotated-4pages",
+   "key": "pdf-scanned-rotated-4pages \u2192 png",
+   "ms": 1042,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pdf-scanned-rotated-4pages/pdf-scanned-rotated-4pages (pages)"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pdf-scanned-rotated-4pages.pdf",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "pdf-scanned-rotated-4pages",
+   "key": "pdf-scanned-rotated-4pages \u2192 txt",
+   "ms": 33724,
+   "operation": "convert.txt",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pdf-scanned-rotated-4pages/pdf-scanned-rotated-4pages.txt"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pdf-scanned-rotated-4pages.pdf",
+   "status": "ok",
+   "target": "txt",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "pdf-acroform-irs-1040",
+   "key": "pdf-acroform-irs-1040 \u2192 png",
+   "ms": 557,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pdf-acroform-irs-1040/pdf-acroform-irs-1040 (pages)"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pdf-acroform-irs-1040.pdf",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "pdf-acroform-irs-1040",
+   "key": "pdf-acroform-irs-1040 \u2192 txt",
+   "ms": 212,
+   "operation": "convert.txt",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pdf-acroform-irs-1040/pdf-acroform-irs-1040.txt"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pdf-acroform-irs-1040.pdf",
+   "status": "ok",
+   "target": "txt",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "error": "pdf-xfa-dynamic-form.pdf: pdf-xfa-dynamic-form.pdf is an XFA form, which only Adobe Acrobat and Reader can show.",
+   "expected": "clean-error",
+   "id": "pdf-xfa-dynamic-form",
+   "key": "pdf-xfa-dynamic-form \u2192 png",
+   "ms": 104,
+   "operation": "convert.png",
+   "outputs": [],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pdf-xfa-dynamic-form.pdf",
+   "status": "error",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "declined: pdf-xfa-dynamic-form.pdf: pdf-xfa-dynamic-form.pdf is an XFA form, which only Adobe Acrobat and Reader can show.",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "error": "pdf-xfa-dynamic-form.pdf: pdf-xfa-dynamic-form.pdf is an XFA form, which only Adobe Acrobat and Reader can show.",
+   "expected": "clean-error",
+   "id": "pdf-xfa-dynamic-form",
+   "key": "pdf-xfa-dynamic-form \u2192 txt",
+   "ms": 101,
+   "operation": "convert.txt",
+   "outputs": [],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pdf-xfa-dynamic-form.pdf",
+   "status": "error",
+   "target": "txt",
+   "verdict": "pass",
+   "reason": "declined: pdf-xfa-dynamic-form.pdf: pdf-xfa-dynamic-form.pdf is an XFA form, which only Adobe Acrobat and Reader can show.",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "pdf-a1b-ghostscript",
+   "key": "pdf-a1b-ghostscript \u2192 png",
+   "ms": 302,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pdf-a1b-ghostscript/pdf-a1b-ghostscript.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pdf-a1b-ghostscript.pdf",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "pdf-a1b-ghostscript",
+   "key": "pdf-a1b-ghostscript \u2192 txt",
+   "ms": 102,
+   "operation": "convert.txt",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pdf-a1b-ghostscript/pdf-a1b-ghostscript.txt"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pdf-a1b-ghostscript.pdf",
+   "status": "ok",
+   "target": "txt",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "pdf-a2b-verapdf-pass",
+   "key": "pdf-a2b-verapdf-pass \u2192 png",
+   "ms": 160,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pdf-a2b-verapdf-pass/pdf-a2b-verapdf-pass.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pdf-a2b-verapdf-pass.pdf",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "pptx-google-slides-export",
+   "key": "pptx-google-slides-export \u2192 pdf",
+   "ms": 180,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pptx-google-slides-export/pptx-google-slides-export.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pptx-google-slides-export.pptx",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "pptx-google-slides-export",
+   "key": "pptx-google-slides-export \u2192 png",
+   "ms": 203,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pptx-google-slides-export/pptx-google-slides-export (slides)"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pptx-google-slides-export.pptx",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "pptx-google-slides-export",
+   "key": "pptx-google-slides-export \u2192 key",
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pptx-google-slides-export.pptx",
+   "status": "not-offered",
+   "target": "key",
+   "unavailable": "no app on this Mac writes Keynote",
+   "verdict": "skipped",
+   "reason": "no app on this Mac writes Keynote",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "pptx-powerpoint-charts-tables-groups",
+   "key": "pptx-powerpoint-charts-tables-groups \u2192 pdf",
+   "ms": 926,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pptx-powerpoint-charts-tables-groups/pptx-powerpoint-charts-tables-groups.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pptx-powerpoint-charts-tables-groups.pptx",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "pptx-powerpoint-charts-tables-groups",
+   "key": "pptx-powerpoint-charts-tables-groups \u2192 png",
+   "ms": 3350,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pptx-powerpoint-charts-tables-groups/pptx-powerpoint-charts-tables-groups (slides)"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pptx-powerpoint-charts-tables-groups.pptx",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "pptx-powerpoint-charts-tables-groups",
+   "key": "pptx-powerpoint-charts-tables-groups \u2192 odp",
+   "ms": 6137,
+   "operation": "convert.odp",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pptx-powerpoint-charts-tables-groups/pptx-powerpoint-charts-tables-groups.odp"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pptx-powerpoint-charts-tables-groups.pptx",
+   "status": "ok",
+   "target": "odp",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "xls-biff8-real-world",
+   "key": "xls-biff8-real-world \u2192 xlsx",
+   "ms": 211,
+   "operation": "convert.xlsx",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/xls-biff8-real-world/xls-biff8-real-world.xlsx"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/xls-biff8-real-world.xls",
+   "status": "ok",
+   "target": "xlsx",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "xls-biff8-real-world",
+   "key": "xls-biff8-real-world \u2192 pdf",
+   "ms": 478,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/xls-biff8-real-world/xls-biff8-real-world.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/xls-biff8-real-world.xls",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "xls-biff8-real-world",
+   "key": "xls-biff8-real-world \u2192 csv",
+   "ms": 40,
+   "operation": "convert.csv",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/xls-biff8-real-world/xls-biff8-real-world.csv"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/xls-biff8-real-world.xls",
+   "status": "ok",
+   "target": "csv",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "xls-biff8-real-world",
+   "key": "xls-biff8-real-world \u2192 ods",
+   "ms": 178,
+   "operation": "convert.ods",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/xls-biff8-real-world/xls-biff8-real-world.ods"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/xls-biff8-real-world.xls",
+   "status": "ok",
+   "target": "ods",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "xlsx-formulas-merges-charts",
+   "key": "xlsx-formulas-merges-charts \u2192 pdf",
+   "ms": 192,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/xlsx-formulas-merges-charts/xlsx-formulas-merges-charts.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/xlsx-formulas-merges-charts.xlsx",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "xlsx-formulas-merges-charts",
+   "key": "xlsx-formulas-merges-charts \u2192 csv",
+   "ms": 50,
+   "operation": "convert.csv",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/xlsx-formulas-merges-charts/xlsx-formulas-merges-charts.csv"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/xlsx-formulas-merges-charts.xlsx",
+   "status": "ok",
+   "target": "csv",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "xlsx-formulas-merges-charts",
+   "key": "xlsx-formulas-merges-charts \u2192 ods",
+   "ms": 75,
+   "operation": "convert.ods",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/xlsx-formulas-merges-charts/xlsx-formulas-merges-charts.ods"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/xlsx-formulas-merges-charts.xlsx",
+   "status": "ok",
+   "target": "ods",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "xlsx-50000-merged-cells",
+   "key": "xlsx-50000-merged-cells \u2192 pdf",
+   "ms": 698,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/xlsx-50000-merged-cells/xlsx-50000-merged-cells.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/xlsx-50000-merged-cells.xlsx",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "xlsx-50000-merged-cells",
+   "key": "xlsx-50000-merged-cells \u2192 csv",
+   "ms": 699,
+   "operation": "convert.csv",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/xlsx-50000-merged-cells/xlsx-50000-merged-cells.csv"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/xlsx-50000-merged-cells.xlsx",
+   "status": "ok",
+   "target": "csv",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "docx-images-in-tables",
+   "key": "docx-images-in-tables \u2192 pdf",
+   "ms": 408,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/docx-images-in-tables/docx-images-in-tables.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/docx-images-in-tables.docx",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "docx-images-in-tables",
+   "key": "docx-images-in-tables \u2192 odt",
+   "ms": 1875,
+   "operation": "convert.odt",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/docx-images-in-tables/docx-images-in-tables.odt"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/docx-images-in-tables.docx",
+   "status": "ok",
+   "target": "odt",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "docx-images-in-tables",
+   "key": "docx-images-in-tables \u2192 txt",
+   "ms": 37,
+   "operation": "convert.txt",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/docx-images-in-tables/docx-images-in-tables.txt"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/docx-images-in-tables.docx",
+   "status": "ok",
+   "target": "txt",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "docx-images-in-tables",
+   "key": "docx-images-in-tables \u2192 html",
+   "ms": 24,
+   "operation": "convert.html",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/docx-images-in-tables/docx-images-in-tables.html"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/docx-images-in-tables.docx",
+   "status": "ok",
+   "target": "html",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "docx-chartex",
+   "key": "docx-chartex \u2192 pdf",
+   "ms": 24,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/docx-chartex/docx-chartex.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/docx-chartex.docx",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "docx-chartex",
+   "key": "docx-chartex \u2192 odt",
+   "ms": 3038,
+   "operation": "convert.odt",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/docx-chartex/docx-chartex.odt"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/docx-chartex.docx",
+   "status": "ok",
+   "target": "odt",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "error": "docx-truncated-zip.docx: Couldn't read docx-truncated-zip.docx.",
+   "expected": "clean-error",
+   "id": "docx-truncated-zip",
+   "key": "docx-truncated-zip \u2192 pdf",
+   "ms": 92,
+   "operation": "convert.pdf",
+   "outputs": [],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/docx-truncated-zip.docx",
+   "status": "error",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "declined: docx-truncated-zip.docx: Couldn't read docx-truncated-zip.docx.",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "error": "docx-truncated-zip.docx: Couldn't read docx-truncated-zip.docx.",
+   "expected": "clean-error",
+   "id": "docx-truncated-zip",
+   "key": "docx-truncated-zip \u2192 txt",
+   "ms": 71,
+   "operation": "convert.txt",
+   "outputs": [],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/docx-truncated-zip.docx",
+   "status": "error",
+   "target": "txt",
+   "verdict": "pass",
+   "reason": "declined: docx-truncated-zip.docx: Couldn't read docx-truncated-zip.docx.",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "odt-text-document",
+   "key": "odt-text-document \u2192 pdf",
+   "ms": 219,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/odt-text-document/odt-text-document.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/odt-text-document.odt",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "odt-text-document",
+   "key": "odt-text-document \u2192 docx",
+   "ms": 98,
+   "operation": "convert.docx",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/odt-text-document/odt-text-document.docx"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/odt-text-document.odt",
+   "status": "ok",
+   "target": "docx",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "odt-text-document",
+   "key": "odt-text-document \u2192 txt",
+   "ms": 114,
+   "operation": "convert.txt",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/odt-text-document/odt-text-document.txt"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/odt-text-document.odt",
+   "status": "ok",
+   "target": "txt",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "ods-table-with-title",
+   "key": "ods-table-with-title \u2192 xlsx",
+   "ms": 354,
+   "operation": "convert.xlsx",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/ods-table-with-title/ods-table-with-title.xlsx"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/ods-table-with-title.ods",
+   "status": "ok",
+   "target": "xlsx",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "ods-table-with-title",
+   "key": "ods-table-with-title \u2192 pdf",
+   "ms": 49,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/ods-table-with-title/ods-table-with-title.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/ods-table-with-title.ods",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "ods-table-with-title",
+   "key": "ods-table-with-title \u2192 csv",
+   "ms": 25,
+   "operation": "convert.csv",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/ods-table-with-title/ods-table-with-title.csv"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/ods-table-with-title.ods",
+   "status": "ok",
+   "target": "csv",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "odp-presentation",
+   "key": "odp-presentation \u2192 pptx",
+   "ms": 1577,
+   "operation": "convert.pptx",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/odp-presentation/odp-presentation.pptx"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/odp-presentation.odp",
+   "status": "ok",
+   "target": "pptx",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "odp-presentation",
+   "key": "odp-presentation \u2192 pdf",
+   "ms": 1528,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/odp-presentation/odp-presentation.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/odp-presentation.odp",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "odp-presentation",
+   "key": "odp-presentation \u2192 png",
+   "ms": 1674,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/odp-presentation/odp-presentation (slides)"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/odp-presentation.odp",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "keynote-2013-iwa",
+   "key": "keynote-2013-iwa \u2192 pdf",
+   "ms": 1239,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/keynote-2013-iwa/keynote-2013-iwa.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/keynote-2013-iwa.key",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "keynote-2013-iwa",
+   "key": "keynote-2013-iwa \u2192 pptx",
+   "ms": 1465,
+   "operation": "convert.pptx",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/keynote-2013-iwa/keynote-2013-iwa.pptx"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/keynote-2013-iwa.key",
+   "status": "ok",
+   "target": "pptx",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "keynote-2013-iwa",
+   "key": "keynote-2013-iwa \u2192 jpeg",
+   "ms": 1296,
+   "operation": "convert.jpeg",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/keynote-2013-iwa/keynote-2013-iwa (slides)"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/keynote-2013-iwa.key",
+   "status": "ok",
+   "target": "jpeg",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "keynote-2018-zipped-bundle",
+   "key": "keynote-2018-zipped-bundle \u2192 pdf",
+   "ms": 1358,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/keynote-2018-zipped-bundle/keynote-2018-zipped-bundle.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/keynote-2018-zipped-bundle.key",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "keynote-2018-zipped-bundle",
+   "key": "keynote-2018-zipped-bundle \u2192 pptx",
+   "ms": 1441,
+   "operation": "convert.pptx",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/keynote-2018-zipped-bundle/keynote-2018-zipped-bundle.pptx"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/keynote-2018-zipped-bundle.key",
+   "status": "ok",
+   "target": "pptx",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "pages-2013-iwa",
+   "key": "pages-2013-iwa \u2192 pdf",
+   "ms": 1527,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pages-2013-iwa/pages-2013-iwa.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pages-2013-iwa.pages",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "pages-2013-iwa",
+   "key": "pages-2013-iwa \u2192 docx",
+   "ms": 1216,
+   "operation": "convert.docx",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/pages-2013-iwa/pages-2013-iwa.docx"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/pages-2013-iwa.pages",
+   "status": "ok",
+   "target": "docx",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "numbers-2013-iwa",
+   "key": "numbers-2013-iwa \u2192 pdf",
+   "ms": 1564,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/numbers-2013-iwa/numbers-2013-iwa.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/numbers-2013-iwa.numbers",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "numbers-2013-iwa",
+   "key": "numbers-2013-iwa \u2192 xlsx",
+   "ms": 1211,
+   "operation": "convert.xlsx",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/numbers-2013-iwa/numbers-2013-iwa.xlsx"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/numbers-2013-iwa.numbers",
+   "status": "ok",
+   "target": "xlsx",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "office",
+   "expected": "convert",
+   "id": "numbers-2013-iwa",
+   "key": "numbers-2013-iwa \u2192 csv",
+   "ms": 1222,
+   "operation": "convert.csv",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/numbers-2013-iwa/numbers-2013-iwa.csv"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/numbers-2013-iwa.numbers",
+   "status": "ok",
+   "target": "csv",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "archive",
+   "expected": "convert",
+   "id": "zip-nested-office-docs",
+   "key": "zip-nested-office-docs \u2192 extract",
+   "ms": 26,
+   "operation": "convert.extract",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/zip-nested-office-docs/zip-nested-office-docs"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/zip-nested-office-docs.zip",
+   "status": "ok",
+   "target": "extract",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "archive",
+   "expected": "convert",
+   "id": "targz-zlib-source",
+   "key": "targz-zlib-source \u2192 extract",
+   "ms": 28,
+   "operation": "convert.extract",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/targz-zlib-source/targz-zlib-source"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/targz-zlib-source.gz",
+   "status": "ok",
+   "target": "extract",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "no checker for ."
+   ]
+  },
+  {
+   "category": "archive",
+   "expected": "convert",
+   "id": "7z-umlaut-solid",
+   "key": "7z-umlaut-solid \u2192 extract",
+   "ms": 170,
+   "operation": "convert.extract",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/7z-umlaut-solid/ta\u0308st.txt"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/7z-umlaut-solid.7z",
+   "status": "ok",
+   "target": "extract",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "archive",
+   "error": "7z-encrypted.7z: tar: tar: Error exit delayed from previous errors.",
+   "expected": "clean-error",
+   "id": "7z-encrypted",
+   "key": "7z-encrypted \u2192 extract",
+   "ms": 247,
+   "operation": "convert.extract",
+   "outputs": [],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/7z-encrypted.7z",
+   "status": "error",
+   "target": "extract",
+   "verdict": "pass",
+   "reason": "declined: 7z-encrypted.7z: tar: tar: Error exit delayed from previous errors.",
+   "notes": []
+  },
+  {
+   "category": "archive",
+   "error": "7z-data-corrupted.7z: tar: tar: Error exit delayed from previous errors.",
+   "expected": "clean-error",
+   "id": "7z-data-corrupted",
+   "key": "7z-data-corrupted \u2192 extract",
+   "ms": 98,
+   "operation": "convert.extract",
+   "outputs": [],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/7z-data-corrupted.7z",
+   "status": "error",
+   "target": "extract",
+   "verdict": "pass",
+   "reason": "declined: 7z-data-corrupted.7z: tar: tar: Error exit delayed from previous errors.",
+   "notes": []
+  },
+  {
+   "category": "archive",
+   "error": "rar3-unicode-names.rar: tar: tar: Error exit delayed from previous errors.",
+   "expected": "convert",
+   "id": "rar3-unicode-names",
+   "key": "rar3-unicode-names \u2192 extract",
+   "ms": 104,
+   "operation": "convert.extract",
+   "outputs": [],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/rar3-unicode-names.rar",
+   "status": "error",
+   "target": "extract",
+   "verdict": "fail",
+   "reason": "error: rar3-unicode-names.rar: tar: tar: Error exit delayed from previous errors.",
+   "notes": []
+  },
+  {
+   "category": "archive",
+   "error": "rar5-encrypted.rar: tar: tar: Error exit delayed from previous errors.",
+   "expected": "clean-error",
+   "id": "rar5-encrypted",
+   "key": "rar5-encrypted \u2192 extract",
+   "ms": 99,
+   "operation": "convert.extract",
+   "outputs": [],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/rar5-encrypted.rar",
+   "status": "error",
+   "target": "extract",
+   "verdict": "pass",
+   "reason": "declined: rar5-encrypted.rar: tar: tar: Error exit delayed from previous errors.",
+   "notes": []
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "jpeg-cmyk-adobe",
+   "key": "jpeg-cmyk-adobe \u2192 png",
+   "ms": 101,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/jpeg-cmyk-adobe/jpeg-cmyk-adobe.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/jpeg-cmyk-adobe.jpg",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "jpeg-cmyk-adobe",
+   "key": "jpeg-cmyk-adobe \u2192 pdf",
+   "ms": 102,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/jpeg-cmyk-adobe/jpeg-cmyk-adobe.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/jpeg-cmyk-adobe.jpg",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "jpeg-cmyk-adobe",
+   "key": "jpeg-cmyk-adobe \u2192 heic",
+   "ms": 109,
+   "operation": "convert.heic",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/jpeg-cmyk-adobe/jpeg-cmyk-adobe.heic"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/jpeg-cmyk-adobe.jpg",
+   "status": "ok",
+   "target": "heic",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.996"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "jpeg-cmyk-adobe",
+   "key": "jpeg-cmyk-adobe \u2192 webp",
+   "ms": 204,
+   "operation": "convert.webp",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/jpeg-cmyk-adobe/jpeg-cmyk-adobe.webp"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/jpeg-cmyk-adobe.jpg",
+   "status": "ok",
+   "target": "webp",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.990"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "jpeg-cmyk-small",
+   "key": "jpeg-cmyk-small \u2192 png",
+   "ms": 109,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/jpeg-cmyk-small/jpeg-cmyk-small.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/jpeg-cmyk-small.jpg",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "png-16bit-hdr-room",
+   "key": "png-16bit-hdr-room \u2192 tiff",
+   "ms": 61,
+   "operation": "convert.tiff",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/png-16bit-hdr-room/png-16bit-hdr-room.tiff"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/png-16bit-hdr-room.png",
+   "status": "ok",
+   "target": "tiff",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "png-16bit-hdr-room",
+   "key": "png-16bit-hdr-room \u2192 jpeg",
+   "ms": 44,
+   "operation": "convert.jpeg",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/png-16bit-hdr-room/png-16bit-hdr-room.jpg"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/png-16bit-hdr-room.png",
+   "status": "ok",
+   "target": "jpeg",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.993"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "png-16bit-hdr-room",
+   "key": "png-16bit-hdr-room \u2192 heic",
+   "ms": 72,
+   "operation": "convert.heic",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/png-16bit-hdr-room/png-16bit-hdr-room.heic"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/png-16bit-hdr-room.png",
+   "status": "ok",
+   "target": "heic",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.995"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "png-16bit-hdr-room",
+   "key": "png-16bit-hdr-room \u2192 avif",
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/png-16bit-hdr-room.png",
+   "status": "not-offered",
+   "target": "avif",
+   "verdict": "fail",
+   "reason": "not-offered",
+   "notes": []
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "gif-animated-42-frames",
+   "key": "gif-animated-42-frames \u2192 webp",
+   "ms": 376,
+   "operation": "convert.webp",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gif-animated-42-frames/gif-animated-42-frames.webp"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gif-animated-42-frames.gif",
+   "status": "ok",
+   "target": "webp",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.969"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "gif-animated-42-frames",
+   "key": "gif-animated-42-frames \u2192 png",
+   "ms": 69,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gif-animated-42-frames/gif-animated-42-frames.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gif-animated-42-frames.gif",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "gif-animated-42-frames",
+   "key": "gif-animated-42-frames \u2192 heic",
+   "ms": 54,
+   "operation": "convert.heic",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gif-animated-42-frames/gif-animated-42-frames.heic"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gif-animated-42-frames.gif",
+   "status": "ok",
+   "target": "heic",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.969"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "webp-animated-42-frames",
+   "key": "webp-animated-42-frames \u2192 gif",
+   "ms": 29,
+   "operation": "convert.gif",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/webp-animated-42-frames/webp-animated-42-frames.gif"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/webp-animated-42-frames.webp",
+   "status": "ok",
+   "target": "gif",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "webp-animated-42-frames",
+   "key": "webp-animated-42-frames \u2192 png",
+   "ms": 31,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/webp-animated-42-frames/webp-animated-42-frames.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/webp-animated-42-frames.webp",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "avif-10bit-hdr-p3",
+   "key": "avif-10bit-hdr-p3 \u2192 jpeg",
+   "ms": 387,
+   "operation": "convert.jpeg",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/avif-10bit-hdr-p3/avif-10bit-hdr-p3.jpg"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/avif-10bit-hdr-p3.avif",
+   "status": "ok",
+   "target": "jpeg",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.997"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "avif-10bit-hdr-p3",
+   "key": "avif-10bit-hdr-p3 \u2192 png",
+   "ms": 3629,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/avif-10bit-hdr-p3/avif-10bit-hdr-p3.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/avif-10bit-hdr-p3.avif",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "avif-10bit-hdr-p3",
+   "key": "avif-10bit-hdr-p3 \u2192 heic",
+   "ms": 398,
+   "operation": "convert.heic",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/avif-10bit-hdr-p3/avif-10bit-hdr-p3.heic"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/avif-10bit-hdr-p3.avif",
+   "status": "ok",
+   "target": "heic",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.999"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "avif-10bit-hdr-p3",
+   "key": "avif-10bit-hdr-p3 \u2192 tiff",
+   "ms": 399,
+   "operation": "convert.tiff",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/avif-10bit-hdr-p3/avif-10bit-hdr-p3.tiff"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/avif-10bit-hdr-p3.avif",
+   "status": "ok",
+   "target": "tiff",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "avif-sequence-animated",
+   "key": "avif-sequence-animated \u2192 gif",
+   "ms": 153,
+   "operation": "convert.gif",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/avif-sequence-animated/avif-sequence-animated.gif"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/avif-sequence-animated.avifs",
+   "status": "ok",
+   "target": "gif",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "avif-sequence-animated",
+   "key": "avif-sequence-animated \u2192 png",
+   "ms": 34,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/avif-sequence-animated/avif-sequence-animated.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/avif-sequence-animated.avifs",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "tiff-multipage",
+   "key": "tiff-multipage \u2192 pdf",
+   "ms": 143,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/tiff-multipage/tiff-multipage.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/tiff-multipage.tiff",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "tiff-multipage",
+   "key": "tiff-multipage \u2192 png",
+   "ms": 120,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/tiff-multipage/tiff-multipage.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/tiff-multipage.tiff",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "tiff-multipage",
+   "key": "tiff-multipage \u2192 jpeg",
+   "ms": 116,
+   "operation": "convert.jpeg",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/tiff-multipage/tiff-multipage.jpg"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/tiff-multipage.tiff",
+   "status": "ok",
+   "target": "jpeg",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "image",
+   "error": "tiff-ifd-loop.tif: Couldn't read tiff-ifd-loop.tif.",
+   "expected": "clean-error",
+   "id": "tiff-ifd-loop",
+   "key": "tiff-ifd-loop \u2192 pdf",
+   "ms": 39,
+   "operation": "convert.pdf",
+   "outputs": [],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/tiff-ifd-loop.tif",
+   "status": "error",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "declined: tiff-ifd-loop.tif: Couldn't read tiff-ifd-loop.tif.",
+   "notes": []
+  },
+  {
+   "category": "image",
+   "error": "tiff-ifd-loop.tif: Couldn't read tiff-ifd-loop.tif.",
+   "expected": "clean-error",
+   "id": "tiff-ifd-loop",
+   "key": "tiff-ifd-loop \u2192 png",
+   "ms": 154,
+   "operation": "convert.png",
+   "outputs": [],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/tiff-ifd-loop.tif",
+   "status": "error",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "declined: tiff-ifd-loop.tif: Couldn't read tiff-ifd-loop.tif.",
+   "notes": []
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "svg-inkscape-filters",
+   "key": "svg-inkscape-filters \u2192 png",
+   "ms": 10806,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/svg-inkscape-filters/svg-inkscape-filters.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/svg-inkscape-filters.svg",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM not measured"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "svg-inkscape-filters",
+   "key": "svg-inkscape-filters \u2192 pdf",
+   "ms": 9405,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/svg-inkscape-filters/svg-inkscape-filters.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/svg-inkscape-filters.svg",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "svg-inkscape-filters",
+   "key": "svg-inkscape-filters \u2192 jpeg",
+   "ms": 5258,
+   "operation": "convert.jpeg",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/svg-inkscape-filters/svg-inkscape-filters.jpg"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/svg-inkscape-filters.svg",
+   "status": "ok",
+   "target": "jpeg",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM not measured"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "svg-inkscape-i18n-text",
+   "key": "svg-inkscape-i18n-text \u2192 png",
+   "ms": 187,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/svg-inkscape-i18n-text/svg-inkscape-i18n-text.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/svg-inkscape-i18n-text.svg",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.997"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "svg-inkscape-i18n-text",
+   "key": "svg-inkscape-i18n-text \u2192 pdf",
+   "ms": 90,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/svg-inkscape-i18n-text/svg-inkscape-i18n-text.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/svg-inkscape-i18n-text.svg",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "psd-layer-effects",
+   "key": "psd-layer-effects \u2192 png",
+   "ms": 41,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/psd-layer-effects/psd-layer-effects.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/psd-layer-effects.psd",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "psd-layer-effects",
+   "key": "psd-layer-effects \u2192 jpeg",
+   "ms": 139,
+   "operation": "convert.jpeg",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/psd-layer-effects/psd-layer-effects.jpg"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/psd-layer-effects.psd",
+   "status": "ok",
+   "target": "jpeg",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.998"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "psd-layer-effects",
+   "key": "psd-layer-effects \u2192 tiff",
+   "ms": 73,
+   "operation": "convert.tiff",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/psd-layer-effects/psd-layer-effects.tiff"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/psd-layer-effects.psd",
+   "status": "ok",
+   "target": "tiff",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "psd-layer-effects",
+   "key": "psd-layer-effects \u2192 pdf",
+   "ms": 54,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/psd-layer-effects/psd-layer-effects.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/psd-layer-effects.psd",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "psd-cmyk-spot-channels",
+   "key": "psd-cmyk-spot-channels \u2192 png",
+   "ms": 156,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/psd-cmyk-spot-channels/psd-cmyk-spot-channels.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/psd-cmyk-spot-channels.psd",
+   "status": "ok",
+   "target": "png",
+   "verdict": "fail",
+   "reason": "psd-cmyk-spot-channels.png: SSIM 0.424 < 0.95",
+   "notes": [
+    "SSIM 0.424"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "psd-cmyk-spot-channels",
+   "key": "psd-cmyk-spot-channels \u2192 jpeg",
+   "ms": 35,
+   "operation": "convert.jpeg",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/psd-cmyk-spot-channels/psd-cmyk-spot-channels.jpg"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/psd-cmyk-spot-channels.psd",
+   "status": "ok",
+   "target": "jpeg",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "psd-cmyk-spot-channels",
+   "key": "psd-cmyk-spot-channels \u2192 tiff",
+   "ms": 40,
+   "operation": "convert.tiff",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/psd-cmyk-spot-channels/psd-cmyk-spot-channels.tiff"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/psd-cmyk-spot-channels.psd",
+   "status": "ok",
+   "target": "tiff",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "heic-samsung-200mp-gainmap",
+   "key": "heic-samsung-200mp-gainmap \u2192 jpeg",
+   "ms": 60954,
+   "operation": "convert.jpeg",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/heic-samsung-200mp-gainmap/heic-samsung-200mp-gainmap.jpg"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/heic-samsung-200mp-gainmap.heic",
+   "status": "ok",
+   "target": "jpeg",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.998"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "heic-samsung-200mp-gainmap",
+   "key": "heic-samsung-200mp-gainmap \u2192 png",
+   "ms": 57633,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/heic-samsung-200mp-gainmap/heic-samsung-200mp-gainmap.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/heic-samsung-200mp-gainmap.heic",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "heic-samsung-200mp-gainmap",
+   "key": "heic-samsung-200mp-gainmap \u2192 tiff",
+   "ms": 56864,
+   "operation": "convert.tiff",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/heic-samsung-200mp-gainmap/heic-samsung-200mp-gainmap.tiff"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/heic-samsung-200mp-gainmap.heic",
+   "status": "ok",
+   "target": "tiff",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "jpeg-exif-orientation-6",
+   "key": "jpeg-exif-orientation-6 \u2192 png",
+   "ms": 168,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/jpeg-exif-orientation-6/jpeg-exif-orientation-6.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/jpeg-exif-orientation-6.jpg",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "jpeg-exif-orientation-6",
+   "key": "jpeg-exif-orientation-6 \u2192 heic",
+   "ms": 76,
+   "operation": "convert.heic",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/jpeg-exif-orientation-6/jpeg-exif-orientation-6.heic"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/jpeg-exif-orientation-6.jpg",
+   "status": "ok",
+   "target": "heic",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.997"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "jpeg-exif-orientation-6",
+   "key": "jpeg-exif-orientation-6 \u2192 webp",
+   "ms": 304,
+   "operation": "convert.webp",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/jpeg-exif-orientation-6/jpeg-exif-orientation-6.webp"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/jpeg-exif-orientation-6.jpg",
+   "status": "ok",
+   "target": "webp",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.996"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "jpeg-exif-orientation-6",
+   "key": "jpeg-exif-orientation-6 \u2192 pdf",
+   "ms": 153,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/jpeg-exif-orientation-6/jpeg-exif-orientation-6.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/jpeg-exif-orientation-6.jpg",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "image",
+   "error": "gif-decompression-bomb.gif: Couldn't read gif-decompression-bomb.gif.",
+   "expected": "clean-error",
+   "id": "gif-decompression-bomb",
+   "key": "gif-decompression-bomb \u2192 png",
+   "ms": 145,
+   "operation": "convert.png",
+   "outputs": [],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gif-decompression-bomb.gif",
+   "status": "error",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "declined: gif-decompression-bomb.gif: Couldn't read gif-decompression-bomb.gif.",
+   "notes": []
+  },
+  {
+   "category": "image",
+   "error": "gif-decompression-bomb.gif: Couldn't read gif-decompression-bomb.gif.",
+   "expected": "clean-error",
+   "id": "gif-decompression-bomb",
+   "key": "gif-decompression-bomb \u2192 jpeg",
+   "ms": 25,
+   "operation": "convert.jpeg",
+   "outputs": [],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gif-decompression-bomb.gif",
+   "status": "error",
+   "target": "jpeg",
+   "verdict": "pass",
+   "reason": "declined: gif-decompression-bomb.gif: Couldn't read gif-decompression-bomb.gif.",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "gen-pdf-500-pages",
+   "key": "gen-pdf-500-pages \u2192 png",
+   "ms": 59342,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-pdf-500-pages/gen-pdf-500-pages (pages)"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-pdf-500-pages.pdf",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "gen-pdf-500-pages",
+   "key": "gen-pdf-500-pages \u2192 jpeg",
+   "ms": 5563,
+   "operation": "convert.jpeg",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-pdf-500-pages/gen-pdf-500-pages (pages) 2"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-pdf-500-pages.pdf",
+   "status": "ok",
+   "target": "jpeg",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "error": "gen-pdf-password.pdf: gen-pdf-password.pdf is password protected.",
+   "expected": "clean-error",
+   "id": "gen-pdf-password",
+   "key": "gen-pdf-password \u2192 png",
+   "ms": 127,
+   "operation": "convert.png",
+   "outputs": [],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-pdf-password.pdf",
+   "status": "error",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "declined: gen-pdf-password.pdf: gen-pdf-password.pdf is password protected.",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "error": "gen-pdf-password.pdf: gen-pdf-password.pdf is password protected.",
+   "expected": "clean-error",
+   "id": "gen-pdf-password",
+   "key": "gen-pdf-password \u2192 txt",
+   "ms": 161,
+   "operation": "convert.txt",
+   "outputs": [],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-pdf-password.pdf",
+   "status": "error",
+   "target": "txt",
+   "verdict": "pass",
+   "reason": "declined: gen-pdf-password.pdf: gen-pdf-password.pdf is password protected.",
+   "notes": []
+  },
+  {
+   "category": "archive",
+   "error": "gen-zip-truncated.zip: ditto: ditto: Couldn't read pkzip local header",
+   "expected": "clean-error",
+   "id": "gen-zip-truncated",
+   "key": "gen-zip-truncated \u2192 extract",
+   "ms": 74,
+   "operation": "convert.extract",
+   "outputs": [],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-zip-truncated.zip",
+   "status": "error",
+   "target": "extract",
+   "verdict": "pass",
+   "reason": "declined: gen-zip-truncated.zip: ditto: ditto: Couldn't read pkzip local header",
+   "notes": []
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "gen-name-image",
+   "key": "gen-name-image \u2192 png",
+   "ms": 67,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-image/gen-name-image Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.png"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-image Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.jpg",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "gen-name-image",
+   "key": "gen-name-image \u2192 heic",
+   "ms": 53,
+   "operation": "convert.heic",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-image/gen-name-image Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.heic"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-image Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.jpg",
+   "status": "ok",
+   "target": "heic",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.996"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "gen-name-image",
+   "key": "gen-name-image \u2192 webp",
+   "ms": 86,
+   "operation": "convert.webp",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-image/gen-name-image Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.webp"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-image Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.jpg",
+   "status": "ok",
+   "target": "webp",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.990"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "gen-name-image",
+   "key": "gen-name-image \u2192 tiff",
+   "ms": 172,
+   "operation": "convert.tiff",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-image/gen-name-image Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.tiff"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-image Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.jpg",
+   "status": "ok",
+   "target": "tiff",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "gen-name-image",
+   "key": "gen-name-image \u2192 gif",
+   "ms": 62,
+   "operation": "convert.gif",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-image/gen-name-image Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.gif"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-image Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.jpg",
+   "status": "ok",
+   "target": "gif",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.999"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "gen-name-image",
+   "key": "gen-name-image \u2192 bmp",
+   "ms": 33,
+   "operation": "convert.bmp",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-image/gen-name-image Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.bmp"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-image Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.jpg",
+   "status": "ok",
+   "target": "bmp",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "image",
+   "expected": "convert",
+   "id": "gen-name-image",
+   "key": "gen-name-image \u2192 pdf",
+   "ms": 44,
+   "operation": "convert.pdf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-image/gen-name-image Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.pdf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-image Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.jpg",
+   "status": "ok",
+   "target": "pdf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "PDF/A not claimed"
+   ]
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "gen-name-video",
+   "key": "gen-name-video \u2192 mp4",
+   "ms": 1073,
+   "operation": "convert.mp4",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-video/gen-name-video Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.mp4"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-video Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.mkv",
+   "status": "ok",
+   "target": "mp4",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "gen-name-video",
+   "key": "gen-name-video \u2192 mov",
+   "ms": 1009,
+   "operation": "convert.mov",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-video/gen-name-video Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.mov"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-video Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.mkv",
+   "status": "ok",
+   "target": "mov",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 1.000"
+   ]
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "gen-name-video",
+   "key": "gen-name-video \u2192 webm",
+   "ms": 27407,
+   "operation": "convert.webm",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-video/gen-name-video Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.webm"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-video Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.mkv",
+   "status": "ok",
+   "target": "webm",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.980"
+   ]
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "gen-name-video",
+   "key": "gen-name-video \u2192 avi",
+   "ms": 5115,
+   "operation": "convert.avi",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-video/gen-name-video Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.avi"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-video Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.mkv",
+   "status": "ok",
+   "target": "avi",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.949"
+   ]
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "gen-name-video",
+   "key": "gen-name-video \u2192 wmv",
+   "ms": 5462,
+   "operation": "convert.wmv",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-video/gen-name-video Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.wmv"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-video Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.mkv",
+   "status": "ok",
+   "target": "wmv",
+   "verdict": "pass",
+   "reason": "",
+   "notes": [
+    "SSIM 0.986"
+   ]
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "gen-name-video",
+   "key": "gen-name-video \u2192 gif",
+   "ms": 22320,
+   "operation": "convert.gif",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-video/gen-name-video Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.gif"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-video Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.mkv",
+   "status": "ok",
+   "target": "gif",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "gen-name-video",
+   "key": "gen-name-video \u2192 mp3",
+   "ms": 1036,
+   "operation": "convert.mp3",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-video/gen-name-video Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.mp3"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-video Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.mkv",
+   "status": "ok",
+   "target": "mp3",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "video",
+   "expected": "convert",
+   "id": "gen-name-video",
+   "key": "gen-name-video \u2192 m4a",
+   "ms": 1130,
+   "operation": "convert.m4a",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-video/gen-name-video Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-video Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.mkv",
+   "status": "ok",
+   "target": "m4a",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "gen-name-pdf",
+   "key": "gen-name-pdf \u2192 png",
+   "ms": 82690,
+   "operation": "convert.png",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-pdf/gen-name-pdf Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308 (pages)"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-pdf Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.pdf",
+   "status": "ok",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "gen-name-pdf",
+   "key": "gen-name-pdf \u2192 jpeg",
+   "ms": 22697,
+   "operation": "convert.jpeg",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-pdf/gen-name-pdf Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308 (pages) 2"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-pdf Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.pdf",
+   "status": "ok",
+   "target": "jpeg",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "gen-name-pdf",
+   "key": "gen-name-pdf \u2192 docx",
+   "ms": 20789,
+   "operation": "convert.docx",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-pdf/gen-name-pdf Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.docx"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-pdf Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.pdf",
+   "status": "ok",
+   "target": "docx",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "gen-name-pdf",
+   "key": "gen-name-pdf \u2192 txt",
+   "ms": 7327,
+   "operation": "convert.txt",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-pdf/gen-name-pdf Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.txt"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-pdf Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.pdf",
+   "status": "ok",
+   "target": "txt",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "gen-name-pdf",
+   "key": "gen-name-pdf \u2192 markdown",
+   "ms": 7654,
+   "operation": "convert.markdown",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-pdf/gen-name-pdf Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.md"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-pdf Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.pdf",
+   "status": "ok",
+   "target": "markdown",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "gen-name-pdf",
+   "key": "gen-name-pdf \u2192 rtf",
+   "ms": 8248,
+   "operation": "convert.rtf",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-pdf/gen-name-pdf Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.rtf"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-pdf Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.pdf",
+   "status": "ok",
+   "target": "rtf",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "gen-name-pdf",
+   "key": "gen-name-pdf \u2192 html",
+   "ms": 16747,
+   "operation": "convert.html",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-pdf/gen-name-pdf Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.html"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-pdf Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.pdf",
+   "status": "ok",
+   "target": "html",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "gen-name-pdf",
+   "key": "gen-name-pdf \u2192 epub",
+   "ms": 16700,
+   "operation": "convert.epub",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-pdf/gen-name-pdf Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.epub"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-pdf Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.pdf",
+   "status": "ok",
+   "target": "epub",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "gen-name-pdf",
+   "key": "gen-name-pdf \u2192 pptx",
+   "ms": 26685,
+   "operation": "convert.pptx",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-pdf/gen-name-pdf Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.pptx"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-pdf Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.pdf",
+   "status": "ok",
+   "target": "pptx",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "pdf",
+   "expected": "convert",
+   "id": "gen-name-pdf",
+   "key": "gen-name-pdf \u2192 xlsx",
+   "ms": 7348,
+   "operation": "convert.xlsx",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-pdf/gen-name-pdf Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.xlsx"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-pdf Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.pdf",
+   "status": "ok",
+   "target": "xlsx",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "gen-name-audio",
+   "key": "gen-name-audio \u2192 m4a",
+   "ms": 49,
+   "operation": "convert.m4a",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-audio/gen-name-audio Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-audio Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.mp3",
+   "status": "ok",
+   "target": "m4a",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "gen-name-audio",
+   "key": "gen-name-audio \u2192 wav",
+   "ms": 40,
+   "operation": "convert.wav",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-audio/gen-name-audio Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.wav"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-audio Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.mp3",
+   "status": "ok",
+   "target": "wav",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "gen-name-audio",
+   "key": "gen-name-audio \u2192 aiff",
+   "ms": 36,
+   "operation": "convert.aiff",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-audio/gen-name-audio Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.aiff"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-audio Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.mp3",
+   "status": "ok",
+   "target": "aiff",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "gen-name-audio",
+   "key": "gen-name-audio \u2192 flac",
+   "ms": 171,
+   "operation": "convert.flac",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-audio/gen-name-audio Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.flac"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-audio Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.mp3",
+   "status": "ok",
+   "target": "flac",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "gen-name-audio",
+   "key": "gen-name-audio \u2192 ogg",
+   "ms": 233,
+   "operation": "convert.ogg",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-audio/gen-name-audio Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.ogg"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-audio Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.mp3",
+   "status": "ok",
+   "target": "ogg",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "gen-name-audio",
+   "key": "gen-name-audio \u2192 opus",
+   "ms": 52,
+   "operation": "convert.opus",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-audio/gen-name-audio Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.opus"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-audio Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.mp3",
+   "status": "ok",
+   "target": "opus",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "gen-name-audio",
+   "key": "gen-name-audio \u2192 wma",
+   "ms": 56,
+   "operation": "convert.wma",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-audio/gen-name-audio Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.wma"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-audio Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.mp3",
+   "status": "ok",
+   "target": "wma",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "audio",
+   "expected": "convert",
+   "id": "gen-name-audio",
+   "key": "gen-name-audio \u2192 alac",
+   "ms": 140,
+   "operation": "convert.alac",
+   "outputs": [
+    "/Users/runner/work/kumquat/kumquat/.corpus/out/gen-name-audio/gen-name-audio Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308 2.m4a"
+   ],
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-name-audio Kesa\u0308 A\u030aland \u2013 o\u0308ljya\u0308 ja a\u0308yria\u0308isia\u0308.mp3",
+   "status": "ok",
+   "target": "alac",
+   "verdict": "pass",
+   "reason": "",
+   "notes": []
+  },
+  {
+   "category": "other",
+   "expected": "clean-error",
+   "id": "gen-icloud-stub",
+   "key": "gen-icloud-stub \u2192 png",
+   "source": "/Users/runner/work/kumquat/kumquat/.corpus/files/gen-icloud-stub.icloud",
+   "status": "not-offered",
+   "target": "png",
+   "verdict": "pass",
+   "reason": "declined: nothing offered",
+   "notes": []
+  }
+ ]
+}
